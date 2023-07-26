@@ -1,0 +1,682 @@
+[
+ {
+  "Staff Member": "Aisling Sarpong",
+  "Email": "aisling@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Akshita Ashokan",
+  "Email": "akshita@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Alan O'Neill",
+  "Email": "Alan.O@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Ali Hilley",
+  "Email": "alison.h@wolfgangdigital.com",
+  "Department": "Office Management",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Anna Spyridopoulou",
+  "Email": "anna.Spyridopoulou@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Barry Lennon",
+  "Email": "barry@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Ben Varghese",
+  "Email": "ben@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Beth Quigley",
+  "Email": "beth@wolfgangdigital.com",
+  "Department": "Client Services",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Brendan Almack",
+  "Email": "brendan@wolfgangdigital.com",
+  "Department": "Client Services",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Caitlan Brownlow",
+  "Email": "caitlan@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Chris Bury",
+  "Email": "chris@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Ciaran Murphy",
+  "Email": "ciaran@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Ciaran Ward",
+  "Email": "ciaran_ward@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Cillian Connolly",
+  "Email": "cillian@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Conor Flanagan",
+  "Email": "conor.f@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Daniel Kiely",
+  "Email": "dan@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Danielle Clarke",
+  "Email": "danielle@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Deborah McMahon",
+  "Email": "deborah.mcmahon@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Ed Murphy",
+  "Email": "ed@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Emily Blackburn",
+  "Email": "emily@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "George Florin Popu",
+  "Email": "george@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Gerard Hackett",
+  "Email": "gerard@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Gillian Brady",
+  "Email": "Gillian@wolfgangdigital.com",
+  "Department": "Email",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Harsha Sharma",
+  "Email": "harsha@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Helena Egri-Barker",
+  "Email": "helena@wolfgangdigital.com",
+  "Department": "Vis Comms",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Himani Maurya",
+  "Email": "himani@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Ian Booth",
+  "Email": "ian@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Iulian Grecu",
+  "Email": "iulian@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Ivan Crnomaric",
+  "Email": "ivan@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Jack Jennings",
+  "Email": "jack.j@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Jelle Evertsen",
+  "Email": "jelle@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Jen Darcy",
+  "Email": "jen@wolfgangdigital.com",
+  "Department": "Vis Comms",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "John Lennon",
+  "Email": "john@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Jordan Swope",
+  "Email": "jordan@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Jose Hernandez",
+  "Email": "jose@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Judit Garroset de la Cruz",
+  "Email": "judit@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Katie McDermott",
+  "Email": "kt@wolfgangdigital.com",
+  "Department": "Office Management",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Keith O'Connor",
+  "Email": "keith@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Kenia Gonzalez",
+  "Email": "kenia@wolfgangdigital.com",
+  "Department": "Client Services",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Laura Guiot",
+  "Email": "laura@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Leticia Martins",
+  "Email": "leticia@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Liam Gosnell",
+  "Email": "liam@wolfgangdigital.com",
+  "Department": "Dev",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Lisa Woods",
+  "Email": "lisa.w@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Lorna Franklin",
+  "Email": "lorna@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Lorna Noone",
+  "Email": "lorna.n@wolfgangdigital.com",
+  "Department": "Email",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Maedhbh Kelly",
+  "Email": "maedhbh@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Michaela Simpson",
+  "Email": "michaela@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Michelle Brady",
+  "Email": "michelle@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Mikie Flood",
+  "Email": "mikie@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Mr Margin",
+  "Email": "accounts@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 100,
+  "125": 100,
+  "150": 100,
+  "175": 100,
+  "200": 100
+ },
+ {
+  "Staff Member": "Muhammad Uzair",
+  "Email": "uzair@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Niamh O'Doherty",
+  "Email": "niamh@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Nicai de Guzman",
+  "Email": "nicai@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Octavian Dinu",
+  "Email": "octavian@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Otavio Dias",
+  "Email": "otavio@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Paul Bryne",
+  "Email": "paul@loadstone.ie",
+  "Department": "Dev",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ },
+ {
+  "Staff Member": "Peter Scott",
+  "Email": "peter@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Pranay Gautam",
+  "Email": "pranay@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Rajat Sabulal",
+  "Email": "rajat@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Rob Beirne",
+  "Email": "rob@wolfgangdigital.com",
+  "Department": "Client Services",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Roisin Linnie",
+  "Email": "roisin@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Sai Prathima Makam",
+  "Email": "sai@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Sean Markey",
+  "Email": "sean@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Shreya Barua",
+  "Email": "shreya@wolfgangdigital.com",
+  "Department": "SEO \/ Content",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Siri Junior",
+  "Email": "siri@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Stephen Murphy",
+  "Email": "stephen@wolfgangdigital.com",
+  "Department": "Social",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Vedran Krupa",
+  "Email": "vedran@wolfgangdigital.com",
+  "Department": "Google Ads",
+  "100": 100,
+  "125": 125,
+  "150": 150,
+  "175": 175,
+  "200": 200
+ },
+ {
+  "Staff Member": "Waleska Snyman",
+  "Email": "waleska@wolfgangdigital.com",
+  "Department": "Finance",
+  "100": 0,
+  "125": 0,
+  "150": 0,
+  "175": 0,
+  "200": 0
+ }
+]
