@@ -10,6 +10,7 @@
     "refine": "refine"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.5",
     "@date-io/date-fns": "^2.17.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -35,6 +36,7 @@
     "@refinedev/react-hook-form": "^4.1.2",
     "@refinedev/simple-rest": "^4.0.0",
     "@supabase/supabase-js": "^2.26.0",
+    "antd": "^5.8.3",
     "apexcharts": "^3.41.1",
     "chart.js": "^4.3.3",
     "date-fns": "^2.30.0",

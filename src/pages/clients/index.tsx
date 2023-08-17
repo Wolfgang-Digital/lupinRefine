@@ -23,6 +23,7 @@ import { TransitionProps } from '@mui/material/transitions';
 
 // Import the Supabase client
 import supabase from "../../config/supaBaseClient";
+import CustomTable from '@components/ClientFinancialsTable';
 
 
 // Transition of dialog
@@ -45,7 +46,6 @@ interface Client {
   client_name: string;
   client_legal_name: string | null;
   client_tier: string;
-  address: string;
   country: string;
   zip: string;
   [key: string]: string | number | null;
@@ -63,20 +63,16 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
     client_name: client.client_name,
     client_legal_name: client.client_legal_name,
     client_tier: client.client_tier,
-    address: client.address,
     country: client.country,
     zip: client.zip,
     // ... Initialize other fields
   });
 
   const clientInfoFields = [
-    { label: 'client_name', field: 'client_name' },
-    { label: 'client_id', field: 'client_id' },
-    { label: 'client_legal_name', field: 'client_legal_name' },
-    { label: 'client_tier', field: 'client_tier' },
-    { label: 'Address', field: 'address' },
-    { label: 'Country', field: 'country' },
-    { label: 'Zip', field: 'zip' },
+    { label: 'Client Name', field: 'client_name' },
+    { label: 'Client ID', field: 'client_id' },
+    { label: 'Client Legal Name', field: 'client_legal_name' },
+    { label: 'Tier', field: 'client_tier' },
     // ... Add more fields
   ];
 
@@ -116,7 +112,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
       <div role="tabpanel" hidden={tabValue !== 0} id={`tabpanel-0`} aria-labelledby={`tab-0`} style={{ paddingTop: '40px', paddingBottom: '90px' }}>
   
           {/* Client Info Tab Content */}
-          <Container component="main" maxWidth="lg">
+          <Container component="main" maxWidth="xl">
             <CssBaseline />
             <Paper elevation={3} sx={{ padding: '20px' }}>
               <Typography component="h1" variant="h5">
@@ -147,15 +143,18 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
           </Container>
         </div>
         
-        <div role="tabpanel" hidden={tabValue !== 1} id={`tabpanel-1`} aria-labelledby={`tab-1`} style={{ paddingTop: '20px' }}>
+        <div role="tabpanel" hidden={tabValue !== 1} id={`tabpanel-1`} aria-labelledby={`tab-1`} style={{ paddingTop: '60px', paddingBottom:"90px" }}>
           {/* Financials Tab Content */}
-          <Container component="main" maxWidth="lg">
+          <Container component="main" maxWidth="xl">
             <CssBaseline />
-            <Paper elevation={3} sx={{ padding: '20px' }}>
-              <Typography component="h1" variant="h5">
-                Financial Details
+            <Paper elevation={3} >
+              <Typography sx={{ paddingLeft: '20px', paddingTop: "10px"}} variant="h5" component="div">
+                Client: {client.client_name}
               </Typography>
-              {/* Additional financials content */}
+              <Typography sx={{ paddingLeft: '20px', paddingTop: "10px", paddingBottom:"10px"}} variant="h6" component="div">
+                Job: Google Ads
+              </Typography>
+              <CustomTable/>
             </Paper>
           </Container>
         </div>
@@ -207,18 +206,18 @@ const ClientOverview: React.FC = () => {
   });
 
   const columns = [
-    { field: 'client_id', headerName: 'client_id', width: 100 },
+    { field: 'client_id', headerName: 'ID', width: 100 },
     {
       field: 'client_name',
-      headerName: 'client_name',
+      headerName: 'NAME',
       width: 250,
       renderCell: (params: any) => (
         <HoverableCell onClick={() => handleClientClick(params)}>{params.value}</HoverableCell>
       ),
     },
-    { field: 'client_legal_name', headerName: 'client_legal_name', width: 250 },
-    { field: 'client_tier', headerName: 'client_tier', width: 200 },
-    { field: 'team_lead', headerName: 'team_lead', width: 200 },
+    { field: 'client_legal_name', headerName: 'LEGAL NAME', width: 250 },
+    { field: 'client_tier', headerName: 'TIER', width: 200 },
+    { field: 'team_lead', headerName: 'TEAM LEAD', width: 200 },
     // ... Other columns
   ];
   const rows = clients.map((client) => ({
@@ -235,13 +234,6 @@ const ClientOverview: React.FC = () => {
         Client Overview
       </Typography>
       <div style={{ display: 'flex', flexDirection: 'row', paddingBottom: '10px' }}>
-        <Button
-          size="small"
-          variant="contained"
-          style={{ fontSize: '12px', padding: '6px 12px', marginRight: '10px' }}
-        >
-          Add New Client
-        </Button>
         <Button
           size="small"
           variant="contained"
