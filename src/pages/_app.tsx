@@ -29,6 +29,8 @@ import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import SecurityIcon from '@mui/icons-material/Security';
 
+import "src/pages/app.css"
+
 
 
 import { CssBaseline, GlobalStyles, ThemeProvider } from "@mui/material";

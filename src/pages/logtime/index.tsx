@@ -1,108 +1,242 @@
-// import React, { useState } from 'react';
-// import { Grid, Tabs, Tab, Button } from '@mui/material';
-// import FullCalendar from '@fullcalendar/react';
-// import dayGridPlugin from '@fullcalendar/daygrid';
-// import timeGridPlugin from '@fullcalendar/timegrid'
-// import TaskList from 'src/components/TaskList.js';
+import React, { useState, useCallback, useMemo } from 'react';
+import {
+    Eventcalendar,
+    Draggable,
+    Popup,
+    Input,
+    Textarea,
+    Select,
+    setOptions,
+    Toast,
+    MbscEventcalendarView,
+    localeEnGB
+} from '@mobiscroll/react';
 
-// const CalendarWithTasks = () => {
-//   const [activeTab, setActiveTab] = useState(0);
-//   const [events, setEvents] = useState([
-//     { title: 'Catch up', date: '2023-07-24', time: '08:00' },
-//     { title: 'Xero Client Call', date: '2023-07-24', time: '11:00' },
-//     { title: 'Innovation Squads', date: '2023-07-17', time: '08:00' },
-//     { title: 'CRO Meeting', date: '2023-07-17', time: '09:00' },
-//     { title: 'Analytics Weekly', date: '2023-07-26', time: '14:00' },
-//     { title: 'Cacth up', date: '2023-07-26', time: '15:00' },
-//   ]);
+import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 
-//   const handleTabChange = (event: any, newValue: React.SetStateAction<number>) => {
-//     setActiveTab(newValue);
-//   };
+setOptions({
+    locale: localeEnGB,
+    theme: 'ios',
+    themeVariant: 'light'
+});
 
-//   return (
-//     <Grid container spacing={2}>
-//       {/* Left box with tasks */}
-//       <Grid item xs={12} md={4}>
-//         <div>
-//           <h2>Log Time</h2>
-//           {/* Assuming TaskList component displays the content for different tabs */}
-//           <Tabs value={activeTab} onChange={handleTabChange} aria-label="Allocated Tasks Tabs">
-//             <Tab label="Allocated Tasks" />
-//             <Tab label="All Tasks" />
-//             <Tab label="Wolfgang" />
-//           </Tabs>
-//           <TaskList activeTab={activeTab + 1} />
-//         </div>
-        
-//       </Grid>
+const tasks = [{
+    title: 'Aura Leisure:Google Ads',
+    color: '#02786D',
+    start: '08:00',
+    end: '10:00',
+    length: '2 h'
+}, {
+    title: 'Bodyslims:Google Ads',
+    color: '#02786D',
+    start: '08:00',
+    end: '09:30',
+    length: '1.5 h'
+}, {
+    title: 'Breast Cancer Ireland:Analytics',
+    color: '#02786D',
+    start: '08:00',
+    end: '10:00',
+    length: '2 h'
+}, {
+    title: 'Bygge Bo Ltd:Project management',
+    color: '#02786D',
+    start: '08:00',
+    end: '10:00',
+    length: '2 h'
+}, {
+    title: 'Camile Thai:Social - Implementation',
+    color: '#02786D',
+    start: '08:00',
+    end: '10:30',
+    length: '2.5 h'
+}, {
+    title: 'Caseys Furniture:Google Ads',
+    color: '#02786D',
+    start: '08:00',
+    end: '12:30',
+    length: '4.5 h'
+}];
 
-//       {/* Right box with calendar */}
-//       <Grid item xs={12} md={8}>
-//         <div>
-//           <FullCalendar plugins={[timeGridPlugin]} initialView="timeGridWeek" weekends={false} events={events} />
-//         </div>
-//       </Grid>
-//     </Grid>
-//   );
-// };
+const myData = [
+    { value: '1', text: 'Client Meetings' },
+    { value: '2', text: 'Analytics' },
+    { value: '3', text: 'OPT' },
+    { value: '4', text: 'CRO' },
+    { value: '5', text: 'Auditing' },
+    { value: '6', text: 'Comms' },
+    { value: '7', text: 'Insights' }
+];
 
-// export default CalendarWithTasks;
+interface TaskProps {
+    data: {
+        title: string;
+        color: string;
+        length: string;
+        technician: string;
+    };
+}
 
+function Task(props: TaskProps) {
+    const [draggable, setDraggable] = useState<HTMLElement | null>(null);
 
-import React, { useState } from 'react';
-import { Grid, Tabs, Tab, Button } from '@mui/material';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import TaskList from 'src/components/TaskList.js';
+    const setDragElm = useCallback((elm: HTMLElement | null) => {
+        setDraggable(elm);
+    }, []);
 
-const CalendarWithTasks = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [events, setEvents] = useState([
-    { title: 'Caseys Furniture - Social', date: '2023-07-24', time: '08:00' },
-    { title: 'The Night Sky - PPC', date: '2023-07-24', time: '10:30' },
-    { title: 'Innovation Squads', date: '2023-07-17', time: '13:45' },
-    { title: 'HomeSecure - PPC', date: '2023-07-17', time: '11:00' },
-    { title: 'Zurich Insurance - Analytics', date: '2023-07-26', time: '09:00' },
-    { title: 'Littlewoods - PPC', date: '2023-07-26', time: '14:15' },
-  ]);
-
-  // Modify events to include both date and time in ISO 8601 format
-  const formattedEvents = events.map((event) => ({
-    title: event.title,
-    start: `${event.date}T${event.time}:00`, // Format: "YYYY-MM-DDTHH:mm:00"
-  }));
-
-  const handleTabChange = (event: any, newValue: React.SetStateAction<number>) => {
-    setActiveTab(newValue);
-  };
-
-  return (
-    <Grid container spacing={2}>
-      {/* Left box with tasks */}
-      <Grid item xs={12} md={4}>
-        <div>
-          <h2>Log Time</h2>
-          {/* Assuming TaskList component displays the content for different tabs */}
-          <Tabs value={activeTab} onChange={handleTabChange} aria-label="Allocated Tasks Tabs">
-            <Tab label="Allocated Tasks" />
-            <Tab label="All Tasks" />
-            <Tab label="Wolfgang" />
-          </Tabs>
-          <TaskList activeTab={activeTab + 1} />
+    return (
+        <div
+            ref={setDragElm}
+            style={{ background: props.data.color }}
+            className="external-event-task"
+        >
+            <div>{props.data.title}</div>
+            <div>{props.data.length}</div>
+            <div>{props.data.technician}</div> {/* Display selected technician */}
+            <Draggable dragData={props.data} element={draggable} />
         </div>
-        
-      </Grid>
+    );
+}
 
-      {/* Right box with calendar */}
-      <Grid item xs={12} md={8}>
-        <div>
-          <FullCalendar plugins={[dayGridPlugin, timeGridPlugin]} initialView="timeGridWeek" weekends={false} events={formattedEvents} />
+
+const MyCalendarComponent: React.FC = () => {
+    const [isOpen, setOpen] = useState<boolean>(false);
+    const [title, setTitle] = useState<string>('');
+    const [details, setDetails] = useState<string>('');
+    const [technician, setTechnician] = useState<string>('');
+    const [selectedText, setSelectedText] = useState<string>(''); // Added state for selected text
+    const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+    const [isToastOpen, setToastOpen] = useState<boolean>(false);
+    const [toastText, setToastText] = useState<string | undefined>();
+
+    const view = useMemo<MbscEventcalendarView>(() => {
+        return {
+            schedule: {
+                type: 'week',
+                allDay: false,
+                startTime: '06:00',
+                endTime: '20:00'
+            }
+        };
+    }, []);
+
+    const invalid = useMemo(() => {
+        return [
+            {
+                recurring: {
+                    repeat: 'weekly',
+                    weekDays: 'SA,SU'
+                }
+            },
+            {
+                start: '13:00',
+                end: '14:00',
+                title: 'Lunch Break',
+                recurring: {
+                    repeat: 'weekly',
+                    weekDays: 'MO,TU,WE,TH,FR'
+                }
+            }
+        ];
+    }, []);
+
+    const fillDialog = useCallback((args: { event: { title: React.SetStateAction<string>; }; target: React.SetStateAction<HTMLElement | null>; }) => {
+        setTitle(args.event.title);
+        setSelectedText(args.event.title); // Set selected text
+        setAnchor(args.target);
+        setOpen(true);
+    }, []);
+
+    const onEventCreated = useCallback((args: any) => {
+        fillDialog(args);
+    }, [fillDialog]);
+
+    const eventCreateFail = useCallback(() => {
+        setToastText("Can't create event on this date");
+        setToastOpen(true);
+    }, []);
+
+    const eventUpdateFail = useCallback(() => {
+        setToastText("Can't add event on this date");
+        setToastOpen(true);
+    }, []);
+
+    const onClose = useCallback(() => {
+        setOpen(false);
+        setToastText('New task added');
+        setToastOpen(true);
+    }, []);
+
+    const changeSelected = useCallback((event: any) => {
+        setTechnician(event.value);
+    }, []);
+
+    const closeToast = useCallback(() => {
+        setToastOpen(false);
+    }, []);
+
+    return (
+        <div className="mbsc-grid mbsc-no-padding">
+            <div className="mbsc-row">
+            <div className="mbsc-col-sm-3">
+                    <div className="mbsc-form-group-title">Allocated Tasks</div>
+                    {tasks.map((task, i) => (
+                        <Task key={i} data={task} />
+                    ))}
+                </div>
+                <div className="mbsc-col-sm-9 external-event-calendar">
+                    <Eventcalendar
+                        view={view}
+                        invalid={invalid}
+                        dragToMove={true}
+                        externalDrop={true}
+                        onEventCreated={onEventCreated}
+                        onEventCreateFailed={eventCreateFail}
+                        onEventUpdateFailed={eventUpdateFail}
+                    />
+                </div>
+                <Popup
+                    display="anchored"
+                    width={500}
+                    contentPadding={false}
+                    touchUi={false}
+                    headerText="Log Time"
+                    buttons={['ok']}
+                    anchor={anchor}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                >
+                    <div className="mbsc-form-group">
+                        <Input label="Job" defaultValue={title} readOnly></Input>
+                        <Textarea
+                            label="Details"
+                            defaultValue={details}
+                            placeholder="Add description..."
+                        ></Textarea>
+                        <Select
+                            data={myData}
+                            value={technician}
+                            onChange={(event: any) => {
+                                setTechnician(event.value);
+                                setSelectedText(event.text); // Set selected text
+                            }}
+                            display="anchored"
+                            touchUi={false}
+                            label="Task"
+                            inputProps={{ placeholder: 'Please select...' }}
+                        />
+                    </div>
+                </Popup>
+            </div>
+            <Toast
+                theme="ios"
+                themeVariant="light"
+                message={toastText}
+                isOpen={isToastOpen}
+                onClose={closeToast}
+            />
         </div>
-      </Grid>
-    </Grid>
-  );
+    );
 };
 
-export default CalendarWithTasks;
+export default MyCalendarComponent;

@@ -50,7 +50,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/pages/logtime/index.jsx"  ],
   "exclude": [
     "node_modules"
   ]
