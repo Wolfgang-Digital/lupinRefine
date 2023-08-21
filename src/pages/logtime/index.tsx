@@ -103,7 +103,7 @@ const MyCalendarComponent: React.FC = () => {
     const [details, setDetails] = useState<string>('');
     const [technician, setTechnician] = useState<string>('');
     const [selectedText, setSelectedText] = useState<string>(''); // Added state for selected text
-    const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+    const [anchor, setAnchor] = useState<HTMLElement | undefined>(undefined); // Update the initial value
     const [isToastOpen, setToastOpen] = useState<boolean>(false);
     const [toastText, setToastText] = useState<string | undefined>();
 
@@ -138,12 +138,18 @@ const MyCalendarComponent: React.FC = () => {
         ];
     }, []);
 
-    const fillDialog = useCallback((args: { event: { title: React.SetStateAction<string>; }; target: React.SetStateAction<HTMLElement | null>; }) => {
-        setTitle(args.event.title);
-        setSelectedText(args.event.title); // Set selected text
-        setAnchor(args.target);
-        setOpen(true);
-    }, []);
+    const fillDialog = useCallback(
+        (args: { event: { title: React.SetStateAction<string> }; target: HTMLElement | null }) => {
+            setTitle(args.event.title);
+            setSelectedText(args.event.title);
+    
+            // Use the target directly in setAnchor
+            setAnchor(args.target);
+    
+            setOpen(true);
+        },
+        []
+    );
 
     const onEventCreated = useCallback((args: any) => {
         fillDialog(args);
