@@ -73,7 +73,6 @@ interface TaskProps {
         title: string;
         color: string;
         length: string;
-        technician: string;
     };
 }
 
@@ -92,7 +91,6 @@ function Task(props: TaskProps) {
         >
             <div>{props.data.title}</div>
             <div>{props.data.length}</div>
-            <div>{props.data.technician}</div> {/* Display selected technician */}
             <Draggable dragData={props.data} element={draggable} />
         </div>
     );
