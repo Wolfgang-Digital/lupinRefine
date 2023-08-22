@@ -126,7 +126,7 @@ function CustomToolbar() {
 }
 
 function CollapsibleGrid() {
-  const groupedRows: { [key: string]: any[] } = {}; // Index signature added
+  const groupedRows: { [key: string]: RowData[] } = {};
 
   // Group the rows by month
   rows.forEach((row) => {
@@ -146,18 +146,16 @@ function CollapsibleGrid() {
           <AccordionDetails>
             <Paper>
               <DataGrid
-                rows={groupedRows[month] as any} // Use 'as any' here to work around the typing issue
+                rows={groupedRows[month]}
                 columns={columns.map((col) => ({
                   ...col,
-                  valueGetter: (params) => params.row[col.field],
-                  editable: true, // All columns are editable
+                  editable: true, // Set all columns as editable
                 }))}
                 components={{
                   Toolbar: CustomToolbar,
                 }}
                 hideFooter
                 autoHeight
-                isCellEditable={(params) => params.field === 'balanced'}
               />
             </Paper>
           </AccordionDetails>
@@ -168,3 +166,8 @@ function CollapsibleGrid() {
 }
 
 export default CollapsibleGrid;
+
+
+
+
+
