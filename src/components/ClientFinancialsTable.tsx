@@ -1,121 +1,170 @@
-import React from "react";
-import { DownOutlined } from "@ant-design/icons";
-import type { TableColumnsType } from "antd";
-import { Badge, Space, Table } from "antd";
+import * as React from 'react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Paper,
+  Typography,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 
-interface DataType {
-  key: React.Key;
+type RowData = {
+  id: number;
   month: string;
-  hours: string;
-  rate: string;
-  value: string;
-  hours2: string;
-  rate2: string;
-  value2: string;
-  budgtInv: string;
-  invoiced: string;
-  used: string;
-  balremaing: string;
-}
-
-interface ExpandedDataType extends Omit<DataType, "month"> {
+  job: string;
   task: string;
   staff: string;
-  upgradeNum: string;
-}
-
-const App: React.FC = () => {
-  const expandedRowRender = () => {
-    const columns: TableColumnsType<ExpandedDataType> = [
-      { title: "Implementation- Bing", dataIndex: "task", key: "task" },
-      { title: "Staff", dataIndex: "staff", key: "staff" },
-      { title: "Hours", dataIndex: "hours", key: "hours" },
-      { title: "Rate", dataIndex: "rate", key: "rate" },
-      { title: "Value", dataIndex: "value", key: "value" },
-      {
-        title: "",
-        dataIndex: "operation",
-        key: "operation",
-        render: () => (
-          <Space size="middle">
-            {/* The tickable box */}
-            <input type="checkbox" />
-          </Space>
-        ),
-      },
-    ];
-
-    const data: ExpandedDataType[] = [];
-    for (let i = 0; i < 1; ++i) {
-      data.push({
-        key: i.toString(),
-        task: "Reporting",
-        staff: "Jack",
-        upgradeNum: "Upgraded: 56",
-        hours: "28",
-        rate: "148",
-        value: "4148",
-        hours2: "21.5",
-        rate2: "151",
-        value2: "3248",
-        budgtInv: "4448",
-        invoiced: "4448",
-        used: "3248",
-        balremaing: "1200",
-      });
-    }
-    return <Table columns={columns} dataSource={data} pagination={false} />;
-  };
-
-  const columns: TableColumnsType<DataType> = [
-    { title: "Month", dataIndex: "month", key: "month" },
-    { title: "Hours", dataIndex: "hours", key: "hours" },
-    { title: "Rate", dataIndex: "rate", key: "rate" },
-    { title: "Value", dataIndex: "value", key: "value" },
-    { title: "Hours", dataIndex: "hours2", key: "hours2" },
-    { title: "Rate", dataIndex: "rate2", key: "rate2" },
-    { title: "Value", dataIndex: "value2", key: "value2" },
-    { title: "Bdgt to Inv", dataIndex: "budgtInv", key: "budgtInv" },
-    { title: "Invoiced", dataIndex: "invoiced", key: "invoiced" },
-    { title: "Used", dataIndex: "used", key: "used" },
-    { title: "Bal Remain", dataIndex: "balremaing", key: "balremaing" },
-    {
-      title: "Balanced",
-      key: "operation",
-    },
-  ];
-
-  const data: DataType[] = [];
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  for (let i = 0; i < 12; ++i) {
-    data.push({
-      key: i.toString(),
-      month: months[i],
-      hours: "28",
-      rate: "148",
-      value: "4148",
-      hours2: "21.5",
-      rate2: "151",
-      value2: "3248",
-      budgtInv: "4448",
-      invoiced: "4448",
-      used: "3248",
-      balremaing: "1200",
-    });
-  }
-
-  return (
-    <>
-      <Table
-        columns={columns}
-        expandable={{ expandedRowRender, defaultExpandedRowKeys: ["0"] }}
-        dataSource={data}
-      />
-    </>
-  );
+  hours: number;
+  rate: number;
+  value: number;
+  budgetToInvoice: number;
+  invoiced: number;
+  balRemaining: number;
+  balanced: boolean;
 };
 
-export default App;
+function createData(
+  id: number,
+  month: string,
+  job: string,
+  task: string,
+  staff: string,
+  hours: number,
+  rate: number,
+  value: number,
+  budgetToInvoice: number,
+  invoiced: number,
+  balRemaining: number,
+  balanced: boolean
+): RowData {
+  return {
+    id,
+    month,
+    job,
+    task,
+    staff,
+    hours,
+    rate,
+    value,
+    budgetToInvoice,
+    invoiced,
+    balRemaining,
+    balanced,
+  };
+}
+
+const columns = [
+  { field: 'job', headerName: 'Job', width: 150 },
+  { field: 'task', headerName: 'Task', width: 150 },
+  { field: 'staff', headerName: 'Staff', width: 120 },
+  { field: 'hours', headerName: 'Hours', width: 120 },
+  { field: 'rate', headerName: 'Rate', width: 120 },
+  { field: 'value', headerName: 'Value', width: 120 },
+  { field: 'budgetToInvoice', headerName: 'Budget to Invoice', width: 150 },
+  { field: 'invoiced', headerName: 'Invoiced', width: 120 },
+  { field: 'balRemaining', headerName: 'Bal Remaining', width: 150 },
+  { field: 'balanced', headerName: 'Balanced', width: 120, type: 'boolean' },
+];
+
+const rows: RowData[] = [
+  // January
+  createData(1, 'January', 'SEO Optimization', 'Keyword Research', 'Alice', 10, 40, 400, 200, 250, 200, true),
+  createData(2, 'January', 'Social Media', 'Content Creation', 'Bob', 12, 35, 420, 180, 200, 180, false),
+
+  // February
+  createData(3, 'February', 'Email Marketing', 'Campaign Design', 'Carol', 8, 45, 360, 150, 180, 150, true),
+  createData(4, 'February', 'Content Strategy', 'Blogging', 'David', 15, 50, 750, 250, 300, 250, false),
+
+  // March
+  createData(5, 'March', 'PPC Advertising', 'Ad Copywriting', 'Alice', 6, 55, 330, 120, 150, 120, false),
+  createData(6, 'March', 'Social Media', 'Engagement', 'Bob', 10, 40, 400, 180, 200, 180, true),
+
+  // April
+  createData(7, 'April', 'SEO Optimization', 'Backlink Building', 'Carol', 8, 45, 360, 150, 180, 150, false),
+  createData(8, 'April', 'Email Marketing', 'Newsletter Campaign', 'David', 12, 35, 420, 200, 220, 200, true),
+
+  // May
+  createData(9, 'May', 'Content Strategy', 'Infographic Creation', 'Alice', 10, 40, 400, 180, 200, 180, false),
+  createData(10, 'May', 'PPC Advertising', 'Keyword Research', 'Bob', 8, 45, 360, 150, 180, 150, true),
+
+  // June
+  createData(11, 'June', 'Social Media', 'Ad Campaigns', 'Carol', 15, 50, 750, 250, 300, 250, false),
+  createData(12, 'June', 'SEO Optimization', 'Site Audit', 'David', 6, 55, 330, 120, 150, 120, true),
+
+  // July
+  createData(13, 'July', 'Email Marketing', 'Automation Setup', 'Alice', 12, 35, 420, 200, 220, 200, false),
+  createData(14, 'July', 'Content Strategy', 'Whitepaper Writing', 'Bob', 10, 40, 400, 180, 200, 180, true),
+
+  // August
+  createData(15, 'August', 'PPC Advertising', 'Ad Campaigns', 'Carol', 8, 45, 360, 150, 180, 150, false),
+  createData(16, 'August', 'Social Media', 'Influencer Outreach', 'David', 15, 50, 750, 250, 300, 250, true),
+
+  // September
+  createData(17, 'September', 'SEO Optimization', 'Content Audit', 'Alice', 10, 40, 400, 180, 200, 180, false),
+  createData(18, 'September', 'Email Marketing', 'Segmentation', 'Bob', 6, 55, 330, 120, 150, 120, true),
+
+  // October
+  createData(19, 'October', 'Content Strategy', 'Video Production', 'Carol', 12, 35, 420, 200, 220, 200, false),
+  createData(20, 'October', 'PPC Advertising', 'Ad Copywriting', 'David', 8, 45, 360, 150, 180, 150, true),
+
+  // November
+  createData(21, 'November', 'Social Media', 'Social Listening', 'Alice', 15, 50, 750, 250, 300, 250, false),
+  createData(22, 'November', 'SEO Optimization', 'On-Page SEO', 'Bob', 10, 40, 400, 180, 200, 180, true),
+
+  // December
+  createData(23, 'December', 'Email Marketing', 'Lead Nurturing', 'Carol', 6, 55, 330, 120, 150, 120, false),
+  createData(24, 'December', 'Content Strategy', 'Content Calendar', 'David', 12, 35, 420, 200, 220, 200, true),
+];
+
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  );
+}
+
+function CollapsibleGrid() {
+  const groupedRows: { [key: string]: any[] } = {}; // Index signature added
+
+  // Group the rows by month
+  rows.forEach((row) => {
+    if (!groupedRows[row.month]) {
+      groupedRows[row.month] = [];
+    }
+    groupedRows[row.month].push(row);
+  });
+
+  return (
+    <div style={{ height: 400, width: '100%' }}>
+      {Object.keys(groupedRows).map((month) => (
+        <Accordion key={month}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>{month}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Paper>
+              <DataGrid
+                rows={groupedRows[month] as any} // Use 'as any' here to work around the typing issue
+                columns={columns.map((col) => ({
+                  ...col,
+                  valueGetter: (params) => params.row[col.field],
+                  editable: true, // All columns are editable
+                }))}
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+                hideFooter
+                autoHeight
+                isCellEditable={(params) => params.field === 'balanced'}
+              />
+            </Paper>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </div>
+  );
+}
+
+export default CollapsibleGrid;

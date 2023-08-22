@@ -23,7 +23,7 @@ import { TransitionProps } from '@mui/material/transitions';
 
 // Import the Supabase client
 import supabase from "../../config/supaBaseClient";
-import CustomTable from '@components/ClientFinancialsTable';
+import CustomTable from 'src/components/ClientFinancialsTable';
 
 
 // Transition of dialog

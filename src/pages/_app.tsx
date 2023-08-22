@@ -30,6 +30,7 @@ import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import SecurityIcon from '@mui/icons-material/Security';
 
 import "src/pages/app.css"
+import "src/components/components.css";
 
 
 
