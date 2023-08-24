@@ -58,7 +58,7 @@ function createData(
 const columns = [
   { field: 'job', headerName: 'Job', width: 150 },
   { field: 'task', headerName: 'Task', width: 150 },
-  { field: 'staff', headerName: 'Staff', width: 100 },
+  { field: 'staff', headerName: 'Staff', width: 150 },
   { field: 'hours', headerName: 'Hours', width: 100 },
   { field: 'rate', headerName: 'Rate', width: 100 },
   { field: 'value', headerName: 'Value', width: 100 },
@@ -66,56 +66,6 @@ const columns = [
   { field: 'invoiced', headerName: 'Invoiced', width: 120 },
   { field: 'balRemaining', headerName: 'Bal Remaining', width: 150 },
   { field: 'balanced', headerName: 'Balanced', width: 120, type: 'boolean' },
-];
-
-const rows: RowData[] = [
-  // January
-  createData(1, 'January', 'SEO Optimization', 'Keyword Research', 'Alice', 10, 40, 400, 200, 250, 200, true),
-  createData(2, 'January', 'Social Media', 'Content Creation', 'Bob', 12, 35, 420, 180, 200, 180, false),
-
-  // February
-  createData(3, 'February', 'Email Marketing', 'Campaign Design', 'Carol', 8, 45, 360, 150, 180, 150, true),
-  createData(4, 'February', 'Content Strategy', 'Blogging', 'David', 15, 50, 750, 250, 300, 250, false),
-
-  // March
-  createData(5, 'March', 'PPC Advertising', 'Ad Copywriting', 'Alice', 6, 55, 330, 120, 150, 120, false),
-  createData(6, 'March', 'Social Media', 'Engagement', 'Bob', 10, 40, 400, 180, 200, 180, true),
-
-  // April
-  createData(7, 'April', 'SEO Optimization', 'Backlink Building', 'Carol', 8, 45, 360, 150, 180, 150, false),
-  createData(8, 'April', 'Email Marketing', 'Newsletter Campaign', 'David', 12, 35, 420, 200, 220, 200, true),
-
-  // May
-  createData(9, 'May', 'Content Strategy', 'Infographic Creation', 'Alice', 10, 40, 400, 180, 200, 180, false),
-  createData(10, 'May', 'PPC Advertising', 'Keyword Research', 'Bob', 8, 45, 360, 150, 180, 150, true),
-
-  // June
-  createData(11, 'June', 'Social Media', 'Ad Campaigns', 'Carol', 15, 50, 750, 250, 300, 250, false),
-  createData(12, 'June', 'SEO Optimization', 'Site Audit', 'David', 6, 55, 330, 120, 150, 120, true),
-
-  // July
-  createData(13, 'July', 'Email Marketing', 'Automation Setup', 'Alice', 12, 35, 420, 200, 220, 200, false),
-  createData(14, 'July', 'Content Strategy', 'Whitepaper Writing', 'Bob', 10, 40, 400, 180, 200, 180, true),
-
-  // August
-  createData(15, 'August', 'PPC Advertising', 'Ad Campaigns', 'Carol', 8, 45, 360, 150, 180, 150, false),
-  createData(16, 'August', 'Social Media', 'Influencer Outreach', 'David', 15, 50, 750, 250, 300, 250, true),
-
-  // September
-  createData(17, 'September', 'SEO Optimization', 'Content Audit', 'Alice', 10, 40, 400, 180, 200, 180, false),
-  createData(18, 'September', 'Email Marketing', 'Segmentation', 'Bob', 6, 55, 330, 120, 150, 120, true),
-
-  // October
-  createData(19, 'October', 'Content Strategy', 'Video Production', 'Carol', 12, 35, 420, 200, 220, 200, false),
-  createData(20, 'October', 'PPC Advertising', 'Ad Copywriting', 'David', 8, 45, 360, 150, 180, 150, true),
-
-  // November
-  createData(21, 'November', 'Social Media', 'Social Listening', 'Alice', 15, 50, 750, 250, 300, 250, false),
-  createData(22, 'November', 'SEO Optimization', 'On-Page SEO', 'Bob', 10, 40, 400, 180, 200, 180, true),
-
-  // December
-  createData(23, 'December', 'Email Marketing', 'Lead Nurturing', 'Carol', 6, 55, 330, 120, 150, 120, false),
-  createData(24, 'December', 'Content Strategy', 'Content Calendar', 'David', 12, 35, 420, 200, 220, 200, true),
 ];
 
 function CustomToolbar() {
@@ -127,15 +77,58 @@ function CustomToolbar() {
 }
 
 function CollapsibleGrid() {
+  const [fetchedRows, setFetchedRows] = React.useState<RowData[]>([]);
+
+  React.useEffect(() => {
+    // Fetch data from Supabase and update the fetchedRows state
+    async function fetchData() {
+      const { data, error } = await supabase
+        .from("timesheet_rows_byuser_v4")
+        .select(
+          "id, job_id, client_name, job_name, task_name, time, user_name, date, rate"
+        )
+
+      if (error) {
+        console.error("Error fetching data:", error);
+      } else {
+        // Map the fetched data to match the RowData type
+        const mappedData: RowData[] = data.map((item: any) => ({
+          id: item.id,
+          month: formatDate(item.date), // Format the month name
+          job: item.job_name,
+          task: item.task_name,
+          staff: item.user_name,
+          hours: item.time,
+          rate: item.rate,
+          value: 0, // You need to calculate this based on hours and rate
+          budgetToInvoice: 0, // You need to determine this value
+          invoiced: 0, // You need to determine this value
+          balRemaining: 0, // You need to determine this value
+          balanced: false, // You need to determine this value
+        }));
+        setFetchedRows(mappedData);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  // Function to format the date
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+  }
+
   const groupedRows: { [key: string]: RowData[] } = {};
 
-  // Group the rows by month
-  rows.forEach((row) => {
+  // Group the fetched rows by month
+  fetchedRows.forEach((row) => {
     if (!groupedRows[row.month]) {
       groupedRows[row.month] = [];
     }
     groupedRows[row.month].push(row);
   });
+
 
   return (
     <div style={{ height: 400, width: '100%' }}>
@@ -167,8 +160,3 @@ function CollapsibleGrid() {
 }
 
 export default CollapsibleGrid;
-
-
-
-
-

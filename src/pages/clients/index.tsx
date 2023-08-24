@@ -245,13 +245,6 @@ const ClientOverview: React.FC = () => {
           variant="outlined"
           style={{ fontSize: '12px', padding: '6px 12px', marginRight: '10px' }}
         >
-          Internal
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          style={{ fontSize: '12px', padding: '6px 12px', marginRight: '10px' }}
-        >
           Bulk Actions
         </Button>
         <TextField size="small" id="search" type="search" label="Search" sx={{ width: 200, height: 30 }} />

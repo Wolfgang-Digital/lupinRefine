@@ -161,12 +161,12 @@ const App = (props: React.PropsWithChildren) => {
                   options:{label: "Timesheet"},
                   icon: <MoreTimeIcon/>
                 },
-                {
-                  name: "Reports",
-                  list: '/reports',
-                  options:{label: "Reports"},
-                  icon: <ContentPasteSearchIcon/>
-                },
+                // {
+                //   name: "Reports",
+                //   list: '/reports',
+                //   options:{label: "Reports"},
+                //   icon: <ContentPasteSearchIcon/>
+                // },
                 {
                   name: "Wolfgangers",
                   list: '/wolfgangers',
