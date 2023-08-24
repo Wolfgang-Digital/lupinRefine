@@ -224,8 +224,7 @@ const ClientOverview: React.FC = () => {
     client_id: client.client_id,
     client_name: client.client_name,
     client_legal_name: client.client_legal_name,
-    client_tier: client.tier.tier_name,
-    team_lead: client.wolfgangers.user_name,
+    client_tier: client.client_tier,
   }))
 
   return (
