@@ -100,11 +100,11 @@ function CollapsibleGrid() {
           staff: item.user_name,
           hours: item.time,
           rate: item.rate,
-          value: 0, // You need to calculate this based on hours and rate
-          budgetToInvoice: 0, // You need to determine this value
-          invoiced: 0, // You need to determine this value
-          balRemaining: 0, // You need to determine this value
-          balanced: false, // You need to determine this value
+          value: 0, // Add to table
+          budgetToInvoice: 0, // Add to table
+          invoiced: 0, // Add to table
+          balRemaining: 0, // Add to table
+          balanced: false, // Add to table
         }));
         setFetchedRows(mappedData);
       }
