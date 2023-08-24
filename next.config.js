@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
 	experimental: {
 		newNextLinkBehavior: true,
 	},
@@ -8,3 +8,5 @@ module.exports = {
 		SUPABASE_KEY: process.env.SUPABASE_KEY,
 	},
 };
+
+export default config;

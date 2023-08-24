@@ -1,11 +1,13 @@
 module.exports = {
 	env: {
 		es2021: true,
+		node: true,
+		commonjs: true,
 	},
 	extends: [
 		'eslint:recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:react/recommended',
+		// 'plugin:@typescript-eslint/recommended',
+		// 'plugin:react/recommended',
 	],
 	overrides: [
 		{
@@ -23,7 +25,7 @@ module.exports = {
 		ecmaVersion: 'latest',
 		sourceType: 'module',
 	},
-	plugins: ['@typescript-eslint', 'react'],
+	//plugins: ['@typescript-eslint', 'react'],
 	rules: {
 		indent: ['error', 'tab', { SwitchCase: 1 }],
 	},

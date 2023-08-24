@@ -6,39 +6,39 @@ import type { ExtendButtonBase } from "@mui/material/ButtonBase";
 import type { IconButtonTypeMap } from "@mui/material/IconButton";
 
 const HamburgerIcon: ExtendButtonBase<IconButtonTypeMap<{}, "button">> = (
-  props: React.PropsWithChildren
+	props: React.PropsWithChildren
 ) => (
-  <IconButton color="inherit" aria-label="open drawer" edge="start" {...props}>
-    <Menu />
-  </IconButton>
+	<IconButton color="inherit" aria-label="open drawer" edge="start" {...props}>
+		<Menu />
+	</IconButton>
 );
 
 export const HamburgerMenu: React.FC = () => {
-  const {
-    siderCollapsed,
-    setSiderCollapsed,
-    mobileSiderOpen,
-    setMobileSiderOpen,
-  } = useThemedLayoutContext();
+	const {
+		siderCollapsed,
+		setSiderCollapsed,
+		mobileSiderOpen,
+		setMobileSiderOpen,
+	} = useThemedLayoutContext();
 
-  return (
-    <>
-      <HamburgerIcon
-        onClick={() => setSiderCollapsed(!siderCollapsed)}
-        sx={{
-          mr: 2,
-          display: { xs: "none", md: "flex" },
-          ...(!siderCollapsed && { display: "none" }),
-        }}
-      />
-      <HamburgerIcon
-        onClick={() => setMobileSiderOpen(!mobileSiderOpen)}
-        sx={{
-          mr: 2,
-          display: { xs: "flex", md: "none" },
-          ...(mobileSiderOpen && { display: "none" }),
-        }}
-      />
-    </>
-  );
+	return (
+		<>
+			<HamburgerIcon
+				onClick={() => setSiderCollapsed(!siderCollapsed)}
+				sx={{
+					mr: 2,
+					display: { xs: "none", md: "flex" },
+					...(!siderCollapsed && { display: "none" }),
+				}}
+			/>
+			<HamburgerIcon
+				onClick={() => setMobileSiderOpen(!mobileSiderOpen)}
+				sx={{
+					mr: 2,
+					display: { xs: "flex", md: "none" },
+					...(mobileSiderOpen && { display: "none" }),
+				}}
+			/>
+		</>
+	);
 };
