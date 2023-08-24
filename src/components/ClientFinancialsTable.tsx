@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
+import supabase from "src/config/supaBaseClient";
 
 type RowData = {
   id: number;
@@ -57,10 +58,10 @@ function createData(
 const columns = [
   { field: 'job', headerName: 'Job', width: 150 },
   { field: 'task', headerName: 'Task', width: 150 },
-  { field: 'staff', headerName: 'Staff', width: 120 },
-  { field: 'hours', headerName: 'Hours', width: 120 },
-  { field: 'rate', headerName: 'Rate', width: 120 },
-  { field: 'value', headerName: 'Value', width: 120 },
+  { field: 'staff', headerName: 'Staff', width: 100 },
+  { field: 'hours', headerName: 'Hours', width: 100 },
+  { field: 'rate', headerName: 'Rate', width: 100 },
+  { field: 'value', headerName: 'Value', width: 100 },
   { field: 'budgetToInvoice', headerName: 'Budget to Invoice', width: 150 },
   { field: 'invoiced', headerName: 'Invoiced', width: 120 },
   { field: 'balRemaining', headerName: 'Bal Remaining', width: 150 },

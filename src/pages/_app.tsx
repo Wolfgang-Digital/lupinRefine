@@ -149,12 +149,12 @@ const App = (props: React.PropsWithChildren) => {
                   options:{label: "Dashboard"},
                   icon: <DashboardIcon/>
                 },
-                {
-                  name: "Log Time",
-                  list: '/logtime',
-                  options:{label: "Log Time example"},
-                  icon: <MoreTimeIcon/>
-                },
+                // {
+                //   name: "Log Time",
+                //   list: '/logtime',
+                //   options:{label: "Log Time example"},
+                //   icon: <MoreTimeIcon/>
+                // },
                 {
                   name: "Timesheet",
                   list: '/timesheet',
