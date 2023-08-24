@@ -91,7 +91,6 @@ function CollapsibleGrid() {
 				.select(
 					'id, job_id, client_name, job_name, task_name, time, user_name, date, rate'
 				);
-			console.log('Adsada');
 
 			if (error) {
 				console.error('Error fetching data:', error);
