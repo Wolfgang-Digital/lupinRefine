@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import {
+	DataGrid,
+	GridToolbar,
+	GridRenderCellParams,
+	GridCellParams,
+} from '@mui/x-data-grid';
+
 import { Typography, Button, styled } from '@mui/material';
 import { getAllClients, ClientData } from '../api/client';
 import { ClientDetail } from './ClientDetail';
 
-function generateRandom() {
-	let length = 8,
-		charset =
-			'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-		retVal = '';
-	for (let i = 0, n = charset.length; i < length; ++i) {
-		retVal += charset.charAt(Math.floor(Math.random() * n));
-	}
-	return retVal;
-}
-
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]); // Use the Client type
-	const [selectedClient, setSelectedClient] = useState<any | null>(null); // Use the Client type
+	const [selectedClient, setSelectedClient] = useState<ClientData | null>(
+		null
+	); // Use the Client type
 
 	useEffect(() => {
 		const fetchClients = async () => {
@@ -29,7 +26,7 @@ const ClientOverview: React.FC = () => {
 		fetchClients();
 	}, []);
 
-	const handleClientClick = (params: any) => {
+	const handleClientClick = (params: GridCellParams) => {
 		setSelectedClient(params.row);
 	};
 
@@ -52,7 +49,7 @@ const ClientOverview: React.FC = () => {
 			field: 'name',
 			headerName: 'name',
 			width: 250,
-			renderCell: (params: any) => (
+			renderCell: (params: GridRenderCellParams) => (
 				<HoverableCell onClick={() => handleClientClick(params)}>
 					{params.value || ''}
 				</HoverableCell>
@@ -106,8 +103,8 @@ const ClientOverview: React.FC = () => {
 				rows={rows}
 				columns={columns}
 				slots={{ toolbar: GridToolbar }}
-				getRowId={(row: any) => row.id} // Use the 'id' property as the id
-				onCellClick={(params: any) => {
+				getRowId={(row) => row.id} // Use the 'id' property as the id
+				onCellClick={(params: GridCellParams) => {
 					if (params.field === 'name') {
 						handleClientClick(params);
 					}
@@ -125,6 +122,6 @@ const ClientOverview: React.FC = () => {
 };
 
 export default ClientOverview;
-function handleClientInfoChange(field: string, value: string): void {
-	throw new Error('Function not implemented.');
-}
+// function handleClientInfoChange(field: string, value: string): void {
+// 	throw new Error('Function not implemented.');
+// }

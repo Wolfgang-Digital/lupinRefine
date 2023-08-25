@@ -11,24 +11,16 @@ import {
 	Typography,
 	TextField,
 	MenuItem,
-	FilledTextFieldProps,
-	OutlinedTextFieldProps,
-	StandardTextFieldProps,
-	TextFieldVariants,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { LocalizationProvider, DatePicker, TimePicker } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
-// Import the Supabase client
 import supabase from '../../config/supaBaseClient';
 
 const Timesheet = () => {
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState('');
-	const [selectedClient, setSelectedClient] = useState(''); // New state for selected client
+	const [selectedClient, setSelectedClient] = useState('');
 	const [timeSpent, setTimeSpent] = useState('');
-	const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 	const [timeEntries, setTimeEntries] = useState<
 		Array<{ task: string; client: string; hours: string }>
 	>([]);
@@ -114,8 +106,7 @@ const Timesheet = () => {
 								<TableHead>
 									<TableRow>
 										<TableCell>Tasks</TableCell>
-										<TableCell>Client</TableCell>{' '}
-										{/* Add Client column */}
+										<TableCell>Client</TableCell>
 										<TableCell>Total Hours</TableCell>
 									</TableRow>
 								</TableHead>
@@ -237,9 +228,9 @@ const Timesheet = () => {
 										variant='body1'
 										style={{ padding: '20px' }}
 									>
-										Clicking the Add Time button will create
-										New time entries which you'll be able to
-										review or edit in your daily view.
+										{`Clicking the Add Time button will create
+										New time entries which you'll be able
+										to review or edit in your daily view.`}
 									</Typography>
 								</>
 							)}

@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Accordion,
 	AccordionDetails,
@@ -12,52 +13,47 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from '@mui/x-data-grid';
-import supabase from 'src/config/supaBaseClient';
+import { getFinancialTable } from '@api/financialTable';
+import { FinancialTable } from 'types';
 
-type RowData = {
-	id: number;
+type RowData = FinancialTable & {
 	month: string;
-	job: string;
-	task: string;
-	staff: string;
-	hours: number;
-	rate: number;
-	value: number;
-	budgetToInvoice: number;
-	invoiced: number;
-	balRemaining: number;
-	balanced: boolean;
+	// value: number;
+	// budgetToInvoice: number;
+	// invoiced: number;
+	// balRemaining: number;
+	// balanced: boolean;
 };
 
-function createData(
-	id: number,
-	month: string,
-	job: string,
-	task: string,
-	staff: string,
-	hours: number,
-	rate: number,
-	value: number,
-	budgetToInvoice: number,
-	invoiced: number,
-	balRemaining: number,
-	balanced: boolean
-): RowData {
-	return {
-		id,
-		month,
-		job,
-		task,
-		staff,
-		hours,
-		rate,
-		value,
-		budgetToInvoice,
-		invoiced,
-		balRemaining,
-		balanced,
-	};
-}
+// function createData(
+// 	id: number,
+// 	month: string,
+// 	job: string,
+// 	task: string,
+// 	staff: string,
+// 	hours: number,
+// 	rate: number,
+// 	value: number,
+// 	budgetToInvoice: number,
+// 	invoiced: number,
+// 	balRemaining: number,
+// 	balanced: boolean
+// ): RowData {
+// 	return {
+// 		id,
+// 		month,
+// 		job,
+// 		task,
+// 		staff,
+// 		hours,
+// 		rate,
+// 		value,
+// 		budgetToInvoice,
+// 		invoiced,
+// 		balRemaining,
+// 		balanced,
+// 	};
+// }
 
 const columns = [
 	{ field: 'job', headerName: 'Job', width: 150 },
@@ -81,35 +77,34 @@ function CustomToolbar() {
 }
 
 function CollapsibleGrid() {
-	const [fetchedRows, setFetchedRows] = React.useState<RowData[]>([]);
+	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const { data, error } = await supabase
-				.from('timesheet_rows_byuser_v4')
-				.select(
-					'id, job_id, client_name, job_name, task_name, time, user_name, date, rate'
-				);
+			const financialTable = await getFinancialTable();
 
-			if (error) {
-				console.error('Error fetching data:', error);
-			} else {
+			if (financialTable) {
 				// Map the fetched data to match the RowData type
-				const mappedData: RowData[] = data.map((item: any) => ({
-					id: item.id,
-					month: formatDate(item.date), // Format the month name
-					job: item.job_name,
-					task: item.task_name,
-					staff: item.user_name,
-					hours: item.time,
-					rate: item.rate,
-					value: 0, // Add to table
-					budgetToInvoice: 0, // Add to table
-					invoiced: 0, // Add to table
-					balRemaining: 0, // Add to table
-					balanced: false, // Add to table
-				}));
+				const mappedData: RowData[] = financialTable.map(
+					(item: FinancialTable) => ({
+						...item,
+						// id: item.id,
+						month: formatDate(
+							item.date?.toString() || new Date().toString()
+						), // Format the month name
+						// job: item.job_name,
+						// task: item.task_name,
+						// staff: item.user_name,
+						// hours: item.time,
+						// rate: item.rate,
+						// value: 0, // Add to table
+						// budgetToInvoice: 0, // Add to table
+						// invoiced: 0, // Add to table
+						// balRemaining: 0, // Add to table
+						// balanced: false, // Add to table
+					})
+				);
 				setFetchedRows(mappedData);
 			}
 		}

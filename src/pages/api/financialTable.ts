@@ -1,16 +1,17 @@
 import supabase from '../../config/supaBaseClient';
-import { Client, Currency, Wolfgangers, Tier } from 'types';
+import { FinancialTable } from 'types';
 
-export type ClientData = Client & Currency & Wolfgangers & Tier;
-export const getAllClients = async (): Promise<ClientData[] | undefined> => {
+export const getFinancialTable = async (): Promise<
+	FinancialTable[] | undefined
+> => {
 	try {
 		const { data, error } = (await supabase
-			.from('client')
+			.from('timesheet_rows_byuser_v4')
 			.select(
-				'*, wolfgangers (user_id, user_name), currency (currency_id, currency_symbol), tier (tier_id, tier_name)'
+				'id, job_id, client_name, job_name, task_name, time, user_name, date, rate'
 			)
 			.order('id', { ascending: true })) as unknown as {
-			data: ClientData[];
+			data: FinancialTable[];
 			error: unknown;
 		};
 		if (error) {

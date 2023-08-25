@@ -1,9 +1,4 @@
-
 /// THIS IS A DEMO PAGE NOT BEING USED AT THIS MOMENT.
-
-
-
-
 
 import React, { useState, useCallback, useMemo } from 'react';
 import {
@@ -16,71 +11,81 @@ import {
 	setOptions,
 	Toast,
 	MbscEventcalendarView,
-	localeEnGB
+	localeEnGB,
+	MbscEventCreatedEvent,
+	MbscCalendarEvent,
 } from '@mobiscroll/react';
 
-import "@mobiscroll/react/dist/css/mobiscroll.min.css";
+import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 
 setOptions({
 	locale: localeEnGB,
 	theme: 'ios',
-	themeVariant: 'light'
+	themeVariant: 'light',
 });
 
-const tasks = [{
-	title: 'Aura Leisure:Google Ads',
-	color: '#02786D',
-	start: '08:00',
-	end: '10:00',
-	length: '2 h'
-}, {
-	title: 'Bodyslims:Google Ads',
-	color: '#02786D',
-	start: '08:00',
-	end: '09:30',
-	length: '1.5 h'
-}, {
-	title: 'Breast Cancer Ireland:Analytics',
-	color: '#02786D',
-	start: '08:00',
-	end: '10:00',
-	length: '2 h'
-}, {
-	title: 'Bygge Bo Ltd:Project management',
-	color: '#02786D',
-	start: '08:00',
-	end: '10:00',
-	length: '2 h'
-}, {
-	title: 'Camile Thai:Social - Implementation',
-	color: '#02786D',
-	start: '08:00',
-	end: '10:30',
-	length: '2.5 h'
-}, {
-	title: 'Caseys Furniture:Google Ads',
-	color: '#02786D',
-	start: '08:00',
-	end: '12:30',
-	length: '4.5 h'
-}];
+const tasks = [
+	{
+		title: 'Aura Leisure:Google Ads',
+		color: '#02786D',
+		start: '08:00',
+		end: '10:00',
+		length: '2 h',
+	},
+	{
+		title: 'Bodyslims:Google Ads',
+		color: '#02786D',
+		start: '08:00',
+		end: '09:30',
+		length: '1.5 h',
+	},
+	{
+		title: 'Breast Cancer Ireland:Analytics',
+		color: '#02786D',
+		start: '08:00',
+		end: '10:00',
+		length: '2 h',
+	},
+	{
+		title: 'Bygge Bo Ltd:Project management',
+		color: '#02786D',
+		start: '08:00',
+		end: '10:00',
+		length: '2 h',
+	},
+	{
+		title: 'Camile Thai:Social - Implementation',
+		color: '#02786D',
+		start: '08:00',
+		end: '10:30',
+		length: '2.5 h',
+	},
+	{
+		title: 'Caseys Furniture:Google Ads',
+		color: '#02786D',
+		start: '08:00',
+		end: '12:30',
+		length: '4.5 h',
+	},
+];
 
-const myData = [
+type DataType = { value: string; text: string };
+const myData: DataType[] = [
 	{ value: '1', text: 'Client Meetings' },
 	{ value: '2', text: 'Analytics' },
 	{ value: '3', text: 'OPT' },
 	{ value: '4', text: 'CRO' },
 	{ value: '5', text: 'Auditing' },
 	{ value: '6', text: 'Comms' },
-	{ value: '7', text: 'Insights' }
+	{ value: '7', text: 'Insights' },
 ];
 
 interface TaskProps {
-    data: {
-        title: string;
-        color: string;
-        length: string;
-    };
+	data: {
+		title: string;
+		color: string;
+		length: string;
+	};
 }
 
 function Task(props: TaskProps) {
@@ -94,7 +99,7 @@ function Task(props: TaskProps) {
 		<div
 			ref={setDragElm}
 			style={{ background: props.data.color }}
-			className="external-event-task"
+			className='external-event-task'
 		>
 			<div>{props.data.title}</div>
 			<div>{props.data.length}</div>
@@ -103,11 +108,10 @@ function Task(props: TaskProps) {
 	);
 }
 
-
 const MyCalendarComponent: React.FC = () => {
 	const [isOpen, setOpen] = useState<boolean>(false);
 	const [title, setTitle] = useState<string>('');
-	const [details, setDetails] = useState<string>('');
+	const [details /*setDetails*/] = useState<string>('');
 	const [technician, setTechnician] = useState<string>('');
 	const [selectedText, setSelectedText] = useState<string>(''); // Added state for selected text
 	const [anchor, setAnchor] = useState<HTMLElement | undefined>(undefined); // Updated type
@@ -120,8 +124,8 @@ const MyCalendarComponent: React.FC = () => {
 				type: 'week',
 				allDay: false,
 				startTime: '06:00',
-				endTime: '20:00'
-			}
+				endTime: '20:00',
+			},
 		};
 	}, []);
 
@@ -130,8 +134,8 @@ const MyCalendarComponent: React.FC = () => {
 			{
 				recurring: {
 					repeat: 'weekly',
-					weekDays: 'SA,SU'
-				}
+					weekDays: 'SA,SU',
+				},
 			},
 			{
 				start: '13:00',
@@ -139,30 +143,30 @@ const MyCalendarComponent: React.FC = () => {
 				title: 'Lunch Break',
 				recurring: {
 					repeat: 'weekly',
-					weekDays: 'MO,TU,WE,TH,FR'
-				}
-			}
+					weekDays: 'MO,TU,WE,TH,FR',
+				},
+			},
 		];
 	}, []);
 
-	const fillDialog = useCallback(
-		(args: { event: { title: string }; target: HTMLElement | null }) => {
-			setTitle(args.event.title);
-			setSelectedText(args.event.title);
+	const fillDialog = useCallback((args: MbscCalendarEvent) => {
+		setTitle(args.event.title);
+		setSelectedText(args.event.title);
+		console.log(selectedText);
+		// Update anchor state based on the target value
+		if (args.target) {
+			setAnchor(args.target);
+		}
 
-			// Update anchor state based on the target value
-			if (args.target) {
-				setAnchor(args.target);
-			}
+		setOpen(true);
+	}, []);
 
-			setOpen(true);
+	const onEventCreated = useCallback(
+		(args: MbscEventCreatedEvent) => {
+			fillDialog(args);
 		},
-		[]
+		[fillDialog]
 	);
-
-	const onEventCreated = useCallback((args: any) => {
-		fillDialog(args);
-	}, [fillDialog]);
 
 	const eventCreateFail = useCallback(() => {
 		setToastText("Can't create event on this date");
@@ -180,24 +184,24 @@ const MyCalendarComponent: React.FC = () => {
 		setToastOpen(true);
 	}, []);
 
-	const changeSelected = useCallback((event: any) => {
-		setTechnician(event.value);
-	}, []);
+	// const changeSelected = useCallback((event: MbscCalendarEvent) => {
+	// 	setTechnician(event.value);
+	// }, []);
 
 	const closeToast = useCallback(() => {
 		setToastOpen(false);
 	}, []);
 
 	return (
-		<div className="mbsc-grid mbsc-no-padding">
-			<div className="mbsc-row">
-				<div className="mbsc-col-sm-3">
-					<div className="mbsc-form-group-title">Allocated Tasks</div>
+		<div className='mbsc-grid mbsc-no-padding'>
+			<div className='mbsc-row'>
+				<div className='mbsc-col-sm-3'>
+					<div className='mbsc-form-group-title'>Allocated Tasks</div>
 					{tasks.map((task, i) => (
 						<Task key={i} data={task} />
 					))}
 				</div>
-				<div className="mbsc-col-sm-9 external-event-calendar">
+				<div className='mbsc-col-sm-9 external-event-calendar'>
 					<Eventcalendar
 						view={view}
 						invalid={invalid}
@@ -209,41 +213,45 @@ const MyCalendarComponent: React.FC = () => {
 					/>
 				</div>
 				<Popup
-					display="anchored"
+					display='anchored'
 					width={500}
 					contentPadding={false}
 					touchUi={false}
-					headerText="Log Time"
+					headerText='Log Time'
 					buttons={['ok']}
 					anchor={anchor}
 					isOpen={isOpen}
 					onClose={onClose}
 				>
-					<div className="mbsc-form-group">
-						<Input label="Job" defaultValue={title} readOnly></Input>
+					<div className='mbsc-form-group'>
+						<Input
+							label='Job'
+							defaultValue={title}
+							readOnly
+						></Input>
 						<Textarea
-							label="Details"
+							label='Details'
 							defaultValue={details}
-							placeholder="Add description..."
+							placeholder='Add description...'
 						></Textarea>
 						<Select
 							data={myData}
 							value={technician}
-							onChange={(event: any) => {
+							onChange={(event: DataType) => {
 								setTechnician(event.value);
 								setSelectedText(event.text); // Set selected text
 							}}
-							display="anchored"
+							display='anchored'
 							touchUi={false}
-							label="Task"
+							label='Task'
 							inputProps={{ placeholder: 'Please select...' }}
 						/>
 					</div>
 				</Popup>
 			</div>
 			<Toast
-				theme="ios"
-				themeVariant="light"
+				theme='ios'
+				themeVariant='light'
 				message={toastText}
 				isOpen={isToastOpen}
 				onClose={closeToast}

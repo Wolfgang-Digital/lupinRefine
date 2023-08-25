@@ -1,72 +1,45 @@
-import { useEffect, useState } from "react";
-import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
-import Grid from "@mui/material/Grid";
+import React, { useEffect, useState } from 'react';
+import { Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import supabase from "../../config/supaBaseClient";
-
-// components
-//import CountriesCard from "../../components/CountriesCard";
-
-type Country = {
-    id: number,
-    name: string,
-    iso2: string,
-    iso3: string,
-}
+import { getAllCountries } from '@api/countries';
+import { Country } from 'types';
 
 const countries = () => {
-	const [fetchError, setFetchError] = useState("")
-	const [countries, setCountries] = useState<Country[] | []>([])
+	const [fetchError, setFetchError] = useState('');
+	const [countries, setCountries] = useState<Country[] | []>([]);
 
 	useEffect(() => {
 		const fetchCountries = async () => {
-			const {data, error} = await supabase.from('countries').select()
+			const countriesResponse = await getAllCountries();
 
-			if (error) {
-				setFetchError('Could not fetch the countries')
-				setCountries([])
-				console.log(error)
+			if (countriesResponse) {
+				setCountries(countriesResponse);
+				console.log(fetchError);
+				setFetchError('');
 			}
-			if (data) {
-				setCountries(data)
-				setFetchError("")
-			}
-		}
-		fetchCountries()
-	}, [])
+		};
+		fetchCountries();
+	}, []);
 
-	const columns = [
+	const columns: (GridColDef & { field: keyof Country })[] = [
 		{ field: 'id', headerName: 'ID', width: 200 },
 		{ field: 'name', headerName: 'Country', width: 200 },
 		{ field: 'iso2', headerName: 'ISO2', width: 300 },
 	];
 
-	const rows = countries.map((country) => ({
-		id: country.id,
-		name: country.name,
-		iso2: country.iso2,
-	}));
-
-	function generateRandom() {
-		let length = 8,
-			charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-			retVal = "";
-		for (let i = 0, n = charset.length; i < length; ++i) {
-			retVal += charset.charAt(Math.floor(Math.random() * n));
-		}
-		return retVal;
-	}
-
-	console.log(countries);
 	return (
 		<div style={{ height: '100vh', width: '100%' }}>
-			<Typography gutterBottom variant="h4" component="div">
-              Countries
+			<Typography gutterBottom variant='h4' component='div'>
+				Countries
 			</Typography>
-			<DataGrid rows={rows} columns={columns} getRowId={(row: any) =>  generateRandom()} checkboxSelection />
-            
+			<DataGrid
+				rows={countries}
+				columns={columns}
+				getRowId={(row: Country) => row.id}
+				checkboxSelection
+			/>
 		</div>
-	)
-}
+	);
+};
 
-export default countries
+export default countries;
