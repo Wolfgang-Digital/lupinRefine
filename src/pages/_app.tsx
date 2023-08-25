@@ -2,7 +2,7 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-
+import React from 'react';
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -27,7 +27,7 @@ import { ThemedTitleV2 } from 'src/components';
 //icons
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
+// import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -56,7 +56,7 @@ const overridedLightTheme = createTheme({
 	},
 });
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
 	noLayout?: boolean;
 };
 

@@ -18,6 +18,8 @@
 			"@components/*": ["src/components/*"],
 			"@components": ["src/components"],
 			"@contexts/*": ["src/contexts/*"],
+			"@pages/*": ["src/pages/*"],
+			"@api/*": ["src/pages/api/*"],
 			"@contexts": ["src/contexts"],
 			"@styles/*": ["src/styles/*"],
 			"@styles": ["src/styles"],

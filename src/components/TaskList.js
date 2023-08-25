@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TaskList = ({ activeTab }) => {
+const TaskList: React.FC<{ activeTab: number }> = ({ activeTab }) => {
 	// Sample task data for different tabs
 	const tasksByTab = [
 		[
@@ -21,12 +21,23 @@ const TaskList = ({ activeTab }) => {
 		],
 		[
 			{ id: 1, title: 'Wolfgang Digital', description: 'Admin' },
-			{ id: 2, title: 'Wolfgang Digital', description: 'Employer Branding' },
+			{
+				id: 2,
+				title: 'Wolfgang Digital',
+				description: 'Employer Branding',
+			},
 			{ id: 3, title: 'Wolfgang Digital', description: 'Reforest' },
 			{ id: 4, title: 'Wolfgang Digital', description: 'Trainer Role' },
-			{ id: 5, title: 'Wolfgang Digital', description: 'Wolfgang Academy' },
-			{ id: 6, title: 'Wolfgang Digital', description: 'Wolfgang Marketing' },
-
+			{
+				id: 5,
+				title: 'Wolfgang Digital',
+				description: 'Wolfgang Academy',
+			},
+			{
+				id: 6,
+				title: 'Wolfgang Digital',
+				description: 'Wolfgang Marketing',
+			},
 		],
 	];
 
@@ -45,7 +56,6 @@ const TaskList = ({ activeTab }) => {
 			</ul>
 		</div>
 	);
-  
 };
 
 export default TaskList;

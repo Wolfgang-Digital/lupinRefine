@@ -1,13 +1,13 @@
 import supabase from '../../config/supaBaseClient';
-import { Job } from 'types';
+import { Wolfgangers } from 'types';
 
-export const getAllJobs = async (): Promise<Job[] | undefined> => {
+export const getAllUsers = async (): Promise<Wolfgangers[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from('jobs')
+			.from('wolfgangers')
 			.select('*')
-			.order('job_id', { ascending: true })) as unknown as {
-			data: Job[];
+			.order('user_id', { ascending: true })) as unknown as {
+			data: Wolfgangers[];
 			error: unknown;
 		};
 		if (error) {
@@ -20,5 +20,3 @@ export const getAllJobs = async (): Promise<Job[] | undefined> => {
 		console.error('Error fetching clients:', error);
 	}
 };
-
-export const CreateJob = async () => {};

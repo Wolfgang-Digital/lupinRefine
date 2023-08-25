@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import React, { /* useEffect, */ useState } from 'react';
+// import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import {
 	TextField,
 	Typography,
@@ -13,7 +13,7 @@ import {
 	Container,
 	CssBaseline,
 	Paper,
-	styled,
+	// styled,
 	Slide,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -49,7 +49,7 @@ export const ClientDetail: React.FC<ClientDetailProps> = ({
 		{ label: 'name', field: 'name' },
 		{ label: 'legal_name', field: 'legal_name' },
 		{ label: 'tier', field: 'tier' },
-		{ label: 'Address', field: 'address' },
+		{ label: 'Address', field: 'address_line1' },
 		{ label: 'Country', field: 'country' },
 	];
 
@@ -122,7 +122,7 @@ export const ClientDetail: React.FC<ClientDetailProps> = ({
 										fullWidth
 										label={field.label}
 										value={client[field.field] || ''}
-										onChange={(e) => () => {}}
+										// onChange={(e) => () => {}}
 									/>
 								))}
 								<Button
