@@ -161,49 +161,57 @@ const Timesheet = () => {
 											</MenuItem>
 										))}
 									</TextField>
-									<TextField
-										select
-										label='Select Task'
-										value={selectedTask}
-										onChange={(event) =>
-											setSelectedTask(event.target.value)
-										}
-										style={{
-											width: '100%',
-											marginBottom: '20px',
-											textAlign: 'left',
-										}}
-										required
-									>
-										{tasks.map((task) => (
-											<MenuItem
-												key={task.value}
-												value={task.value}
-											>
-												{task.label}
-											</MenuItem>
-										))}
-									</TextField>
-									<TextField
-										type='number'
-										label='Time Spent (in hours)'
-										value={timeSpent}
-										onChange={(event) => {
-											if (
-												Number(event.target.value) >= 0
-											) {
-												setTimeSpent(
+									{selectedClient && (
+										<TextField
+											select
+											label='Select Task'
+											value={selectedTask}
+											onChange={(event) =>
+												setSelectedTask(
 													event.target.value
-												);
+												)
 											}
-										}}
-										style={{
-											width: '100%',
-											marginBottom: '20px',
-											textAlign: 'left',
-										}}
-										required
-									/>
+											style={{
+												width: '100%',
+												marginBottom: '20px',
+												textAlign: 'left',
+											}}
+											required
+										>
+											{tasks.map((task) => (
+												<MenuItem
+													key={task.value}
+													value={task.value}
+												>
+													{task.label}
+												</MenuItem>
+											))}
+										</TextField>
+									)}
+									{selectedTask && (
+										<TextField
+											type='number'
+											label='Time Spent (in hours)'
+											value={timeSpent}
+											onChange={(event) => {
+												if (
+													Number(
+														event.target.value
+													) >= 0
+												) {
+													setTimeSpent(
+														event.target.value
+													);
+												}
+											}}
+											style={{
+												width: '100%',
+												marginBottom: '20px',
+												textAlign: 'left',
+											}}
+											required
+										/>
+									)}
 
 									<Button
 										variant='contained'

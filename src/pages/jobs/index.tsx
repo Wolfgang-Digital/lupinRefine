@@ -16,6 +16,7 @@ const jobList = () => {
 		}
 		fetchJobs();
 	}, []);
+
 	const columns: (GridColDef & { field: keyof Job })[] = [
 		{ field: 'job_name', headerName: 'job name', width: 200 },
 		{ field: 'job_type', headerName: 'job type', width: 200 },
