@@ -188,9 +188,15 @@ const Timesheet = () => {
 										type='number'
 										label='Time Spent (in hours)'
 										value={timeSpent}
-										onChange={(event) =>
-											setTimeSpent(event.target.value)
-										}
+										onChange={(event) => {
+											if (
+												Number(event.target.value) >= 0
+											) {
+												setTimeSpent(
+													event.target.value
+												);
+											}
+										}}
 										style={{
 											width: '100%',
 											marginBottom: '20px',
