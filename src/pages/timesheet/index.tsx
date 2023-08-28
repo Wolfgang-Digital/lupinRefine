@@ -11,34 +11,42 @@ import {
 	Typography,
 	TextField,
 	MenuItem,
+	FormControlLabel,
+	Checkbox,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import supabase from "../../config/supaBaseClient";
+
+type TimeEntry = {
+	task: string;
+	client: string;
+	hours: string;
+	date: string;
+	nonBillable: boolean;
+	notes: string;
+};
+
+type TaskOption = {
+	label: string;
+	value: string;
+};
+
+type ClientOption = {
+	label: string;
+	value: string;
+};
+
 const Timesheet = () => {
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedClient, setSelectedClient] = useState("");
 	const [timeSpent, setTimeSpent] = useState("");
-	const [timeEntries, setTimeEntries] = useState<
-		Array<{
-			task: string;
-			client: string;
-			hours: string;
-			date: string;
-		}>
-	>([]);
-	const [tasks, setTasks] = useState<
-		Array<{
-			label: string;
-			value: string;
-		}>
-	>([]);
-	const [clients, setClients] = useState<
-		Array<{
-			label: string;
-			value: string;
-		}>
-	>([]);
+	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+	const [tasks, setTasks] = useState<TaskOption[]>([]);
+	const [clients, setClients] = useState<ClientOption[]>([]);
+	const [nonBillable, setNonBillable] = useState(false);
+	const [notes, setNotes] = useState("");
+
 	useEffect(() => {
 		async function fetchTasksAndClients() {
 			try {
@@ -46,50 +54,64 @@ const Timesheet = () => {
 					.from("job_names")
 					.select("job_name_id, job_name_name");
 				const clientsResponse = await supabase.from("client").select("id, name");
+
 				if (tasksResponse.error || clientsResponse.error) {
 					throw new Error("Error fetching data");
 				}
+
 				const taskOptions = tasksResponse.data.map((task) => ({
 					label: task.job_name_name,
 					value: task.job_name_id,
 				}));
+
 				const clientOptions = clientsResponse.data.map((client) => ({
 					label: client.name,
 					value: client.id,
 				}));
+
 				setTasks(taskOptions);
 				setClients(clientOptions);
 			} catch (error) {
 				console.error("Error fetching tasks and clients:", error);
 			}
 		}
+
 		fetchTasksAndClients();
 	}, []);
+
 	const handleAddTimeClick = () => {
 		setShowForm(true);
 	};
+
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		// Find the corresponding task label (job_name_name) based on the selected task ID
+
 		const selectedTaskLabel = tasks.find(
 			(task) => task.value === selectedTask
 		)?.label;
-		// Find the corresponding client label (name) based on the selected client ID
+
 		const selectedClientLabel = clients.find(
 			(client) => client.value === selectedClient
 		)?.label;
-		const newTimeEntry = {
+
+		const newTimeEntry: TimeEntry = {
 			task: selectedTaskLabel || "",
 			client: selectedClientLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
 			date: "15/1/23", // Replace with the actual date value
+			nonBillable: nonBillable,
+			notes: notes,
 		};
+
 		setTimeEntries([...timeEntries, newTimeEntry]);
 		setSelectedTask("");
 		setSelectedClient("");
 		setTimeSpent("");
+		setNonBillable(false);
+		setNotes("");
 		setShowForm(false);
 	};
+
 	return (
 		<>
 			<h1>My Timesheet</h1>
@@ -105,6 +127,8 @@ const Timesheet = () => {
 										<TableCell>Client</TableCell>
 										<TableCell>Hours</TableCell>
 										<TableCell>Date</TableCell>
+										<TableCell>Non Billable</TableCell>
+										<TableCell>Notes</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -114,6 +138,8 @@ const Timesheet = () => {
 											<TableCell>{entry.client}</TableCell>
 											<TableCell>{entry.hours} Hrs</TableCell>
 											<TableCell>{entry.date}</TableCell>
+											<TableCell>{entry.nonBillable ? "Yes" : "No"}</TableCell>
+											<TableCell>{entry.notes}</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
@@ -131,7 +157,7 @@ const Timesheet = () => {
 								<form onSubmit={handleFormSubmit}>
 									<TextField
 										label="Date"
-										value="15/1/23" // Replace with the actual date value
+										value="15/1/23"
 										InputProps={{
 											readOnly: true,
 										}}
@@ -161,26 +187,24 @@ const Timesheet = () => {
 										))}
 									</TextField>
 									{selectedClient && (
-										<>
-											<TextField
-												select
-												label="Select Task"
-												value={selectedTask}
-												onChange={(event) => setSelectedTask(event.target.value)}
-												style={{
-													width: "100%",
-													marginBottom: "20px",
-													textAlign: "left",
-												}}
-												required
-											>
-												{tasks.map((task) => (
-													<MenuItem key={task.value} value={task.value}>
-														{task.label}
-													</MenuItem>
-												))}
-											</TextField>
-										</>
+										<TextField
+											select
+											label="Select Task"
+											value={selectedTask}
+											onChange={(event) => setSelectedTask(event.target.value)}
+											style={{
+												width: "100%",
+												marginBottom: "20px",
+												textAlign: "left",
+											}}
+											required
+										>
+											{tasks.map((task) => (
+												<MenuItem key={task.value} value={task.value}>
+													{task.label}
+												</MenuItem>
+											))}
+										</TextField>
 									)}
 									{selectedTask && (
 										<TextField
@@ -200,12 +224,37 @@ const Timesheet = () => {
 											required
 										/>
 									)}
-
+									{selectedTask && timeSpent && (
+										<TextField
+											label="Notes"
+											value={notes}
+											onChange={(event) => setNotes(event.target.value)}
+											multiline
+											rows={4}
+											style={{
+												width: "100%",
+												marginBottom: "20px",
+												textAlign: "left",
+											}}
+										/>
+									)}
+									{selectedTask && timeSpent && (
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={nonBillable}
+													onChange={(event) => setNonBillable(event.target.checked)}
+												/>
+											}
+											label="Non Billable"
+										/>
+									)}
 									<Button
 										variant="contained"
 										color="primary"
 										type="submit"
 										style={{ padding: "10px" }}
+										disabled={!selectedTask || !timeSpent}
 									>
 										Save Time Entry
 									</Button>
@@ -237,4 +286,5 @@ const Timesheet = () => {
 		</>
 	);
 };
+
 export default Timesheet;
