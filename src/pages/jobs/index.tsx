@@ -1,11 +1,13 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useState, useEffect } from 'react';
 import { getAllJobs } from 'src/pages/api/jobs';
 import { Job } from 'types';
 
-const jobList = () => {
+const JobList = () => {
+	const router = useRouter();
 	const [jobs, setJobs] = useState<Job[]>([]);
 	useEffect(() => {
 		async function fetchJobs() {
@@ -31,9 +33,10 @@ const jobList = () => {
 				rows={jobs}
 				columns={columns}
 				getRowId={(row: Job) => row.job_id}
+				onCellClick={(params) => router.push(`/jobs/${params.id}`)}
 			/>
 		</div>
 	);
 };
 
-export default jobList;
+export default JobList;
