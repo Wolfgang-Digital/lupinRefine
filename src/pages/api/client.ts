@@ -1,4 +1,4 @@
-import supabase from '../../config/supaBaseClient';
+import supabase, { PostgrestError } from '../../config/supaBaseClient';
 import { Client, Currency, Wolfgangers, Tier } from 'types';
 
 export type ClientData = Client & Currency & Wolfgangers & Tier;
@@ -11,13 +11,12 @@ export const getAllClients = async (): Promise<ClientData[] | undefined> => {
 			)
 			.order('id', { ascending: true })) as unknown as {
 			data: ClientData[];
-			error: unknown;
+			error: PostgrestError;
 		};
 		if (error) {
 			console.error('Error fetching clients:', error);
 			return;
 		}
-		console.log({ data });
 		return data;
 	} catch (error) {
 		console.error('Error fetching clients:', error);
