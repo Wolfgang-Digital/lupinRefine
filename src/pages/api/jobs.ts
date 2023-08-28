@@ -17,4 +17,22 @@ export const getAllJobs = async () => {
 	}
 };
 
+export const getJob = async ({ id }: { id: string }) => {
+	try {
+		const { data, error } = await supabase
+			.from('jobs')
+			.select('*')
+			.eq('job_id', id)
+			.single();
+
+		if (error) {
+			console.error('Error fetching clients:', error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error('Error fetching clients:', error);
+	}
+};
+
 export const CreateJob = async () => {};

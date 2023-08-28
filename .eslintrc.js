@@ -27,5 +27,6 @@ module.exports = {
 	//plugins: ['@typescript-eslint', 'react'],
 	rules: {
 		indent: ['error', 'tab', { SwitchCase: 1 }],
+		'react/prop-types': 'off',
 	},
 };
