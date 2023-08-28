@@ -11,6 +11,9 @@ import {
 	Typography,
 	TextField,
 	MenuItem,
+	FormControl,
+	InputLabel,
+	Select,
 	FormControlLabel,
 	Checkbox,
 } from "@mui/material";
@@ -46,6 +49,7 @@ const Timesheet = () => {
 	const [clients, setClients] = useState<ClientOption[]>([]);
 	const [nonBillable, setNonBillable] = useState(false);
 	const [notes, setNotes] = useState("");
+	const [filterOption, setFilterOption] = useState("All Tasks");
 
 	useEffect(() => {
 		async function fetchTasksAndClients() {
@@ -114,7 +118,23 @@ const Timesheet = () => {
 
 	return (
 		<>
-			<h1>My Timesheet</h1>
+			<div style={{ display: "flex", alignItems: "center" }}>
+				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
+				<FormControl variant="outlined">
+					<InputLabel id="filter-label">Filter:</InputLabel>
+					<Select
+						labelId="filter-label"
+						label="Filter"
+						value={filterOption}
+						onChange={(event) => setFilterOption(event.target.value as string)}
+					>
+						<MenuItem value="Allocated Tasks">Allocated Tasks</MenuItem>
+						<MenuItem value="All Tasks">All Tasks</MenuItem>
+						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
+					</Select>
+				</FormControl>
+			</div>
+
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
@@ -138,7 +158,9 @@ const Timesheet = () => {
 											<TableCell>{entry.client}</TableCell>
 											<TableCell>{entry.hours} Hrs</TableCell>
 											<TableCell>{entry.date}</TableCell>
-											<TableCell>{entry.nonBillable ? "Yes" : "No"}</TableCell>
+											<TableCell>
+												<Checkbox checked={entry.nonBillable} disabled />
+											</TableCell>
 											<TableCell>{entry.notes}</TableCell>
 										</TableRow>
 									))}
