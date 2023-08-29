@@ -2,7 +2,7 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -67,18 +67,19 @@ type AppPropsWithLayout = AppProps & {
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
 	const router = useRouter();
-	console.log({ data, status });
 	if (status === 'loading') {
 		return <span>loading...</span>;
 	}
-	if (!data && router.pathname !== '/login') {
-		router.push('/login');
-	}
-	// check if I have state param in route
-	console.log(router.query);
-	if (router?.query?.state) {
-		router.push('/dashboard');
-	}
+
+	useEffect(() => {
+		if (!data && router.pathname !== '/login') {
+			router.push('/login');
+		}
+		// check if I have state param in route
+		if (router?.query?.state) {
+			router.push('/dashboard');
+		}
+	}, [data, router]);
 
 	const authProvider: AuthBindings = {
 		login: async () => {
