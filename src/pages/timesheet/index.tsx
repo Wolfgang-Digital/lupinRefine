@@ -14,11 +14,12 @@ import {
 	FormControl,
 	InputLabel,
 	Select,
-	FormControlLabel,
 	Checkbox,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import supabase from "../../config/supaBaseClient";
+
+import MoreTimeIcon from "@mui/icons-material/MoreTime";
 
 type TimeEntry = {
 	task: string;
@@ -102,7 +103,7 @@ const Timesheet = () => {
 			task: selectedTaskLabel || "",
 			client: selectedClientLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
-			date: "15/1/23", // Replace with the actual date value
+			date: "01/09/23", // Replace with the actual date value
 			nonBillable: nonBillable,
 			notes: notes,
 		};
@@ -121,7 +122,7 @@ const Timesheet = () => {
 			<div style={{ display: "flex", alignItems: "center" }}>
 				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
 				<FormControl variant="outlined">
-					<InputLabel id="filter-label">Filter:</InputLabel>
+					<InputLabel id="filter-label">Filter</InputLabel>
 					<Select
 						labelId="filter-label"
 						label="Filter"
@@ -138,30 +139,38 @@ const Timesheet = () => {
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
-					<Grid item xs={5}>
+					<Grid item xs={6}>
 						<TableContainer component={Paper} variant="outlined">
 							<Table>
 								<TableHead>
 									<TableRow>
-										<TableCell>Tasks</TableCell>
-										<TableCell>Client</TableCell>
-										<TableCell>Hours</TableCell>
 										<TableCell>Date</TableCell>
-										<TableCell>Non Billable</TableCell>
-										<TableCell>Notes</TableCell>
+										{/* <TableCell>Tasks</TableCell> */}
+										<TableCell>Client</TableCell>
+										<TableCell>Allocated Hours Used</TableCell>
+										<TableCell>Days Left</TableCell>
+										<TableCell>Completed</TableCell>
+										<TableCell>Timer</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 									{timeEntries.map((entry, index) => (
 										<TableRow key={index}>
-											<TableCell>{entry.task}</TableCell>
-											<TableCell>{entry.client}</TableCell>
-											<TableCell>{entry.hours} Hrs</TableCell>
 											<TableCell>{entry.date}</TableCell>
+											{/* <TableCell>{entry.task}</TableCell> */}
+											<TableCell>{entry.client}</TableCell>
+											<TableCell>{entry.hours} hrs of 5:00 hrs</TableCell>{" "}
+											{/* Example hours left */}
+											<TableCell>29</TableCell> {/* Example days left */}
 											<TableCell>
-												<Checkbox checked={entry.nonBillable} disabled />
+												<Checkbox />
 											</TableCell>
-											<TableCell>{entry.notes}</TableCell>
+											<TableCell
+												onClick={handleAddTimeClick}
+												style={{ cursor: "pointer" }}
+											>
+												<MoreTimeIcon />
+											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
@@ -170,7 +179,7 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={7}>
+					<Grid item xs={6}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "80px" }}
@@ -179,7 +188,7 @@ const Timesheet = () => {
 								<form onSubmit={handleFormSubmit}>
 									<TextField
 										label="Date"
-										value="15/1/23"
+										value="01/09/23" // example date
 										InputProps={{
 											readOnly: true,
 										}}
@@ -258,17 +267,6 @@ const Timesheet = () => {
 												marginBottom: "20px",
 												textAlign: "left",
 											}}
-										/>
-									)}
-									{selectedTask && timeSpent && (
-										<FormControlLabel
-											control={
-												<Checkbox
-													checked={nonBillable}
-													onChange={(event) => setNonBillable(event.target.checked)}
-												/>
-											}
-											label="Non Billable"
 										/>
 									)}
 									<Button
