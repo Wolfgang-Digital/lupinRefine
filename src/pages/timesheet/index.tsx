@@ -51,7 +51,7 @@ const Timesheet = () => {
 				}));
 
 				const clientOptions = clientsResponse.data.map((client) => ({
-					label: client.name,
+					label: client?.name,
 					value: client.id,
 				}));
 

@@ -1,5 +1,4 @@
-import React, { /* useEffect, */ useState } from 'react';
-// import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import React, { useState } from 'react';
 import {
 	TextField,
 	Typography,
@@ -50,7 +49,6 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 		{ label: 'Country', field: 'country' },
 	];
 
-	console.log({ client });
 	return (
 		<Dialog
 			fullScreen
@@ -74,7 +72,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 						variant='h6'
 						component='div'
 					>
-						{client.name}
+						{client?.name}
 					</Typography>
 					<Button autoFocus color='inherit' onClick={onClose}>
 						Save
@@ -114,11 +112,11 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							<form>
 								{clientInfoFields.map((field) => (
 									<TextField
-										key={field.field}
+										key={field?.field}
 										margin='normal'
 										fullWidth
 										label={field.label}
-										value={client[field.field] || ''}
+										value={client?.[field?.field] || ''}
 										// onChange={(e) => () => {}}
 									/>
 								))}

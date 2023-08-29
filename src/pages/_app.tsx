@@ -120,7 +120,7 @@ const App = (props: React.PropsWithChildren) => {
 			if (data?.user) {
 				const { user } = data;
 				return {
-					name: user.name,
+					name: user?.name,
 					avatar: user.image,
 				};
 			}
