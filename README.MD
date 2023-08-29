@@ -15,6 +15,7 @@ This [refine](https://github.com/pankod/refine) project was generated with [supe
 
 Refine offers lots of out-of-the box functionality for rapid development, without compromising extreme customizability. Use-cases include, but are not limited to admin panels, B2B applications and dashboards.
 
+
 ## Available Scripts
 
 ### Running the development server.
