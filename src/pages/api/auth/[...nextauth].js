@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
-console.log(process.env);
 export const authOptions = {
 	// Configure one or more authentication providers
 	providers: [
@@ -19,7 +18,12 @@ export const authOptions = {
 				if (isProduction) {
 					return profile.email.endsWith('@wolfgangdigital.com');
 				}
-				return true;
+				const devEmails = [
+					'aligt55@gmail.com',
+					'liam@wolfgangdigital.com',
+					'polobryn@gmail.com',
+				];
+				return devEmails.includes(profile.email);
 			}
 		},
 	},
