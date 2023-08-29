@@ -78,7 +78,7 @@ const App = (props: React.PropsWithChildren) => {
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
-				callbackUrl: '/',
+				callbackUrl: '/dashboard',
 				redirect: true,
 			});
 
