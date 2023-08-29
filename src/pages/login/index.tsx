@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<object> = async (
 		return {
 			props: {},
 			redirect: {
-				destination: '/',
+				destination: '/dashboard',
 				permanent: false,
 			},
 		};
@@ -72,5 +72,9 @@ export const getServerSideProps: GetServerSideProps<object> = async (
 
 	return {
 		props: {},
+		redirect: {
+			destination: '/dashboard',
+			permanent: false,
+		},
 	};
 };
