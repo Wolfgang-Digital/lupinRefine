@@ -73,10 +73,6 @@ const App = (props: React.PropsWithChildren) => {
 		if (!data && router.pathname !== '/login' && status !== 'loading') {
 			router.push('/login');
 		}
-		// check if I have state param in route
-		if (router?.query?.state) {
-			router.push('/dashboard');
-		}
 	}, [data, router, status]);
 
 	const authProvider: AuthBindings = {
