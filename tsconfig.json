@@ -34,7 +34,8 @@
 		"**/*.ts",
 		"**/*.tsx",
 		"src/pages/logtime/index.jsx",
-		"next.config.js"
+		"next.config.js",
+		"src/pages/api/auth/[...nextauth].js"
 	],
 	"exclude": ["node_modules"]
 }
