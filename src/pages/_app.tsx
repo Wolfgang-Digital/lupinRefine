@@ -17,7 +17,6 @@ import routerProvider, {
 import type { NextPage } from 'next';
 import { SessionProvider, signIn, signOut, useSession } from 'next-auth/react';
 import { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
 
 import { ThemedLayoutV2 } from 'src/components';
 import { ThemedHeaderV2 } from 'src/components';
@@ -66,8 +65,6 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
-	const router = useRouter();
-	const { to } = router.query;
 
 	if (status === 'loading') {
 		return <span>loading...</span>;
@@ -76,7 +73,7 @@ const App = (props: React.PropsWithChildren) => {
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
-				callbackUrl: to ? to.toString() : '/',
+				callbackUrl: '/',
 				redirect: true,
 			});
 
