@@ -5,7 +5,7 @@ const Home: React.FC = () => {
 	const router = useRouter();
 	useEffect(() => {
 		router.push('/dashboard');
-	});
+	}, []);
 	return <>home</>;
 };
 
