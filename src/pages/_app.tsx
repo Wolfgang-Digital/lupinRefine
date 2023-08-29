@@ -69,7 +69,6 @@ const App = (props: React.PropsWithChildren) => {
 	const router = useRouter();
 
 	useEffect(() => {
-		console.log(data);
 		if (!data && router.pathname !== '/login' && status !== 'loading') {
 			router.push('/login');
 		}
@@ -132,84 +131,80 @@ const App = (props: React.PropsWithChildren) => {
 
 	return (
 		<>
-			{status === 'loading' ? (
-				<span>loading...</span>
-			) : (
-				<ThemeProvider theme={overridedLightTheme}>
-					<RefineKbarProvider>
-						<CssBaseline />
-						<GlobalStyles
-							styles={{ html: { WebkitFontSmoothing: 'auto' } }}
-						/>
-						<RefineSnackbarProvider>
-							<Refine
-								routerProvider={routerProvider}
-								dataProvider={dataProvider(API_URL)}
-								notificationProvider={notificationProvider}
-								authProvider={authProvider}
-								resources={[
-									{
-										name: 'Dashboard',
-										list: '/dashboard',
-										options: { label: 'Dashboard' },
-										icon: <DashboardIcon />,
-									},
-									// {
-									//   name: "Log Time",
-									//   list: '/logtime',
-									//   options:{label: "Log Time example"},
-									//   icon: <MoreTimeIcon/>
-									// },
-									{
-										name: 'Timesheet',
-										list: '/timesheet',
-										options: { label: 'Timesheet' },
-										icon: <MoreTimeIcon />,
-									},
-									// {
-									//   name: "Reports",
-									//   list: '/reports',
-									//   options:{label: "Reports"},
-									//   icon: <ContentPasteSearchIcon/>
-									// },
-									{
-										name: 'Wolfgangers',
-										list: '/wolfgangers',
-										options: { label: 'Wolfgangers' },
-										icon: <ConnectWithoutContactIcon />,
-									},
-									{
-										name: 'Client Overview',
-										list: '/clients',
-										options: { label: 'Client Overview' },
-										icon: <RecentActorsIcon />,
-									},
-									{
-										name: 'Job List',
-										list: '/jobs',
-										options: { label: 'Job List' },
-										icon: <RecentActorsIcon />,
-									},
-									{
-										name: 'Admin',
-										list: '/admin',
-										options: { label: 'Admin' },
-										icon: <SecurityIcon />,
-									},
-								]}
-								options={{
-									syncWithLocation: true,
-									warnWhenUnsavedChanges: true,
-								}}
-							>
-								{props.children}
-								<RefineKbar />
-								<UnsavedChangesNotifier />
-							</Refine>
-						</RefineSnackbarProvider>
-					</RefineKbarProvider>
-				</ThemeProvider>
-			)}
+			<ThemeProvider theme={overridedLightTheme}>
+				<RefineKbarProvider>
+					<CssBaseline />
+					<GlobalStyles
+						styles={{ html: { WebkitFontSmoothing: 'auto' } }}
+					/>
+					<RefineSnackbarProvider>
+						<Refine
+							routerProvider={routerProvider}
+							dataProvider={dataProvider(API_URL)}
+							notificationProvider={notificationProvider}
+							authProvider={authProvider}
+							resources={[
+								{
+									name: 'Dashboard',
+									list: '/dashboard',
+									options: { label: 'Dashboard' },
+									icon: <DashboardIcon />,
+								},
+								// {
+								//   name: "Log Time",
+								//   list: '/logtime',
+								//   options:{label: "Log Time example"},
+								//   icon: <MoreTimeIcon/>
+								// },
+								{
+									name: 'Timesheet',
+									list: '/timesheet',
+									options: { label: 'Timesheet' },
+									icon: <MoreTimeIcon />,
+								},
+								// {
+								//   name: "Reports",
+								//   list: '/reports',
+								//   options:{label: "Reports"},
+								//   icon: <ContentPasteSearchIcon/>
+								// },
+								{
+									name: 'Wolfgangers',
+									list: '/wolfgangers',
+									options: { label: 'Wolfgangers' },
+									icon: <ConnectWithoutContactIcon />,
+								},
+								{
+									name: 'Client Overview',
+									list: '/clients',
+									options: { label: 'Client Overview' },
+									icon: <RecentActorsIcon />,
+								},
+								{
+									name: 'Job List',
+									list: '/jobs',
+									options: { label: 'Job List' },
+									icon: <RecentActorsIcon />,
+								},
+								{
+									name: 'Admin',
+									list: '/admin',
+									options: { label: 'Admin' },
+									icon: <SecurityIcon />,
+								},
+							]}
+							options={{
+								syncWithLocation: true,
+								warnWhenUnsavedChanges: true,
+							}}
+						>
+							{props.children}
+							<RefineKbar />
+							<UnsavedChangesNotifier />
+						</Refine>
+					</RefineSnackbarProvider>
+				</RefineKbarProvider>
+			</ThemeProvider>
 		</>
 	);
 };
@@ -218,7 +213,6 @@ function MyApp({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithLayout): JSX.Element {
-	console.log({ session, pageProps });
 	const renderComponent = () => {
 		if (Component.noLayout) {
 			return <Component {...pageProps} />;

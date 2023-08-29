@@ -1,12 +1,15 @@
 import React from 'react';
-import { ErrorComponent } from '@refinedev/mui';
+
 import { GetServerSideProps } from 'next';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 
-export default function CatchAll() {
-	return <ErrorComponent />;
+export default function Index() {
+	return <>index</>;
 }
+
+Index.noLayout = true;
 
 export const getServerSideProps: GetServerSideProps<object> = async (
 	context
