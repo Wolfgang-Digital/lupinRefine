@@ -1,4 +1,4 @@
-import supabase from '../../config/supaBaseClient';
+import supabase from '@config/supaBaseClient';
 import { Country } from 'types';
 
 export const getAllCountries = async (): Promise<Country[] | undefined> => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { getJob } from 'src/pages/api/jobs';
+import { getJob } from '@api/jobs';
 
 import { Job as JobType } from 'types';
 

@@ -1,4 +1,4 @@
-import supabase, { PostgrestError } from '../../config/supaBaseClient';
+import supabase, { PostgrestError } from '../config/supaBaseClient';
 import { Client, Currency, Wolfgangers, Tier } from 'types';
 
 export type ClientData = Client & Currency & Wolfgangers & Tier;

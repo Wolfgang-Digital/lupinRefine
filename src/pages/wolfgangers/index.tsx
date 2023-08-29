@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { DataGrid /* GridColDef */ } from '@mui/x-data-grid';
 import { Wolfgangers } from 'types';
 import { useState, useEffect } from 'react';
-import { getAllUsers } from 'src/pages/api/users';
+import { getAllUsers } from '@api/users';
 
 const wolfgangers = () => {
 	const [users, setUsers] = useState<Wolfgangers[]>([]);

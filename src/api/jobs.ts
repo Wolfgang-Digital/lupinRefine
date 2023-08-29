@@ -1,4 +1,4 @@
-import supabase from '../../config/supaBaseClient';
+import supabase from '@config/supaBaseClient';
 
 export const getAllJobs = async () => {
 	try {

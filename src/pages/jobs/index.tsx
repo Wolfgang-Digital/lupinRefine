@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useState, useEffect } from 'react';
-import { getAllJobs } from 'src/pages/api/jobs';
+import { getAllJobs } from '@api/jobs';
 import { Job } from 'types';
 
 const JobList = () => {

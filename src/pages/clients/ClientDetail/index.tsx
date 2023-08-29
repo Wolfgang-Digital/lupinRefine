@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { ClientData } from '../../api/client';
+import { ClientData } from '@api/client';
 import { Client } from 'types';
 
 const Transition = React.forwardRef(function Transition(
@@ -35,10 +35,7 @@ interface ClientDetailProps {
 	onClose: () => void; // Callback to close the dialog
 }
 
-export const ClientDetail: React.FC<ClientDetailProps> = ({
-	client,
-	onClose,
-}) => {
+const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
 
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -162,3 +159,5 @@ export const ClientDetail: React.FC<ClientDetailProps> = ({
 		</Dialog>
 	);
 };
+
+export default ClientDetail;
