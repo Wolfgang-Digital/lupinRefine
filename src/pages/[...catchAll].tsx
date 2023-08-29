@@ -1,12 +1,13 @@
-import { ErrorComponent } from "@refinedev/mui";
-import { GetServerSideProps } from "next";
+import React from 'react';
+import { ErrorComponent } from '@refinedev/mui';
+import { GetServerSideProps } from 'next';
 
 export default function CatchAll() {
-  return <ErrorComponent />;
+	return <ErrorComponent />;
 }
 
-export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
-  return {
-    props: {},
-  };
+export const getServerSideProps: GetServerSideProps = async () => {
+	return {
+		props: {},
+	};
 };

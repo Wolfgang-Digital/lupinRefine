@@ -1,0 +1,53 @@
+.external-event-calendar {
+    border-right: 1px solid #ccc;
+}
+
+.external-event-task {
+    color: #fff;
+    padding: 10px;
+    margin: 20px;
+    border-radius: 8px;
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.demo-external-event-presets.demo-wrapper,
+.demo-external-event-presets .mbsc-grid,
+.demo-external-event-presets .mbsc-row,
+.demo-external-event-presets .external-event-calendar {
+    height: 100%;
+}
+
+.mbsc-form-group-title {
+    padding-left: 20px;
+}
+
+/* Custom styling for the Eventcalendar component */
+/* Style the month selector */
+.mbsc-eventcalendar .mbsc-calendar-month-selector {
+    background-color: #02786D;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+/* Style the month header */
+.mbsc-eventcalendar .mbsc-calendar-year-month {
+    color: #02786D;
+}
+
+/* Style the lines in the calendar */
+.mbsc-eventcalendar .mbsc-calendar-body .mbsc-calendar-cell {
+    border: 1px solid #02786D;
+    box-shadow: none;
+}
+
+/* Style the events in the calendar */
+.mbsc-eventcalendar .mbsc-event-box {
+    background-color: #02786D;
+    color: white;
+}
+
+/* Style the event description in the calendar */
+.mbsc-eventcalendar .mbsc-event-desc {
+    color: white;
+}

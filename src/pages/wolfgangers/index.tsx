@@ -1,73 +1,58 @@
-import { useEffect, useState } from "react";
-import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
-import Grid from "@mui/material/Grid";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import supabase from "../../config/supaBaseClient";
-
-type Wolfganger = {
-  user_id: number,
-  user_name: string,
-  user_email: string,
-  department_name: string,
-}
+import React from 'react';
+import { Typography } from '@mui/material';
+import { DataGrid /* GridColDef */ } from '@mui/x-data-grid';
+import { Wolfgangers } from 'types';
+import { useState, useEffect } from 'react';
+import { getAllUsers } from 'src/pages/api/users';
 
 const wolfgangers = () => {
-  const [fetchError, setFetchError] = useState("");
-  const [wolfgangers, setWolfgangers] = useState<Wolfganger[] | []>([]);
+	const [users, setUsers] = useState<Wolfgangers[]>([]);
+	useEffect(() => {
+		async function fetchUsers() {
+			const usersResponse = await getAllUsers();
+			if (usersResponse) {
+				setUsers(usersResponse);
+			}
+		}
+		console.log(users);
+		fetchUsers();
+	}, []);
 
-  useEffect(() => {
-    const fetchWolfgangers = async () => {
-      const {data, error} = await supabase.from('user_dept_join').select()
+	const columns = [
+		{ field: 'user_name', headerName: 'user name ', width: 200 },
+		{
+			field: 'user_department',
+			headerName: 'user department ',
+			width: 200,
+		},
+		{
+			field: 'user_role',
+			headerName: 'user role ',
+			width: 200,
+		},
+	];
 
-      if (error) {
-        setFetchError('Could not fetch the users');
-        setWolfgangers([]);
-        console.log(error);
-      }
-      if (data) {
-        setWolfgangers(data);
-        setFetchError("");
-      }
-    }
-    fetchWolfgangers();
-  }, [])
+	const rows = users.map((user) => ({
+		id: user.user_id,
+		user_name: user.user_name,
+		user_department: user.user_department,
+		user_role: user.user_role,
+	}));
+	console.log(rows);
 
-  const columns = [
-    { field: 'user_id', headerName: 'ID', width: 200 },
-    { field: 'user_name', headerName: 'Name', width: 200 },
-    { field: 'user_email', headerName: 'Email', width: 300 },
-    { field: 'user_department', headerName: 'Department', width: 300 },
-  ];
+	return (
+		<div style={{ height: '100vh', width: '100%' }}>
+			<Typography gutterBottom variant='h4' component='div'>
+				Wolfgangers
+			</Typography>
+			<DataGrid
+				rows={rows}
+				columns={columns}
+				getRowId={(row) => row.id}
+				checkboxSelection
+			/>
+		</div>
+	);
+};
 
-  const rows = wolfgangers.map((wolfganger) => ({
-    user_id: wolfganger.user_id,
-    user_name: wolfganger.user_name,
-    user_email: wolfganger.user_email,
-    user_department: wolfganger.department_name,
-}));
-
-function generateRandom() {
-  var length = 8,
-      charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-      retVal = "";
-  for (var i = 0, n = charset.length; i < length; ++i) {
-      retVal += charset.charAt(Math.floor(Math.random() * n));
-  }
-  return retVal;
-}
-
-console.log(wolfgangers);
-return (
-  <div style={{ height: '100vh', width: '100%' }}>
-    <Typography gutterBottom variant="h4" component="div">
-      Wolfgangers
-    </Typography>
-    <DataGrid rows={rows} columns={columns} getRowId={(row: any) => generateRandom()} checkboxSelection />
-    
-  </div>
-)
-
-}
-
-export default wolfgangers
-
+export default wolfgangers;

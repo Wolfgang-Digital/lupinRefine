@@ -1,112 +1,119 @@
+import React from 'react';
+import {
+	Card,
+	CardActionArea,
+	CardMedia,
+	CardContent,
+	Typography,
+	Grid,
+} from '@mui/material';
 
-import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
-import Grid from "@mui/material/Grid";
+const Dashboard = () => {
+	const gridItemProps = {
+		xs: 12,
+		sm: 6,
+		md: 4,
+		lg: 3,
+		xl: 2,
+	};
 
-const dashboard = () => {
-    return (
-        <Grid container columns={24} spacing={2}>
-            <Grid item xs={12} md={12} lg={8} xl={8}>
-                <Card sx={{ height: "100%", minHeight: "200px"  }}>
-                    <CardActionArea>
-                        <CardMedia
-                        component="img"
-                        height="300px"
-                        src= "https://www.wolfgangdigital.com/uploads/banners/time2_(3).png"// Use the 'logo' variable here with 'src' prop
-                        alt="Log Time"
-                        />
-                        <CardContent sx={{ height: "100%", minHeight: "100px" }}>
-                        <Typography gutterBottom variant="h5" component="div" sx={{ padding:"20px" }}>
-                            Log Time
-                        </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
-            </Grid>
-            <Grid item xs={12} md={12} lg={8} xl={8}>
-            <Card sx={{ height: "100%", minHeight: "200px" }}>
-                <CardActionArea>
-                <CardMedia
-                        component="img"
-                        height="300px"
-                        src="https://www.wolfgangdigital.com/uploads/banners/reports.png" // Use the 'logo' variable here
-                        alt="Reports"
-                        />
-                    <CardContent sx={{ height: "100%", minHeight: "100px" }} >
-                    <Typography gutterBottom variant="h5" component="div" sx={{ padding:"20px" }}>
-                        Reports
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                        Example Text
-                    </Typography> */}
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            </Grid>
-            <Grid item xs={12} md={12} lg={8} xl={8}>
-            <Card sx={{ height: "100%", minHeight: "200px" }}>
-                <CardActionArea>
-                <CardMedia
-                        component="img"
-                        height="300px"
-                        src="https://www.wolfgangdigital.com/uploads/banners/wg_(1).png" // Use the 'logo' variable here
-                        alt="Clients"
-                        />
-                    <CardContent sx={{ height: "100%", minHeight: "80px" }}>
-                    <Typography gutterBottom variant="h5" component="div" sx={{ padding:"20px" }}>
-                        Clients
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                        Example Text
-                    </Typography> */}
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            </Grid>
-            <Grid item xs={12} md={12} lg={8} xl={8}>
-            <Card sx={{ height: "100%", minHeight: "200px" }}>
-                <CardActionArea>
-                <CardMedia
-                        component="img"
-                        height="300px"
-                        src="https://www.wolfgangdigital.com/uploads/banners/pipeline_(1).png" // Use the 'logo' variable here
-                        alt="Wolfgangers"
-                        />
-                    <CardContent sx={{ height: "100%", minHeight: "100px" }}>
-                    <Typography gutterBottom variant="h5" component="div" sx={{ padding:"20px" }}>
-                        Pipeline
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                        Example Text
-                    </Typography> */}
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            </Grid>
-            
-            <Grid item xs={12} md={12} lg={8} xl={8}>
-            <Card sx={{ height: "100%", minHeight: "200px" }}>
-                <CardActionArea>
-                <CardMedia
-                        component="img"
-                        height="300px"
-                        src="https://www.wolfgangdigital.com/uploads/banners/admin.png" // Use the 'logo' variable here
-                        alt="Clients"
-                        />
-                    <CardContent sx={{ height: "100%", minHeight: "100px" }}>
-                    <Typography gutterBottom variant="h5" component="div" sx={{ padding:"20px" }}>
-                        Admin
-                    </Typography>
-                    {/* <Typography variant="body2" color="text.secondary">
-                        Example Text
-                    </Typography> */}
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            </Grid>
-        </Grid>
+	const cardStyle = {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'space-between',
+		height: '100%',
+		minHeight: 200,
+	};
 
-    )
-}
+	return (
+		<Grid container spacing={2}>
+			<Grid item {...gridItemProps}>
+				<Card sx={cardStyle}>
+					<CardActionArea>
+						<CardMedia
+							component='img'
+							height='200px'
+							src='https://www.wolfgangdigital.com/uploads/banners/time2_(3).png'
+							alt='Log Time'
+						/>
+						<CardContent>
+							<Typography gutterBottom variant='h6'>
+								Log Time
+							</Typography>
+						</CardContent>
+					</CardActionArea>
+				</Card>
+			</Grid>
+			<Grid item {...gridItemProps}>
+				<Card sx={cardStyle}>
+					<CardActionArea>
+						<CardMedia
+							component='img'
+							height='200px'
+							src='https://www.wolfgangdigital.com/uploads/banners/reports.png'
+							alt='Reports'
+						/>
+						<CardContent>
+							<Typography gutterBottom variant='h6'>
+								Reports
+							</Typography>
+						</CardContent>
+					</CardActionArea>
+				</Card>
+			</Grid>
+			<Grid item {...gridItemProps}>
+				<Card sx={cardStyle}>
+					<CardActionArea>
+						<CardMedia
+							component='img'
+							height='200px'
+							src='https://www.wolfgangdigital.com/uploads/banners/wg_(1).png'
+							alt='Clients'
+						/>
+						<CardContent>
+							<Typography gutterBottom variant='h6'>
+								Clients
+							</Typography>
+						</CardContent>
+					</CardActionArea>
+				</Card>
+			</Grid>
+			<Grid item {...gridItemProps}>
+				<Card sx={cardStyle}>
+					<CardActionArea>
+						<CardMedia
+							component='img'
+							height='200px'
+							src='https://www.wolfgangdigital.com/uploads/banners/pipeline_(1).png'
+							alt='Pipeline'
+						/>
+						<CardContent>
+							<Typography gutterBottom variant='h6'>
+								Pipeline
+							</Typography>
+						</CardContent>
+					</CardActionArea>
+				</Card>
+			</Grid>
+			<Grid item {...gridItemProps}>
+				<Card sx={cardStyle}>
+					<CardActionArea>
+						<CardMedia
+							component='img'
+							height='200px'
+							src='https://www.wolfgangdigital.com/uploads/banners/admin.png'
+							alt='Admin'
+						/>
+						<CardContent>
+							<Typography gutterBottom variant='h6'>
+								Admin
+							</Typography>
+						</CardContent>
+					</CardActionArea>
+				</Card>
+			</Grid>
+		</Grid>
+	);
+};
 
-export default dashboard
-
+export default Dashboard;
