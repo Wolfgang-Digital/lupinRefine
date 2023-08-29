@@ -24,11 +24,11 @@ const Timesheet = () => {
 	const [timeEntries, setTimeEntries] = useState<
 		Array<{ task: string; client: string; hours: string }>
 	>([]);
-	const [tasks, setTasks] = useState<Array<{ label: string; value: string }>>(
-		[]
-	);
+	const [tasks, setTasks] = useState<
+		Array<{ label: string | null; value: number }>
+	>([]);
 	const [clients, setClients] = useState<
-		Array<{ label: string; value: string }>
+		Array<{ label: string | null; value: number }>
 	>([]); // Array for clients
 
 	useEffect(() => {
@@ -74,12 +74,12 @@ const Timesheet = () => {
 
 		// Find the corresponding task label (job_name_name) based on the selected task ID
 		const selectedTaskLabel = tasks.find(
-			(task) => task.value === selectedTask
+			(task) => task.value === Number(selectedTask)
 		)?.label;
 
 		// Find the corresponding client label (name) based on the selected client ID
 		const selectedClientLabel = clients.find(
-			(client) => client.value === selectedClient
+			(client) => client.value === Number(selectedClient)
 		)?.label;
 
 		const newTimeEntry = {
