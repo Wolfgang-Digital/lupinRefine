@@ -8,6 +8,13 @@ export const authOptions = {
 		GoogleProvider({
 			clientId: `686204342223-e9j1st5fhk59qfmma3va583seb9gbotq.apps.googleusercontent.com`,
 			clientSecret: `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`,
+			authorization: {
+				params: {
+					prompt: 'consent',
+					access_type: 'offline',
+					response_type: 'code',
+				},
+			},
 		}),
 	],
 	callbacks: {
