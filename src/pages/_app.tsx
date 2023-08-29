@@ -10,6 +10,7 @@ import {
 	notificationProvider,
 	RefineThemes,
 } from '@refinedev/mui';
+import { useRouter } from 'next/router';
 import { createTheme } from '@mui/material/styles';
 import routerProvider, {
 	UnsavedChangesNotifier,
@@ -65,9 +66,13 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
-
+	const router = useRouter();
+	console.log({ data, status });
 	if (status === 'loading') {
 		return <span>loading...</span>;
+	}
+	if (!data && router.pathname !== '/login') {
+		router.push('/login');
 	}
 
 	const authProvider: AuthBindings = {
@@ -209,6 +214,7 @@ function MyApp({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithLayout): JSX.Element {
+	console.log({ session, pageProps });
 	const renderComponent = () => {
 		if (Component.noLayout) {
 			return <Component {...pageProps} />;
