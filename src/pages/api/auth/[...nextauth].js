@@ -12,7 +12,7 @@ export const authOptions = {
 	],
 	callbacks: {
 		async signIn({ account, profile }) {
-			const isProduction = process.env.NODE_ENV === 'production';
+			const isProduction = process.env.env === 'production';
 
 			if (account.provider === 'google') {
 				if (isProduction) {
