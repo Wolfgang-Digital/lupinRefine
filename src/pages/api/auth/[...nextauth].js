@@ -27,6 +27,6 @@ export const authOptions = {
 			}
 		},
 	},
-	secret: `UItTuD1HcGXIj8ZfHUswhYdNd40Lc325R8VlxQPUoR0=`,
+	secret: process.env.NEXTAUTH_SECRET,
 };
 export default NextAuth(authOptions);
