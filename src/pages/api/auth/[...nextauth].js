@@ -18,21 +18,20 @@ export const authOptions = {
 		}),
 	],
 	callbacks: {
-		async signIn({ account, profile }) {
-			const isProduction = process.env.env === 'production';
-
-			if (account.provider === 'google') {
-				if (isProduction) {
-					return profile.email.endsWith('@wolfgangdigital.com');
-				}
-				const devEmails = [
-					'aligt55@gmail.com',
-					'liam@wolfgangdigital.com',
-					'polobryn@gmail.com',
-				];
-				return devEmails.includes(profile.email);
-			}
-		},
+		// async signIn({ account, profile }) {
+		// 	const isProduction = process.env.env === 'production';
+		// 	if (account.provider === 'google') {
+		// 		if (isProduction) {
+		// 			return profile.email.endsWith('@wolfgangdigital.com');
+		// 		}
+		// 		const devEmails = [
+		// 			'aligt55@gmail.com',
+		// 			'liam@wolfgangdigital.com',
+		// 			'polobryn@gmail.com',
+		// 		];
+		// 		return devEmails.includes(profile.email);
+		// 	}
+		// },
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 };
