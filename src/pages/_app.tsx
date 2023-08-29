@@ -75,6 +75,7 @@ const App = (props: React.PropsWithChildren) => {
 		router.push('/login');
 	}
 	// check if I have state param in route
+	console.log(router.query);
 	if (router?.query?.state) {
 		router.push('/dashboard');
 	}
