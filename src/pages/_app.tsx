@@ -66,17 +66,6 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
-	const router = useRouter();
-
-	useEffect(() => {
-		console.log({ status, router });
-		if (status === 'unauthenticated') {
-			router.push('/login');
-		}
-		if (router.pathname === '/') {
-			router.push('/dashboard');
-		}
-	}, [data, router, status]);
 
 	const authProvider: AuthBindings = {
 		login: async () => {

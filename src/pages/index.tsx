@@ -1,40 +1,13 @@
-import React from 'react';
-
-import { GetServerSideProps } from 'next';
-
-import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]';
-
+import React, { useEffect } from 'react';
+// import { useRouter } from 'next/router';
 export default function Index() {
+	// const router = useRouter();
+	useEffect(() => {
+		console.log('pushing');
+		// router.push('/dashboard');
+	}, []);
+
 	return <>index</>;
 }
 
 Index.noLayout = true;
-
-export const getServerSideProps: GetServerSideProps<object> = async (
-	context
-) => {
-	const session = await getServerSession(
-		context.req,
-		context.res,
-		authOptions
-	);
-
-	if (session) {
-		return {
-			props: {},
-			redirect: {
-				destination: '/dashboard',
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {},
-		redirect: {
-			destination: '/login',
-			permanent: false,
-		},
-	};
-};
