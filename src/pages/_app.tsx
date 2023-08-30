@@ -69,8 +69,12 @@ const App = (props: React.PropsWithChildren) => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!data && router.pathname !== '/login' && status !== 'loading') {
+		console.log({ status });
+		if (status === 'unauthenticated') {
 			router.push('/login');
+		}
+		if (router.pathname === '/') {
+			router.push('/dashboard');
 		}
 	}, [data, router, status]);
 
@@ -213,6 +217,7 @@ function MyApp({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithLayout): JSX.Element {
+	console.log({ session });
 	const renderComponent = () => {
 		if (Component.noLayout) {
 			return <Component {...pageProps} />;
