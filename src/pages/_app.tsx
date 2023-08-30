@@ -69,7 +69,7 @@ const App = (props: React.PropsWithChildren) => {
 	const router = useRouter();
 
 	useEffect(() => {
-		console.log({ status });
+		console.log({ status, router });
 		if (status === 'unauthenticated') {
 			router.push('/login');
 		}
