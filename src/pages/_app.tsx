@@ -2,7 +2,8 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -66,6 +67,12 @@ type AppPropsWithLayout = AppProps & {
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
 
+	const router = useRouter();
+	useEffect(() => {
+		if (status === 'unauthenticated') {
+			router.push('/login');
+		}
+	}, [status]);
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
@@ -205,7 +212,6 @@ function MyApp({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithLayout): JSX.Element {
-	console.log({ session });
 	const renderComponent = () => {
 		if (Component.noLayout) {
 			return <Component {...pageProps} />;
