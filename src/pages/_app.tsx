@@ -2,7 +2,7 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-import React, { useEffect } from 'react';
+import React from 'react';
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -10,7 +10,6 @@ import {
 	notificationProvider,
 	RefineThemes,
 } from '@refinedev/mui';
-import { useRouter } from 'next/router';
 import { createTheme } from '@mui/material/styles';
 import routerProvider, {
 	UnsavedChangesNotifier,
