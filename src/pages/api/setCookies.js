@@ -7,16 +7,12 @@ export default (req, res) => {
 	let cookieString = '';
 	for (const key of Object.keys(cookies)) {
 		// encode the value of the cookie
-		cookieString += serialize(
-			key,
-			encodeURIComponent(cookies[key].split('&')[0]),
-			{
-				httpOnly: true,
-				secure: true,
-				sameSite: 'none', // Adjust this if needed based on your requirements
-				path: '/', // Adjust the path attribute if needed
-			}
-		);
+		cookieString += serialize(key, cookies[key], {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none', // Adjust this if needed based on your requirements
+			path: '/', // Adjust the path attribute if needed
+		});
 	}
 
 	res.setHeader('Set-Cookie', cookieString);

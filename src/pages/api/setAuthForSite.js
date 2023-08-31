@@ -18,7 +18,7 @@ export default (req, res) => {
 	// Split the cookies and store them in the parsedCookies object
 	cookies.split(';').forEach((cookie) => {
 		const [key, value] = cookie.split('=');
-		parsedCookies[key.trim()] = decodeURIComponent(value);
+		parsedCookies[key.trim()] = value;
 	});
 
 	// Filter cookies by the ones you specified in your cookieArray
@@ -33,5 +33,5 @@ export default (req, res) => {
 	const queryString = querystring.stringify(filteredCookies);
 	console.log(queryString);
 	// Now you have the cookies turned into a query string
-	res.redirect(`${site}/api/setCookies?${encodeURIComponent(queryString)}`);
+	res.redirect(`${site}/api/setCookies?${queryString}`);
 };
