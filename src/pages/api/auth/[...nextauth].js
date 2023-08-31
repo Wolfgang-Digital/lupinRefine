@@ -32,6 +32,10 @@ export const authOptions = {
 				return devEmails.includes(profile.email);
 			}
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		async redirect({ url, baseUrl }) {
+			return baseUrl;
+		},
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 };
