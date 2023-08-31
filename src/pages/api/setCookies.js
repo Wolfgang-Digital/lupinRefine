@@ -6,7 +6,8 @@ export default (req, res) => {
 	console.log(Object.keys(cookies));
 	let cookieString = '';
 	for (const key of Object.keys(cookies)) {
-		cookieString += serialize(key, cookies[key], {
+		// encode the value of the cookie
+		cookieString += serialize(key, encodeURIComponent(cookies[key]), {
 			httpOnly: true,
 			secure: true,
 			sameSite: 'none', // Adjust this if needed based on your requirements
