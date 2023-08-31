@@ -1,9 +1,5 @@
 # LUPIN-APP
 
-
-
-This [refine](https://github.com/pankod/refine) project was generated with [superplate](https://github.com/pankod/refine).
-
 ## How to authenticate in feature branches
 
  * first authenticate in staging
