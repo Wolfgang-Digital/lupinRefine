@@ -19,7 +19,7 @@ export const authOptions = {
 	],
 	callbacks: {
 		async signIn({ account, profile }) {
-			const isProduction = process.env.env === 'production';
+			const isProduction = process.env.NEXT_PUBLIC_ENV === 'production';
 			if (account.provider === 'google') {
 				if (isProduction) {
 					return profile.email.endsWith('@wolfgangdigital.com');

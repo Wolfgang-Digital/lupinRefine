@@ -67,12 +67,14 @@ type AppPropsWithLayout = AppProps & {
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
 
+	const skipAuth = process.env.NEXT_PUBLIC_ENV === 'preview';
 	const router = useRouter();
 	useEffect(() => {
-		if (status === 'unauthenticated') {
+		if (status === 'unauthenticated' && !skipAuth) {
 			router.push('/login');
 		}
-	}, [status]);
+	}, [status, data]);
+
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
@@ -101,7 +103,8 @@ const App = (props: React.PropsWithChildren) => {
 			};
 		},
 		check: async () => {
-			if (status === 'unauthenticated') {
+			if (status === 'unauthenticated' && !skipAuth) {
+				console.log('1');
 				return {
 					authenticated: false,
 					redirectTo: '/login',
