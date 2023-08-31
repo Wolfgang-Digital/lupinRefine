@@ -19,5 +19,5 @@ export default (req, res) => {
 
 	// Convert the filteredCookies object into a query string
 	// Now you have the cookies turned into a query string
-	res.redirect(`${site}/api/setCookies?cookieValue=${cookieValue}}`);
+	res.redirect(`${site}/api/setCookies?cookieValue=${cookieValue}`);
 };
