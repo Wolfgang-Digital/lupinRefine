@@ -158,17 +158,29 @@ const Timesheet = () => {
 					{/* First column */}
 					<Grid item xs={6}>
 						<div
-							style={{ display: "flex", alignItems: "center", paddingBottom: "10px" }}
+							style={{ display: "flex", alignItems: "center", paddingBottom: "20px" }}
 						>
-							<Button onClick={() => navigateWeeks(-1)}>Previous Week</Button>
-							<Button onClick={() => navigateWeeks(1)}>Next Week</Button>
-							<Typography style={{ marginLeft: "20px" }}>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={() => navigateWeeks(-1)}
+							>
+								Previous Week
+							</Button>
+							<Typography style={{ marginLeft: "20px", marginRight: "20px" }}>
 								{format(selectedWeekStart, "MMM d")} -{" "}
 								{format(
 									endOfWeek(addWeeks(selectedWeekStart, 1), { weekStartsOn: 1 }),
 									"MMM d"
 								)}
 							</Typography>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={() => navigateWeeks(1)}
+							>
+								Next Week
+							</Button>
 						</div>
 						<div
 							style={{
