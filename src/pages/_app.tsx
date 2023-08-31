@@ -73,6 +73,7 @@ const App = (props: React.PropsWithChildren) => {
 			router.push('/login');
 		}
 	}, [status]);
+
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
