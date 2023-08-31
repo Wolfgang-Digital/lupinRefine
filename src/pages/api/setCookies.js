@@ -9,7 +9,7 @@ export default (req, res) => {
 		cookieString += serialize(key, cookies[key], {
 			httpOnly: true,
 			secure: true,
-			sameSite: 'lax', // Adjust this if needed based on your requirements
+			sameSite: 'none', // Adjust this if needed based on your requirements
 			path: '/', // Adjust the path attribute if needed
 		});
 	}
