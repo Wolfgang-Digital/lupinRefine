@@ -21,6 +21,8 @@ import supabase from "../../config/supaBaseClient";
 
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 
+import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
+
 type TimeEntry = {
 	task: string;
 	client: string;
@@ -41,6 +43,10 @@ type ClientOption = {
 };
 
 const Timesheet = () => {
+	const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(
+		startOfWeek(new Date(), { weekStartsOn: 1 }) // Set weekStartsOn to 1 (Monday)
+	);
+
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedClient, setSelectedClient] = useState("");
@@ -84,6 +90,15 @@ const Timesheet = () => {
 		fetchTasksAndClients();
 	}, []);
 
+	const navigateWeeks = (weeks: number) => {
+		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
+	};
+
+	const weekDays: Date[] = [];
+	for (let i = 0; i < 7; i++) {
+		weekDays.push(addDays(selectedWeekStart, i));
+	}
+
 	const handleAddTimeClick = () => {
 		setShowForm(true);
 	};
@@ -119,7 +134,9 @@ const Timesheet = () => {
 
 	return (
 		<>
-			<div style={{ display: "flex", alignItems: "center" }}>
+			<div
+				style={{ display: "flex", alignItems: "center", paddingBottom: "10px" }}
+			>
 				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
 				<FormControl variant="outlined">
 					<InputLabel id="filter-label">Filter</InputLabel>
@@ -140,6 +157,47 @@ const Timesheet = () => {
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={6}>
+						<div
+							style={{ display: "flex", alignItems: "center", paddingBottom: "10px" }}
+						>
+							<Button onClick={() => navigateWeeks(-1)}>Previous Week</Button>
+							<Button onClick={() => navigateWeeks(1)}>Next Week</Button>
+							<Typography style={{ marginLeft: "20px" }}>
+								{format(selectedWeekStart, "MMM d")} -{" "}
+								{format(
+									endOfWeek(addWeeks(selectedWeekStart, 1), { weekStartsOn: 1 }),
+									"MMM d"
+								)}
+							</Typography>
+						</div>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "space-between",
+								paddingBottom: "10px",
+							}}
+						>
+							{weekDays.map((day) => (
+								<div
+									key={day.toISOString()}
+									style={{
+										border: "1px solid #ccc",
+										paddingLeft: "20px",
+										paddingRight: "20px",
+										paddingTop: "5px",
+										paddingBottom: "5px",
+										borderRadius: "5px",
+										textAlign: "center",
+									}}
+								>
+									<Typography>
+										{format(day, "EEE")}
+										<br />
+										{format(day, "d")}
+									</Typography>
+								</div>
+							))}
+						</div>
 						<TableContainer component={Paper} variant="outlined">
 							<Table>
 								<TableHead>
