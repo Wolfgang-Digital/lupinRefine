@@ -1,7 +1,7 @@
 export default (req, res) => {
 	// get cookie value from request params
 	const { cookie } = req.query;
-	console.log(req.query);
+
 	res.setHeader(
 		'Set-Cookie',
 		`__Secure-next-auth.session-token=${cookie}; HttpOnly; Path=/; Expires=${new Date(

@@ -72,7 +72,7 @@ const App = (props: React.PropsWithChildren) => {
 		if (status === 'unauthenticated') {
 			router.push('/login');
 		}
-	}, [status, data]);
+	}, [status]);
 
 	const authProvider: AuthBindings = {
 		login: async () => {
@@ -103,7 +103,6 @@ const App = (props: React.PropsWithChildren) => {
 		},
 		check: async () => {
 			if (status === 'unauthenticated') {
-				console.log('1');
 				return {
 					authenticated: false,
 					redirectTo: '/login',
