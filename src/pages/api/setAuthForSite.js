@@ -33,5 +33,5 @@ export default (req, res) => {
 	const queryString = querystring.stringify(filteredCookies);
 	console.log(queryString);
 	// Now you have the cookies turned into a query string
-	res.redirect(`${site}/api/setCookies?${queryString}`);
+	res.redirect(`${site}/api/setCookies?${encodeURIComponent(queryString)}`);
 };
