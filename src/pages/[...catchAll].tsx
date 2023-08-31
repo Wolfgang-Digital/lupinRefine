@@ -16,9 +16,8 @@ export const getServerSideProps: GetServerSideProps<object> = async (
 		context.res,
 		authOptions
 	);
-	const skipAuth = process.env.NEXT_PUBLIC_ENV === 'preview';
 
-	if (session || skipAuth) {
+	if (session) {
 		return {
 			props: {},
 			redirect: {

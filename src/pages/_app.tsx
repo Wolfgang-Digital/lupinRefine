@@ -67,10 +67,9 @@ type AppPropsWithLayout = AppProps & {
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
 
-	const skipAuth = process.env.NEXT_PUBLIC_ENV === 'preview';
 	const router = useRouter();
 	useEffect(() => {
-		if (status === 'unauthenticated' && !skipAuth) {
+		if (status === 'unauthenticated') {
 			router.push('/login');
 		}
 	}, [status, data]);
@@ -103,7 +102,7 @@ const App = (props: React.PropsWithChildren) => {
 			};
 		},
 		check: async () => {
-			if (status === 'unauthenticated' && !skipAuth) {
+			if (status === 'unauthenticated') {
 				console.log('1');
 				return {
 					authenticated: false,
