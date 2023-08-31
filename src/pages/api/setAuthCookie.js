@@ -1,7 +1,7 @@
 export default (req, res) => {
 	// get cookie value from request params
 	const { cookie } = req.query;
-
+	console.log(req.query);
 	res.setHeader(
 		'Set-Cookie',
 		`__Secure-next-auth.session-token=${cookie}; HttpOnly; Path=/; Expires=${new Date(
@@ -9,6 +9,6 @@ export default (req, res) => {
 		).toUTCString()}`
 	);
 
-	// redirect to dashboard url
-	res.redirect('/dashboard');
+	// redirect to dashboard
+	res.status(200).json({ message: 'Cookie set!' });
 };
