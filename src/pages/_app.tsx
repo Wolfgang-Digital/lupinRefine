@@ -2,12 +2,8 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-<<<<<<< HEAD
-import React from 'react';
-=======
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
->>>>>>> staging
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -22,10 +18,6 @@ import routerProvider, {
 import type { NextPage } from 'next';
 import { SessionProvider, signIn, signOut, useSession } from 'next-auth/react';
 import { AppProps } from 'next/app';
-<<<<<<< HEAD
-import { useRouter } from 'next/router';
-=======
->>>>>>> staging
 
 import { ThemedLayoutV2 } from 'src/components';
 import { ThemedHeaderV2 } from 'src/components';
@@ -74,14 +66,6 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
-<<<<<<< HEAD
-	const router = useRouter();
-	const { to } = router.query;
-
-	if (status === 'loading') {
-		return <span>loading...</span>;
-	}
-=======
 
 	const router = useRouter();
 	useEffect(() => {
@@ -89,16 +73,11 @@ const App = (props: React.PropsWithChildren) => {
 			router.push('/login');
 		}
 	}, [status]);
->>>>>>> staging
 
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
-<<<<<<< HEAD
-				callbackUrl: to ? to.toString() : '/',
-=======
 				callbackUrl: '/dashboard',
->>>>>>> staging
 				redirect: true,
 			});
 
