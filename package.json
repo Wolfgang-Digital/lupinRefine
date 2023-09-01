@@ -1,10 +1,6 @@
 {
 	"name": "lupinapp",
 	"version": "0.1.0",
-	"prettier": {
-		"tabWidth": 1,
-		"useTabs": true
-	  },
 	"private": true,
 	"scripts": {
 		"dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev",
@@ -12,7 +8,7 @@
 		"start": "refine start",
 		"lint": "eslint '**/*.{js,jsx,ts,tsx}'",
 		"refine": "refine",
-		"create-types": "npx supabase gen types typescript --project-id 'stujybrsreksohyiqtdu' --schema public > types/supabase.ts",
+		"create-types": "npx supabase gen types typescript --project-id 'nczgevaguekxcebrzqsx' --schema public > types/supabase.ts",
 		"prepare": "husky install"
 	},
 	"dependencies": {
@@ -46,6 +42,7 @@
 		"antd": "^5.8.3",
 		"apexcharts": "^3.41.1",
 		"chart.js": "^4.3.3",
+		"cookie": "^0.5.0",
 		"date-fns": "^2.30.0",
 		"dayjs": "^1.11.9",
 		"dotenv": "^16.3.1",

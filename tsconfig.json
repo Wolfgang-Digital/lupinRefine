@@ -19,7 +19,8 @@
 			"@components": ["src/components"],
 			"@contexts/*": ["src/contexts/*"],
 			"@pages/*": ["src/pages/*"],
-			"@api/*": ["src/pages/api/*"],
+			"@api/*": ["src/api/*"],
+			"@config/*": ["src/config/*"],
 			"@contexts": ["src/contexts"],
 			"@styles/*": ["src/styles/*"],
 			"@styles": ["src/styles"],
@@ -33,7 +34,8 @@
 		"**/*.ts",
 		"**/*.tsx",
 		"src/pages/logtime/index.jsx",
-		"next.config.js"
+		"next.config.js",
+		"src/pages/api/auth/[...nextauth].js"
 	],
 	"exclude": ["node_modules"]
 }

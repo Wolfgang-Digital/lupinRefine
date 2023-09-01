@@ -1,12 +1,12 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { DataGrid /* GridColDef */ } from '@mui/x-data-grid';
-import { Wolfgangers } from 'types';
+import { User } from 'types';
 import { useState, useEffect } from 'react';
-import { getAllUsers } from 'src/pages/api/users';
+import { getAllUsers } from '@api/users';
 
-const wolfgangers = () => {
-	const [users, setUsers] = useState<Wolfgangers[]>([]);
+const Users = () => {
+	const [users, setUsers] = useState<User[]>([]);
 	useEffect(() => {
 		async function fetchUsers() {
 			const usersResponse = await getAllUsers();
@@ -55,4 +55,4 @@ const wolfgangers = () => {
 	);
 };
 
-export default wolfgangers;
+export default Users;

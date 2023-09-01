@@ -1,8 +1,11 @@
-import React from 'react';
-import { NavigateToResource } from '@refinedev/nextjs-router';
-
-export default function Home() {
-	return <NavigateToResource resource='Dashboard' />;
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+export default function Index() {
+	const router = useRouter();
+	useEffect(() => {
+		router.push('/dashboard');
+	}, []);
+	return <>index</>;
 }
 
-Home.noLayout = true;
+Index.noLayout = true;
