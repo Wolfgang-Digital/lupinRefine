@@ -236,9 +236,9 @@ const Timesheet = () => {
 							<Table>
 								<TableHead>
 									<TableRow>
-										<TableCell>Date</TableCell>
 										{/* <TableCell>Tasks</TableCell> */}
-										<TableCell>Client</TableCell>
+										<TableCell>Job</TableCell>
+										<TableCell>Task</TableCell>
 										<TableCell>
 											Allocated Hours Used
 										</TableCell>
@@ -250,11 +250,11 @@ const Timesheet = () => {
 								<TableBody>
 									{timeEntries.map((entry, index) => (
 										<TableRow key={index}>
-											<TableCell>{entry.date}</TableCell>
 											{/* <TableCell>{entry.task}</TableCell> */}
 											<TableCell>
 												{entry.client}
 											</TableCell>
+											<TableCell>Task</TableCell>
 											<TableCell>
 												{entry.hours} hrs of 5:00 hrs
 											</TableCell>{' '}
@@ -300,7 +300,7 @@ const Timesheet = () => {
 									/>
 									<TextField
 										select
-										label='Select Client'
+										label='Select Job'
 										value={selectedClient}
 										onChange={(event) =>
 											setSelectedClient(
@@ -388,6 +388,7 @@ const Timesheet = () => {
 												marginBottom: '20px',
 												textAlign: 'left',
 											}}
+											required
 										/>
 									)}
 									<Button
