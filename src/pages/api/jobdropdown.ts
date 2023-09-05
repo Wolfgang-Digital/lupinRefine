@@ -1,9 +1,9 @@
 import supabase from "../../config/supaBaseClient";
 
-export const getAllJobs = async () => {
+export const jobsDropdown = async () => {
 	try {
 		const { data, error } = await supabase
-			.from("jobs")
+			.from("timesheet_jobsresponse_dropdown")
 			.select("*")
 			.order("job_id", { ascending: true });
 
@@ -17,4 +17,4 @@ export const getAllJobs = async () => {
 	}
 };
 
-export const CreateJob = async () => {};
+export const CreateJobDropdown = async () => {};

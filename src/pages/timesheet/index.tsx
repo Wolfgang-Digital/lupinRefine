@@ -15,21 +15,25 @@ import {
 	InputLabel,
 	Select,
 	Checkbox,
+	TablePagination, // Import TablePagination
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import supabase from "../../config/supaBaseClient";
-
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-
 import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 
 type TimeEntry = {
 	task: string;
-	client: string;
+	job: string;
 	hours: string;
 	date: string;
 	nonBillable: boolean;
 	notes: string;
+};
+
+type JobOption = {
+	label: string;
+	value: string;
 };
 
 type TaskOption = {
@@ -37,58 +41,94 @@ type TaskOption = {
 	value: string;
 };
 
-type ClientOption = {
-	label: string;
-	value: string;
-};
-
 const Timesheet = () => {
 	const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(
-		startOfWeek(new Date(), { weekStartsOn: 1 }) // Set weekStartsOn to 1 (Monday)
+		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
 
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
-	const [selectedClient, setSelectedClient] = useState("");
+	const [selectedJob, setSelectedJob] = useState("");
 	const [timeSpent, setTimeSpent] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
-	const [clients, setClients] = useState<ClientOption[]>([]);
 	const [nonBillable, setNonBillable] = useState(false);
 	const [notes, setNotes] = useState("");
 	const [filterOption, setFilterOption] = useState("All Tasks");
+	const [page, setPage] = useState(0); // Current page
+	const [rowsPerPage, setRowsPerPage] = useState(5); // Rows per page (changed to 5)
 
 	useEffect(() => {
-		async function fetchTasksAndClients() {
+		async function fetchTasksAndJobs() {
 			try {
-				const tasksResponse = await supabase
-					.from("job_names")
-					.select("job_name_id, job_name_name");
-				const clientsResponse = await supabase.from("client").select("id, name");
+				const jobsResponse = await supabase
+					.from("timesheet_jobsresponse_dropdown")
+					.select("job_id, job_name, client_name");
 
-				if (tasksResponse.error || clientsResponse.error) {
+				const tasksResponse = await supabase
+					.from("tasks")
+					.select("task_id, task_name");
+
+				if (jobsResponse.error || tasksResponse.error) {
 					throw new Error("Error fetching data");
 				}
 
+				const jobOptions = jobsResponse.data.map((job) => ({
+					label: `${job.client_name} : ${job.job_name}`,
+					value: job.job_id?.toString() || "0",
+				}));
+
 				const taskOptions = tasksResponse.data.map((task) => ({
-					label: task.job_name_name,
-					value: task.job_name_id,
+					label: task.task_name || "No Task Found",
+					value: task.task_id.toString(),
 				}));
 
-				const clientOptions = clientsResponse.data.map((client) => ({
-					label: client.name,
-					value: client.id,
-				}));
-
+				setJobs(jobOptions);
 				setTasks(taskOptions);
-				setClients(clientOptions);
 			} catch (error) {
-				console.error("Error fetching tasks and clients:", error);
+				console.error("Error fetching jobs and tasks:", error);
 			}
 		}
 
-		fetchTasksAndClients();
+		fetchTasksAndJobs();
 	}, []);
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				if (filterOption === "All Tasks") {
+					const response = await supabase
+						.from("timesheet_jobsresponse_dropdown")
+						.select("client_name, job_name");
+
+					if (response.error) {
+						throw new Error("Error fetching data");
+					}
+
+					const jobEntries = response.data.map((entry) => ({
+						job: `${entry.client_name}: ${entry.job_name}`,
+						task: "Opt",
+						hours: "0",
+						date: "01/09/23",
+						nonBillable: false,
+						notes: "",
+					})) as TimeEntry[];
+
+					setTimeEntries(jobEntries);
+				} else {
+					// Handle other filter options here
+					// Clear rows or fetch data as needed for other filter options
+					setTimeEntries([]); // Clear rows for other options
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		}
+
+		fetchData();
+		setPage(0); // Reset to the first page when changing filter options
+	}, [filterOption]);
 
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
@@ -110,26 +150,46 @@ const Timesheet = () => {
 			(task) => task.value === selectedTask
 		)?.label;
 
-		const selectedClientLabel = clients.find(
-			(client) => client.value === selectedClient
-		)?.label;
+		const selectedJobLabel = jobs.find((job) => job.value === selectedJob)?.label;
 
 		const newTimeEntry: TimeEntry = {
+			job: selectedJobLabel || "",
 			task: selectedTaskLabel || "",
-			client: selectedClientLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
-			date: "01/09/23", // Replace with the actual date value
+			date: "01/09/23",
 			nonBillable: nonBillable,
 			notes: notes,
 		};
 
 		setTimeEntries([...timeEntries, newTimeEntry]);
 		setSelectedTask("");
-		setSelectedClient("");
+		setSelectedJob("");
 		setTimeSpent("");
 		setNonBillable(false);
 		setNotes("");
 		setShowForm(false);
+	};
+
+	// Update the TimeEntries based on the current page and rows per page
+	const displayedTimeEntries = timeEntries.slice(
+		page * rowsPerPage,
+		page * rowsPerPage + rowsPerPage
+	);
+
+	// Function to handle page change
+	const handleChangePage = (
+		event: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	// Function to handle rows per page change
+	const handleChangeRowsPerPage = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setRowsPerPage(parseInt(event.target.value, 10));
+		setPage(0); // Reset to the first page when changing rows per page
 	};
 
 	return (
@@ -158,7 +218,11 @@ const Timesheet = () => {
 					{/* First column */}
 					<Grid item xs={6}>
 						<div
-							style={{ display: "flex", alignItems: "center", paddingBottom: "20px" }}
+							style={{
+								display: "flex",
+								alignItems: "center",
+								paddingBottom: "20px",
+							}}
 						>
 							<Button
 								variant="contained"
@@ -214,30 +278,107 @@ const Timesheet = () => {
 							<Table>
 								<TableHead>
 									<TableRow>
-										{/* <TableCell>Tasks</TableCell> */}
-										<TableCell>Job</TableCell>
-										<TableCell>Task</TableCell>
-										<TableCell>Allocated Hours Used</TableCell>
-										<TableCell>Days Left</TableCell>
-										<TableCell>Completed</TableCell>
-										<TableCell>Timer</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller",
+											}}
+										>
+											Job
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller",
+											}}
+										>
+											Task
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller",
+											}}
+										>
+											Allocated Hours Used
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller",
+											}}
+										>
+											Days Left
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller",
+											}}
+										>
+											Completed
+										</TableCell>
+										<TableCell style={{ textAlign: "center" }}>Timer</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{timeEntries.map((entry, index) => (
+									{displayedTimeEntries.map((entry, index) => (
 										<TableRow key={index}>
-											{/* <TableCell>{entry.task}</TableCell> */}
-											<TableCell>{entry.client}</TableCell>
-											<TableCell>Task</TableCell>
-											<TableCell>{entry.hours} hrs of 5:00 hrs</TableCell>{" "}
-											{/* Example hours left */}
-											<TableCell>29</TableCell> {/* Example days left */}
-											<TableCell>
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													whiteSpace: "pre-line",
+													fontSize: "smaller",
+												}}
+											>
+												{entry.job.replace(/:/g, ":\n")}
+											</TableCell>
+
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													fontSize: "smaller",
+												}}
+											>
+												{entry.task}
+											</TableCell>
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													fontSize: "smaller",
+												}}
+											>
+												{entry.hours} hrs of AL hrs
+											</TableCell>
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													fontSize: "smaller",
+												}}
+											>
+												29
+											</TableCell>
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													fontSize: "smaller",
+												}}
+											>
 												<Checkbox />
 											</TableCell>
 											<TableCell
 												onClick={handleAddTimeClick}
-												style={{ cursor: "pointer" }}
+												style={{ cursor: "pointer", textAlign: "center" }}
 											>
 												<MoreTimeIcon />
 											</TableCell>
@@ -246,6 +387,16 @@ const Timesheet = () => {
 								</TableBody>
 							</Table>
 						</TableContainer>
+						{/* Add TablePagination component for pagination */}
+						<TablePagination
+							rowsPerPageOptions={[2, 5, 10]}
+							component="div"
+							count={timeEntries.length}
+							rowsPerPage={rowsPerPage}
+							page={page}
+							onPageChange={handleChangePage}
+							onRowsPerPageChange={handleChangeRowsPerPage}
+						/>
 					</Grid>
 
 					{/* Second column */}
@@ -258,7 +409,7 @@ const Timesheet = () => {
 								<form onSubmit={handleFormSubmit}>
 									<TextField
 										label="Date"
-										value="01/09/23" // example date
+										value="01/09/23"
 										InputProps={{
 											readOnly: true,
 										}}
@@ -272,8 +423,8 @@ const Timesheet = () => {
 									<TextField
 										select
 										label="Select Job"
-										value={selectedClient}
-										onChange={(event) => setSelectedClient(event.target.value)}
+										value={selectedJob}
+										onChange={(event) => setSelectedJob(event.target.value)}
 										style={{
 											width: "100%",
 											marginBottom: "20px",
@@ -281,13 +432,13 @@ const Timesheet = () => {
 										}}
 										required
 									>
-										{clients.map((client) => (
-											<MenuItem key={client.value} value={client.value}>
-												{client.label}
+										{jobs.map((job) => (
+											<MenuItem key={job.value} value={job.value}>
+												{job.label}
 											</MenuItem>
 										))}
 									</TextField>
-									{selectedClient && (
+									{selectedJob && (
 										<TextField
 											select
 											label="Select Task"

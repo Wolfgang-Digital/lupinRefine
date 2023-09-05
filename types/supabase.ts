@@ -162,46 +162,46 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'client_client_lead_fkey';
-						columns: ['client_lead'];
-						referencedRelation: 'wolfgangers';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "client_client_lead_fkey";
+						columns: ["client_lead"];
+						referencedRelation: "wolfgangers";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'client_client_lead_fkey';
-						columns: ['client_lead'];
-						referencedRelation: 'user_dept_join';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "client_client_lead_fkey";
+						columns: ["client_lead"];
+						referencedRelation: "user_dept_join";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'client_client_lead_fkey';
-						columns: ['client_lead'];
-						referencedRelation: 'user_dept_join_v2';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "client_client_lead_fkey";
+						columns: ["client_lead"];
+						referencedRelation: "user_dept_join_v2";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'client_currency_fkey';
-						columns: ['currency'];
-						referencedRelation: 'currency';
-						referencedColumns: ['currency_id'];
+						foreignKeyName: "client_currency_fkey";
+						columns: ["currency"];
+						referencedRelation: "currency";
+						referencedColumns: ["currency_id"];
 					},
 					{
-						foreignKeyName: 'client_poc_fkey';
-						columns: ['poc'];
-						referencedRelation: 'client_contact';
-						referencedColumns: ['client_contact_id'];
+						foreignKeyName: "client_poc_fkey";
+						columns: ["poc"];
+						referencedRelation: "client_contact";
+						referencedColumns: ["client_contact_id"];
 					},
 					{
-						foreignKeyName: 'client_tier_fkey';
-						columns: ['tier'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "client_tier_fkey";
+						columns: ["tier"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					},
 					{
-						foreignKeyName: 'client_type_fkey';
-						columns: ['type'];
-						referencedRelation: 'client_type';
-						referencedColumns: ['client_type_id'];
+						foreignKeyName: "client_type_fkey";
+						columns: ["type"];
+						referencedRelation: "client_type";
+						referencedColumns: ["client_type_id"];
 					}
 				];
 			};
@@ -306,7 +306,7 @@ export interface Database {
 			};
 			countries: {
 				Row: {
-					continent: Database['public']['Enums']['continents'] | null;
+					continent: Database["public"]["Enums"]["continents"] | null;
 					created_at: string | null;
 					id: number;
 					iso2: string;
@@ -315,9 +315,7 @@ export interface Database {
 					name: string | null;
 				};
 				Insert: {
-					continent?:
-						| Database['public']['Enums']['continents']
-						| null;
+					continent?: Database["public"]["Enums"]["continents"] | null;
 					created_at?: string | null;
 					id?: number;
 					iso2: string;
@@ -326,9 +324,7 @@ export interface Database {
 					name?: string | null;
 				};
 				Update: {
-					continent?:
-						| Database['public']['Enums']['continents']
-						| null;
+					continent?: Database["public"]["Enums"]["continents"] | null;
 					created_at?: string | null;
 					id?: number;
 					iso2?: string;
@@ -512,64 +508,64 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'jobs';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "jobs";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_currency_status_type_join';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_currency_status_type_join";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_team_client_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_team_client_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view_v2';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view_v2";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'timesheet_jobsresponse_dropdown';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_tasks_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "timesheet_jobsresponse_dropdown";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_tasks_task_id_fkey';
-						columns: ['task_id'];
-						referencedRelation: 'tasks';
-						referencedColumns: ['task_id'];
+						foreignKeyName: "job_tasks_task_id_fkey";
+						columns: ["task_id"];
+						referencedRelation: "tasks";
+						referencedColumns: ["task_id"];
 					}
 				];
 			};
@@ -600,76 +596,76 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'jobs';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "jobs";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_currency_status_type_join';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_currency_status_type_join";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_team_client_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_team_client_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view_v2';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view_v2";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'timesheet_jobsresponse_dropdown';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "job_team_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "timesheet_jobsresponse_dropdown";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'job_team_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'wolfgangers';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "job_team_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "wolfgangers";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'job_team_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'user_dept_join';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "job_team_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "user_dept_join";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'job_team_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'user_dept_join_v2';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "job_team_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "user_dept_join_v2";
+						referencedColumns: ["user_id"];
 					}
 				];
 			};
@@ -781,58 +777,58 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_category_id_fkey';
-						columns: ['job_category_id'];
-						referencedRelation: 'categories';
-						referencedColumns: ['categories_id'];
+						foreignKeyName: "jobs_job_category_id_fkey";
+						columns: ["job_category_id"];
+						referencedRelation: "categories";
+						referencedColumns: ["categories_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_client_contact_id_fkey';
-						columns: ['job_client_contact_id'];
-						referencedRelation: 'client_contact';
-						referencedColumns: ['client_contact_id'];
+						foreignKeyName: "jobs_job_client_contact_id_fkey";
+						columns: ["job_client_contact_id"];
+						referencedRelation: "client_contact";
+						referencedColumns: ["client_contact_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_client_id_fkey';
-						columns: ['job_client_id'];
-						referencedRelation: 'client';
-						referencedColumns: ['id'];
+						foreignKeyName: "jobs_job_client_id_fkey";
+						columns: ["job_client_id"];
+						referencedRelation: "client";
+						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_current_status_fkey';
-						columns: ['job_current_status'];
-						referencedRelation: 'status_codes';
-						referencedColumns: ['status_code_id'];
+						foreignKeyName: "jobs_job_current_status_fkey";
+						columns: ["job_current_status"];
+						referencedRelation: "status_codes";
+						referencedColumns: ["status_code_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_default_category_fkey';
-						columns: ['job_default_category'];
-						referencedRelation: 'categories';
-						referencedColumns: ['categories_id'];
+						foreignKeyName: "jobs_job_default_category_fkey";
+						columns: ["job_default_category"];
+						referencedRelation: "categories";
+						referencedColumns: ["categories_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_default_tax_rate_fkey';
-						columns: ['job_default_tax_rate'];
-						referencedRelation: 'tax_rates';
-						referencedColumns: ['tax_rate_id'];
+						foreignKeyName: "jobs_job_default_tax_rate_fkey";
+						columns: ["job_default_tax_rate"];
+						referencedRelation: "tax_rates";
+						referencedColumns: ["tax_rate_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_type_fkey';
-						columns: ['job_type'];
-						referencedRelation: 'job_type';
-						referencedColumns: ['job_type_id'];
+						foreignKeyName: "jobs_job_type_fkey";
+						columns: ["job_type"];
+						referencedRelation: "job_type";
+						referencedColumns: ["job_type_id"];
 					}
 				];
 			};
@@ -1091,82 +1087,82 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'jobs';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "jobs";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_currency_status_type_join';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_currency_status_type_join";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_team_client_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_team_client_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view_v2';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view_v2";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'timesheet_jobsresponse_dropdown';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "timesheet_jobsresponse_dropdown";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_staff_id_fkey';
-						columns: ['staff_id'];
-						referencedRelation: 'wolfgangers';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "timesheet_rows_staff_id_fkey";
+						columns: ["staff_id"];
+						referencedRelation: "wolfgangers";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_staff_id_fkey';
-						columns: ['staff_id'];
-						referencedRelation: 'user_dept_join';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "timesheet_rows_staff_id_fkey";
+						columns: ["staff_id"];
+						referencedRelation: "user_dept_join";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_staff_id_fkey';
-						columns: ['staff_id'];
-						referencedRelation: 'user_dept_join_v2';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "timesheet_rows_staff_id_fkey";
+						columns: ["staff_id"];
+						referencedRelation: "user_dept_join_v2";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_task_id_fkey';
-						columns: ['task_id'];
-						referencedRelation: 'tasks';
-						referencedColumns: ['task_id'];
+						foreignKeyName: "timesheet_rows_task_id_fkey";
+						columns: ["task_id"];
+						referencedRelation: "tasks";
+						referencedColumns: ["task_id"];
 					}
 				];
 			};
@@ -1218,28 +1214,28 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'user_task_assign_job_task_id_fkey';
-						columns: ['job_task_id'];
-						referencedRelation: 'job_tasks';
-						referencedColumns: ['id'];
+						foreignKeyName: "user_task_assign_job_task_id_fkey";
+						columns: ["job_task_id"];
+						referencedRelation: "job_tasks";
+						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: 'user_task_assign_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'wolfgangers';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "user_task_assign_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "wolfgangers";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'user_task_assign_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'user_dept_join';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "user_task_assign_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "user_dept_join";
+						referencedColumns: ["user_id"];
 					},
 					{
-						foreignKeyName: 'user_task_assign_user_id_fkey';
-						columns: ['user_id'];
-						referencedRelation: 'user_dept_join_v2';
-						referencedColumns: ['user_id'];
+						foreignKeyName: "user_task_assign_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "user_dept_join_v2";
+						referencedColumns: ["user_id"];
 					}
 				];
 			};
@@ -1285,10 +1281,10 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'wolfgangers_user_department_fkey';
-						columns: ['user_department'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "wolfgangers_user_department_fkey";
+						columns: ["user_department"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					}
 				];
 			};
@@ -1319,28 +1315,28 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_current_status_fkey';
-						columns: ['job_current_status'];
-						referencedRelation: 'status_codes';
-						referencedColumns: ['status_code_id'];
+						foreignKeyName: "jobs_job_current_status_fkey";
+						columns: ["job_current_status"];
+						referencedRelation: "status_codes";
+						referencedColumns: ["status_code_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_type_fkey';
-						columns: ['job_type'];
-						referencedRelation: 'job_type';
-						referencedColumns: ['job_type_id'];
+						foreignKeyName: "jobs_job_type_fkey";
+						columns: ["job_type"];
+						referencedRelation: "job_type";
+						referencedColumns: ["job_type_id"];
 					}
 				];
 			};
@@ -1357,16 +1353,16 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					}
 				];
 			};
@@ -1383,16 +1379,16 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					}
 				];
 			};
@@ -1416,16 +1412,16 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					}
 				];
 			};
@@ -1443,16 +1439,16 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					}
 				];
 			};
@@ -1471,16 +1467,16 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'jobs_job_department_id_fkey';
-						columns: ['job_department_id'];
-						referencedRelation: 'department';
-						referencedColumns: ['department_id'];
+						foreignKeyName: "jobs_job_department_id_fkey";
+						columns: ["job_department_id"];
+						referencedRelation: "department";
+						referencedColumns: ["department_id"];
 					},
 					{
-						foreignKeyName: 'jobs_job_tier_id_fkey';
-						columns: ['job_tier_id'];
-						referencedRelation: 'tier';
-						referencedColumns: ['tier_id'];
+						foreignKeyName: "jobs_job_tier_id_fkey";
+						columns: ["job_tier_id"];
+						referencedRelation: "tier";
+						referencedColumns: ["tier_id"];
 					}
 				];
 			};
@@ -1538,58 +1534,58 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'jobs';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "jobs";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_currency_status_type_join';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_currency_status_type_join";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_team_client_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_team_client_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view_v2';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view_v2";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'timesheet_jobsresponse_dropdown';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "timesheet_jobsresponse_dropdown";
+						referencedColumns: ["job_id"];
 					}
 				];
 			};
@@ -1609,58 +1605,58 @@ export interface Database {
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'jobs';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "jobs";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_currency_status_type_join';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_currency_status_type_join";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_client_wolfganger_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_client_wolfganger_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_team_client_view_v4';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_team_client_view_v4";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'job_teamlead_and_poc_view_v2';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "job_teamlead_and_poc_view_v2";
+						referencedColumns: ["job_id"];
 					},
 					{
-						foreignKeyName: 'timesheet_rows_job_id_fkey';
-						columns: ['job_id'];
-						referencedRelation: 'timesheet_jobsresponse_dropdown';
-						referencedColumns: ['job_id'];
+						foreignKeyName: "timesheet_rows_job_id_fkey";
+						columns: ["job_id"];
+						referencedRelation: "timesheet_jobsresponse_dropdown";
+						referencedColumns: ["job_id"];
 					}
 				];
 			};
@@ -1693,13 +1689,13 @@ export interface Database {
 		};
 		Enums: {
 			continents:
-				| 'Africa'
-				| 'Antarctica'
-				| 'Asia'
-				| 'Europe'
-				| 'Oceania'
-				| 'North America'
-				| 'South America';
+				| "Africa"
+				| "Antarctica"
+				| "Asia"
+				| "Europe"
+				| "Oceania"
+				| "North America"
+				| "South America";
 		};
 		CompositeTypes: {
 			[_ in never]: never;

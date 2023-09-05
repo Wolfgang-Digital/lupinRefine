@@ -83,10 +83,10 @@ export const WolfgangerDetail: React.FC<WolfgangerDetailProps> = ({
 					aria-label="Wolfganger Tabs"
 				>
 					<Tab label="Wolfganger Info" />
-					<Tab label="Teams" />
+					<Tab label="Permissions" />
 					<Tab label="Time" />
 					<Tab label="Expenses" />
-					<Tab label="Activity" />
+					<Tab label="Team" />
 				</Tabs>
 			</div>
 
