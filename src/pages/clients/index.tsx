@@ -60,7 +60,7 @@ const ClientOverview: React.FC = () => {
     },
     { field: "tier", headerName: "tier", width: 200 },
     { field: "team_lead", headerName: "team_lead", width: 200 },
-    { field: "currency", headerName: "currency", width: 200 },
+    // { field: "currency", headerName: "currency", width: 200 },
     // ... Other columns
   ];
 
@@ -70,6 +70,7 @@ const ClientOverview: React.FC = () => {
     legal_name: client.legal_name,
     tier: client.tier,
     team_lead: client.client_lead,
+    // currency: client.currency?.currency_symbol,
     // currency: client.currency,
   }));
 
