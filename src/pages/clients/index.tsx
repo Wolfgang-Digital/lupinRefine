@@ -21,6 +21,7 @@ const ClientOverview: React.FC = () => {
         setClients(clientsResponse);
       }
     };
+    console.log(clients);
     fetchClients();
   }, []);
 
@@ -69,6 +70,7 @@ const ClientOverview: React.FC = () => {
     legal_name: client.legal_name,
     tier: client.tier_name,
     team_lead: client.user_name,
+    address: client.address,
   }));
 
   return (
