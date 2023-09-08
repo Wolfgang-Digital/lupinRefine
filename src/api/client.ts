@@ -1,7 +1,6 @@
 import supabase, { PostgrestError } from "../config/supaBaseClient";
 import { ClientOverview } from "types";
 
-// export type ClientData = Client & Currency & Users & Tier;
 export type ClientData = ClientOverview;
 export const getAllClients = async (): Promise<ClientData[] | undefined> => {
   try {
