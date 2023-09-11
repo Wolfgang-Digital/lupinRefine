@@ -2,7 +2,8 @@
 	src='https://apis.google.com/js/api.js'
 	type='text/javascript'
 ></script>;
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { AuthBindings, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import {
@@ -17,7 +18,6 @@ import routerProvider, {
 import type { NextPage } from 'next';
 import { SessionProvider, signIn, signOut, useSession } from 'next-auth/react';
 import { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
 
 import { ThemedLayoutV2 } from 'src/components';
 import { ThemedHeaderV2 } from 'src/components';
@@ -66,17 +66,18 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
-	const router = useRouter();
-	const { to } = router.query;
 
-	if (status === 'loading') {
-		return <span>loading...</span>;
-	}
+	const router = useRouter();
+	useEffect(() => {
+		if (status === 'unauthenticated') {
+			router.push('/login');
+		}
+	}, [status]);
 
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn('google', {
-				callbackUrl: to ? to.toString() : '/',
+				callbackUrl: '/dashboard',
 				redirect: true,
 			});
 
@@ -119,7 +120,7 @@ const App = (props: React.PropsWithChildren) => {
 			if (data?.user) {
 				const { user } = data;
 				return {
-					name: user.name,
+					name: user?.name,
 					avatar: user.image,
 				};
 			}
@@ -168,8 +169,8 @@ const App = (props: React.PropsWithChildren) => {
 								//   icon: <ContentPasteSearchIcon/>
 								// },
 								{
-									name: 'Wolfgangers',
-									list: '/wolfgangers',
+									name: 'Users',
+									list: '/users',
 									options: { label: 'Wolfgangers' },
 									icon: <ConnectWithoutContactIcon />,
 								},

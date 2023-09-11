@@ -21,8 +21,8 @@ import {
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { getAllClients, ClientData } from "../api/client";
-import { ClientDetail } from "./ClientDetail";
+import { getAllClients, ClientData } from '@api/client';
+import ClientDetail from './ClientDetail';
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]);

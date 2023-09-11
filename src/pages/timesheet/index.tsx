@@ -21,13 +21,15 @@ import React, { useEffect, useState } from "react";
 import supabase from "../../config/supaBaseClient";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
+import { getJobsDropdown } from "@pages/api/timesheet";
+import { getAllTasks } from "@pages/api/tasks";
+import { ButtonContainer, TimesheetContainer } from "./StyledComponents";
 
 type TimeEntry = {
 	task: string;
 	job: string;
 	hours: string;
 	date: string;
-	nonBillable: boolean;
 	notes: string;
 };
 
@@ -49,39 +51,37 @@ const Timesheet = () => {
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
-	const [timeSpent, setTimeSpent] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
-	const [nonBillable, setNonBillable] = useState(false);
-	const [notes, setNotes] = useState("");
 	const [filterOption, setFilterOption] = useState("All Tasks");
-	const [page, setPage] = useState(0); // Current page
-	const [rowsPerPage, setRowsPerPage] = useState(5); // Rows per page (changed to 5)
+
+	// great object here
+	const [notes, setNotes] = useState("");
+	const [timeSpent, setTimeSpent] = useState("");
+
+	const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 5 });
+	const { page, rowsPerPage } = pagination;
 
 	useEffect(() => {
 		async function fetchTasksAndJobs() {
 			try {
-				const jobsResponse = await supabase
-					.from("timesheet_jobsresponse_dropdown")
-					.select("job_id, job_name, client_name");
+				const jobsResponse = await getJobsDropdown();
 
-				const tasksResponse = await supabase
-					.from("tasks")
-					.select("task_id, task_name");
+				const tasksResponse = await getAllTasks();
 
-				if (jobsResponse.error || tasksResponse.error) {
+				if (!jobsResponse || !tasksResponse) {
 					throw new Error("Error fetching data");
 				}
 
-				const jobOptions = jobsResponse.data.map((job) => ({
+				const jobOptions = jobsResponse.map((job) => ({
 					label: `${job.client_name} : ${job.job_name}`,
 					value: job.job_id?.toString() || "0",
 				}));
 
-				const taskOptions = tasksResponse.data.map((task) => ({
+				const taskOptions = tasksResponse.map((task) => ({
 					label: task.task_name || "No Task Found",
-					value: task.task_id.toString(),
+					value: task.task_id.toString() || "0",
 				}));
 
 				setJobs(jobOptions);
@@ -127,7 +127,10 @@ const Timesheet = () => {
 		}
 
 		fetchData();
-		setPage(0); // Reset to the first page when changing filter options
+		setPagination((previousPagination) => ({
+			...previousPagination,
+			page: 0,
+		}));
 	}, [filterOption]);
 
 	const navigateWeeks = (weeks: number) => {
@@ -157,7 +160,6 @@ const Timesheet = () => {
 			task: selectedTaskLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
 			date: "01/09/23",
-			nonBillable: nonBillable,
 			notes: notes,
 		};
 
@@ -165,7 +167,6 @@ const Timesheet = () => {
 		setSelectedTask("");
 		setSelectedJob("");
 		setTimeSpent("");
-		setNonBillable(false);
 		setNotes("");
 		setShowForm(false);
 	};
@@ -181,22 +182,22 @@ const Timesheet = () => {
 		event: React.MouseEvent<HTMLButtonElement> | null,
 		newPage: number
 	) => {
-		setPage(newPage);
+		setPagination((previousPagination) => ({
+			...previousPagination,
+			page: newPage,
+		}));
 	};
 
 	// Function to handle rows per page change
 	const handleChangeRowsPerPage = (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
-		setPage(0); // Reset to the first page when changing rows per page
+		setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
 	};
 
 	return (
 		<>
-			<div
-				style={{ display: "flex", alignItems: "center", paddingBottom: "10px" }}
-			>
+			<TimesheetContainer>
 				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
 				<FormControl variant="outlined">
 					<InputLabel id="filter-label">Filter</InputLabel>
@@ -211,19 +212,13 @@ const Timesheet = () => {
 						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
 					</Select>
 				</FormControl>
-			</div>
+			</TimesheetContainer>
 
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={6}>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								paddingBottom: "20px",
-							}}
-						>
+						<ButtonContainer>
 							<Button
 								variant="contained"
 								color="primary"
@@ -231,10 +226,17 @@ const Timesheet = () => {
 							>
 								Previous Week
 							</Button>
-							<Typography style={{ marginLeft: "20px", marginRight: "20px" }}>
+							<Typography
+								style={{
+									marginLeft: "20px",
+									marginRight: "20px",
+								}}
+							>
 								{format(selectedWeekStart, "MMM d")} -{" "}
 								{format(
-									endOfWeek(addWeeks(selectedWeekStart, 1), { weekStartsOn: 1 }),
+									endOfWeek(addWeeks(selectedWeekStart, 1), {
+										weekStartsOn: 1,
+									}),
 									"MMM d"
 								)}
 							</Typography>
@@ -245,7 +247,7 @@ const Timesheet = () => {
 							>
 								Next Week
 							</Button>
-						</div>
+						</ButtonContainer>
 						<div
 							style={{
 								display: "flex",
