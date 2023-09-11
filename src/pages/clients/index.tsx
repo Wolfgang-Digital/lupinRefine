@@ -59,19 +59,19 @@ const ClientOverview: React.FC = () => {
       headerName: "legal_name",
       width: 250,
     },
-    { field: "tier", headerName: "tier", width: 200 },
-    { field: "team_lead", headerName: "team_lead", width: 200 },
+    { field: "tier_name", headerName: "tier", width: 200 },
+    { field: "user_name", headerName: "team_lead", width: 200 },
     // ... Other columns
   ];
 
-  const rows = clients.map((client) => ({
-    id: client.id,
-    name: client.name,
-    legal_name: client.legal_name,
-    tier: client.tier_name,
-    team_lead: client.user_name,
-    address: client.address,
-  }));
+  // const rows = clients.map((client) => ({
+  //   id: client.id,
+  //   name: client.name,
+  //   legal_name: client.legal_name,
+  //   tier_name: client.tier_name,
+  //   user_name: client.user_name,
+  //   address: client.address,
+  // }));
 
   return (
     <div style={{ height: 750, width: "100%", marginBottom: "100px" }}>
@@ -100,10 +100,10 @@ const ClientOverview: React.FC = () => {
       </div>
 
       <DataGrid
-        rows={rows}
+        rows={clients}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
-        getRowId={(row) => row.id} // Use the 'id' property as the id
+        getRowId={(row) => row.id || 0} // Use the 'id' property as the id
         onCellClick={(params: GridCellParams) => {
           if (params.field === "name") {
             handleClientClick(params);
