@@ -23,7 +23,12 @@ import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 import { getJobsDropdown } from "@pages/api/timesheet";
 import { getAllTasks } from "@pages/api/tasks";
-import { ButtonContainer, TimesheetContainer } from "./StyledComponents";
+import {
+	ButtonContainer,
+	TimesheetContainer,
+	PreviousWeekButton,
+	NextWeekButton,
+} from "./StyledComponents";
 
 type TimeEntry = {
 	task: string;
@@ -43,7 +48,9 @@ type TaskOption = {
 	value: string;
 };
 
+// Create the Timesheet component
 const Timesheet = () => {
+	// Initialize state variables
 	const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(
 		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
@@ -56,18 +63,39 @@ const Timesheet = () => {
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const [filterOption, setFilterOption] = useState("All Tasks");
 
-	// great object here
+	// Create a selected day state
+	const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+	const currentDate = new Date();
+	const formattedCurrentDate = format(currentDate, "dd/MM/yy");
+
+	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
+
+	const handleDayClick = (index: number) => {
+		if (selectedDay === index) {
+			// If the clicked day is already selected, deselect it
+			setSelectedDay(null);
+			setShowForm(false); // Optionally, you can hide the form when deselecting
+		} else {
+			setSelectedDay(index);
+			setShowForm(true); // Show the form when a day is clicked
+			setSelectedDate(format(weekDays[index], "dd/MM/yy")); // Update selectedDate
+		}
+	};
+
+	// Initialize notes and timeSpent states
 	const [notes, setNotes] = useState("");
 	const [timeSpent, setTimeSpent] = useState("");
 
+	// Initialize pagination state
 	const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 5 });
 	const { page, rowsPerPage } = pagination;
 
+	// Fetch tasks and jobs data
 	useEffect(() => {
 		async function fetchTasksAndJobs() {
 			try {
 				const jobsResponse = await getJobsDropdown();
-
 				const tasksResponse = await getAllTasks();
 
 				if (!jobsResponse || !tasksResponse) {
@@ -94,6 +122,7 @@ const Timesheet = () => {
 		fetchTasksAndJobs();
 	}, []);
 
+	// Fetch data based on filter option
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -133,19 +162,23 @@ const Timesheet = () => {
 		}));
 	}, [filterOption]);
 
+	// Function to navigate between weeks
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
 	};
 
+	// Create an array of week days
 	const weekDays: Date[] = [];
 	for (let i = 0; i < 7; i++) {
 		weekDays.push(addDays(selectedWeekStart, i));
 	}
 
+	// Function to handle "Add Time" button click
 	const handleAddTimeClick = () => {
 		setShowForm(true);
 	};
 
+	// Function to handle form submission
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 
@@ -219,13 +252,13 @@ const Timesheet = () => {
 					{/* First column */}
 					<Grid item xs={6}>
 						<ButtonContainer>
-							<Button
+							<PreviousWeekButton
 								variant="contained"
 								color="primary"
 								onClick={() => navigateWeeks(-1)}
 							>
 								Previous Week
-							</Button>
+							</PreviousWeekButton>
 							<Typography
 								style={{
 									marginLeft: "20px",
@@ -240,14 +273,16 @@ const Timesheet = () => {
 									"MMM d"
 								)}
 							</Typography>
-							<Button
+							<NextWeekButton
 								variant="contained"
 								color="primary"
 								onClick={() => navigateWeeks(1)}
 							>
 								Next Week
-							</Button>
+							</NextWeekButton>
 						</ButtonContainer>
+
+						{/* Days selection with clickable buttons */}
 						<div
 							style={{
 								display: "flex",
@@ -255,8 +290,8 @@ const Timesheet = () => {
 								paddingBottom: "10px",
 							}}
 						>
-							{weekDays.map((day) => (
-								<div
+							{weekDays.map((day, index) => (
+								<button
 									key={day.toISOString()}
 									style={{
 										border: "1px solid #ccc",
@@ -266,14 +301,18 @@ const Timesheet = () => {
 										paddingBottom: "5px",
 										borderRadius: "5px",
 										textAlign: "center",
+										cursor: "pointer",
+										backgroundColor: selectedDay === index ? "#3A2462" : "white",
+										color: selectedDay === index ? "white" : "black",
 									}}
+									onClick={() => handleDayClick(index)}
 								>
 									<Typography>
 										{format(day, "EEE")}
 										<br />
 										{format(day, "d")}
 									</Typography>
-								</div>
+								</button>
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
@@ -378,11 +417,8 @@ const Timesheet = () => {
 											>
 												<Checkbox />
 											</TableCell>
-											<TableCell
-												onClick={handleAddTimeClick}
-												style={{ cursor: "pointer", textAlign: "center" }}
-											>
-												<MoreTimeIcon />
+											<TableCell style={{ cursor: "pointer", textAlign: "center" }}>
+												<MoreTimeIcon onClick={handleAddTimeClick} /> {/* Add this line */}
 											</TableCell>
 										</TableRow>
 									))}
@@ -411,7 +447,7 @@ const Timesheet = () => {
 								<form onSubmit={handleFormSubmit}>
 									<TextField
 										label="Date"
-										value="01/09/23"
+										value={selectedDate}
 										InputProps={{
 											readOnly: true,
 										}}
@@ -422,6 +458,7 @@ const Timesheet = () => {
 										}}
 										required
 									/>
+
 									<TextField
 										select
 										label="Select Job"
@@ -518,8 +555,8 @@ const Timesheet = () => {
 									</Typography>
 									<Typography variant="body1" style={{ padding: "20px" }}>
 										{`Clicking the Add Time button will create
-					  New time entries which you'll be able
-					  to review or edit in your daily view.`}
+						New time entries which you'll be able
+						to review or edit in your daily view.`}
 									</Typography>
 								</>
 							)}

@@ -1,10 +1,21 @@
 import styled from "styled-components";
-// import { Typography } from "@mui/material";
+import { Button } from "@mui/material";
 
-// export const TypographyContainer  = styled(Typography)`
-//      font-size: 12px;
+export const PreviousWeekButton = styled(Button)`
+	background-color: #3a2462;
+	color: white; // Change text color to white
+	&:hover {
+		background-color: #3a2462; // Keep the background color the same on hover
+	}
+`;
 
-// `
+export const NextWeekButton = styled(Button)`
+	background-color: #3a2462;
+	color: white; // Change text color to white
+	&:hover {
+		background-color: #3a2462; // Keep the background color the same on hover
+	}
+`;
 
 export const ButtonContainer = styled.div`
 	display: flex;
