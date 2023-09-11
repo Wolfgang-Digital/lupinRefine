@@ -9,3 +9,4 @@ export type Job = Tables["jobs"]["Row"];
 export type Country = Tables["countries"]["Row"];
 export type FinancialTable = Views["timesheet_rows_view"]["Row"];
 export type ClientOverview = Views["client_overview"]["Row"];
+export type JobsOverview = Views["jobs_overview"]["Row"];
