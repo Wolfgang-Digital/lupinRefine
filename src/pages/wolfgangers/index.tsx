@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
 	DataGrid,
 	GridCellParams,
 	GridRenderCellParams,
 	GridToolbar,
-} from '@mui/x-data-grid';
+} from "@mui/x-data-grid";
 import {
 	AppBar,
 	Button,
@@ -19,27 +19,27 @@ import {
 	TextField,
 	Toolbar,
 	Typography,
-} from '@mui/material';
+} from "@mui/material";
 
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 
-import { WolfgangerDetail } from 'src/pages/wolfgangers/WolfgangersDetail/index'; // Create WolfgangerDetail similarly to ClientDetail
-import { getAllUsers } from '@pages/api/users';
-import { User } from 'types';
-import supabase from 'src/config/supaBaseClient';
+import { WolfgangerDetail } from "src/pages/wolfgangers/WolfgangersDetail/index"; // Create WolfgangerDetail similarly to ClientDetail
+import { getAllUsers } from "@pages/api/users";
+import { Users } from "types";
+import supabase from "src/config/supaBaseClient";
 
 const Users = () => {
-	const [users, setUsers] = useState<User[]>([]); // Explicitly specify the type
+	const [users, setUsers] = useState<Users[]>([]); // Explicitly specify the type
 	const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
-	const [newUserId, setNewUserId] = useState<number | string>(''); // Example type
+	const [newUserId, setNewUserId] = useState<number | string>(""); // Example type
 	// ... rest of the code
 
-	const [newUserName, setNewUserName] = useState('');
-	const [newUserEmail, setNewUserEmail] = useState('');
-	const [selectedDepartment, setSelectedDepartment] = useState('');
-	const [newUserRate, setNewUserRate] = useState('');
+	const [newUserName, setNewUserName] = useState("");
+	const [newUserEmail, setNewUserEmail] = useState("");
+	const [selectedDepartment, setSelectedDepartment] = useState("");
+	const [newUserRate, setNewUserRate] = useState("");
 
-	const departments = ['Department 1', 'Department 2', 'Department 3'];
+	const departments = ["Department 1", "Department 2", "Department 3"];
 
 	useEffect(() => {
 		// Mock function for fetching users
@@ -51,7 +51,7 @@ const Users = () => {
 					setUsers(usersResponse);
 				}
 			} catch (error) {
-				console.error('Error fetching users:', error);
+				console.error("Error fetching users:", error);
 			}
 		};
 		fetchUsers();
@@ -76,7 +76,7 @@ const Users = () => {
 	};
 
 	const handleSaveUser = async () => {
-		const { data, error } = await supabase.from('users').insert([
+		const { data, error } = await supabase.from("users").insert([
 			{
 				user_id: 1,
 				user_name: newUserName,
@@ -88,7 +88,7 @@ const Users = () => {
 		]);
 
 		if (error) {
-			console.error('Error saving user:', error);
+			console.error("Error saving user:", error);
 			// Handle error state or show a notification to the user
 		} else {
 			if (data) {
@@ -100,40 +100,40 @@ const Users = () => {
 			// Close the dialog
 			setOpenAddUserDialog(false);
 			// Reset the form fields
-			setNewUserId('');
-			setNewUserName('');
-			setNewUserEmail('');
-			setSelectedDepartment('');
-			setNewUserRate('');
+			setNewUserId("");
+			setNewUserName("");
+			setNewUserEmail("");
+			setSelectedDepartment("");
+			setNewUserRate("");
 		}
 	};
 
-	const HoverableCell = styled('div')({
-		cursor: 'pointer',
-		transition: 'all 0.2s ease-in-out',
-		'&:hover': {
-			textDecoration: 'underline',
-			fontWeight: 'bold',
+	const HoverableCell = styled("div")({
+		cursor: "pointer",
+		transition: "all 0.2s ease-in-out",
+		"&:hover": {
+			textDecoration: "underline",
+			fontWeight: "bold",
 		},
 	});
 
 	const filteredUsers = users.filter((user) => user.user_id !== 0);
 
 	const columns = [
-		{ field: 'user_id', headerName: 'User ID', width: 100 },
+		{ field: "user_id", headerName: "User ID", width: 100 },
 		{
-			field: 'user_name',
-			headerName: 'User Name',
+			field: "user_name",
+			headerName: "User Name",
 			width: 250,
 			renderCell: (params: GridRenderCellParams) => (
 				<HoverableCell onClick={() => handleUserClick(params)}>
-					{params.value || ''}
+					{params.value || ""}
 				</HoverableCell>
 			),
 		},
 		{
-			field: 'user_department',
-			headerName: 'User Department',
+			field: "user_department",
+			headerName: "User Department",
 			width: 250,
 		},
 		// ... Other columns
@@ -147,24 +147,24 @@ const Users = () => {
 	}));
 
 	return (
-		<div style={{ height: '100%', width: '100%', paddingBottom: '50px' }}>
-			<Typography gutterBottom variant='h5' component='div'>
+		<div style={{ height: "100%", width: "100%", paddingBottom: "50px" }}>
+			<Typography gutterBottom variant="h5" component="div">
 				Wolfgangers Overview
 			</Typography>
 			<div
 				style={{
-					display: 'flex',
-					flexDirection: 'row',
-					paddingBottom: '10px',
+					display: "flex",
+					flexDirection: "row",
+					paddingBottom: "10px",
 				}}
 			>
 				<Button
-					size='small'
-					variant='contained'
+					size="small"
+					variant="contained"
 					style={{
-						fontSize: '12px',
-						padding: '6px 12px',
-						marginRight: '10px',
+						fontSize: "12px",
+						padding: "6px 12px",
+						marginRight: "10px",
 					}}
 					onClick={handleAddUserClick}
 				>
@@ -179,82 +179,69 @@ const Users = () => {
 				slots={{ toolbar: GridToolbar }}
 				getRowId={(row) => row.user_id.toString()}
 				onCellClick={(params: GridCellParams) => {
-					if (params.field === 'user_name') {
+					if (params.field === "user_name") {
 						handleUserClick(params);
 					}
 				}}
 			/>
 
 			{selectedUser && (
-				<WolfgangerDetail
-					user={selectedUser}
-					onClose={handleCloseDialog}
-				/>
+				<WolfgangerDetail user={selectedUser} onClose={handleCloseDialog} />
 			)}
 			<Dialog
 				fullScreen
 				open={openAddUserDialog}
 				onClose={handleAddUserDialogClose}
-				PaperProps={{ style: { marginLeft: '10%', width: '90%' } }}
+				PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
 			>
-				<AppBar sx={{ position: 'relative' }}>
+				<AppBar sx={{ position: "relative" }}>
 					<Toolbar>
 						<IconButton
-							edge='start'
-							color='inherit'
+							edge="start"
+							color="inherit"
 							onClick={handleAddUserDialogClose}
-							aria-label='close'
+							aria-label="close"
 						>
 							<CloseIcon />
 						</IconButton>
-						<Typography
-							sx={{ ml: 2, flex: 1 }}
-							variant='h6'
-							component='div'
-						>
+						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
 							Add New User
 						</Typography>
-						<Button
-							autoFocus
-							color='inherit'
-							onClick={handleAddUserDialogClose}
-						>
+						<Button autoFocus color="inherit" onClick={handleAddUserDialogClose}>
 							Save
 						</Button>
 					</Toolbar>
 				</AppBar>
 				<DialogContent>
-					<Typography variant='h6' gutterBottom>
+					<Typography variant="h6" gutterBottom>
 						Add New User
 					</Typography>
 					<TextField
-						label='User ID'
+						label="User ID"
 						value={newUserId}
 						onChange={(e) => setNewUserId(e.target.value)}
 						fullWidth
-						margin='normal'
+						margin="normal"
 					/>
 					<TextField
-						label='User Name'
+						label="User Name"
 						value={newUserName}
 						onChange={(e) => setNewUserName(e.target.value)}
 						fullWidth
-						margin='normal'
+						margin="normal"
 					/>
 					<TextField
-						label='Email'
+						label="Email"
 						value={newUserEmail}
 						onChange={(e) => setNewUserEmail(e.target.value)}
 						fullWidth
-						margin='normal'
+						margin="normal"
 					/>
-					<FormControl fullWidth margin='normal'>
+					<FormControl fullWidth margin="normal">
 						<InputLabel>Department</InputLabel>
 						<Select
 							value={selectedDepartment}
-							onChange={(e) =>
-								setSelectedDepartment(e.target.value as string)
-							}
+							onChange={(e) => setSelectedDepartment(e.target.value as string)}
 							disableUnderline // Add this line
 						>
 							{departments.map((dept) => (
@@ -264,26 +251,24 @@ const Users = () => {
 							))}
 						</Select>
 					</FormControl>
-					<FormControl fullWidth margin='normal'>
+					<FormControl fullWidth margin="normal">
 						<InputLabel>User Rate</InputLabel>
 						<Select
 							value={newUserRate}
-							onChange={(e) =>
-								setNewUserRate(e.target.value as string)
-							}
+							onChange={(e) => setNewUserRate(e.target.value as string)}
 							disableUnderline // Add this line
 						>
-							<MenuItem value='100'>100</MenuItem>
-							<MenuItem value='120'>120</MenuItem>
-							<MenuItem value='150'>150</MenuItem>
-							<MenuItem value='170'>170</MenuItem>
+							<MenuItem value="100">100</MenuItem>
+							<MenuItem value="120">120</MenuItem>
+							<MenuItem value="150">150</MenuItem>
+							<MenuItem value="170">170</MenuItem>
 						</Select>
 					</FormControl>
 					<Button
-						variant='contained'
-						color='primary'
+						variant="contained"
+						color="primary"
 						onClick={handleSaveUser}
-						style={{ marginTop: '20px' }}
+						style={{ marginTop: "20px" }}
 					>
 						Save User
 					</Button>
