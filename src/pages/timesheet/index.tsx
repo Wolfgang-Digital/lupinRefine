@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from "react";
+import MoreTimeIcon from "@mui/icons-material/MoreTime";
+import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 import {
 	Grid,
 	Paper,
@@ -15,19 +18,15 @@ import {
 	InputLabel,
 	Select,
 	Checkbox,
-	TablePagination, // Import TablePagination
+	TablePagination,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import supabase from "../../config/supaBaseClient";
-import MoreTimeIcon from "@mui/icons-material/MoreTime";
-import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
-import { getJobsDropdown } from "@pages/api/timesheet";
-import { getAllTasks } from "@pages/api/tasks";
+
+import { getAllTimesheetRowsDemo } from "../api/timesheetRowsDemo";
 import {
 	ButtonContainer,
-	TimesheetContainer,
-	PreviousWeekButton,
 	NextWeekButton,
+	PreviousWeekButton,
+	TimesheetContainer,
 } from "./StyledComponents";
 
 type TimeEntry = {
@@ -46,6 +45,7 @@ type JobOption = {
 type TaskOption = {
 	label: string;
 	value: string;
+	jobId: string; // Add a jobId field to TaskOption
 };
 
 // Create the Timesheet component
@@ -60,7 +60,8 @@ const Timesheet = () => {
 	const [selectedJob, setSelectedJob] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
-	const [tasks, setTasks] = useState<TaskOption[]>([]);
+	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
+	const [filteredTasks, setFilteredTasks] = useState<TaskOption[]>([]); // Store tasks filtered by selected job
 	const [filterOption, setFilterOption] = useState("All Tasks");
 
 	// Create a selected day state
@@ -95,24 +96,31 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchTasksAndJobs() {
 			try {
-				const jobsResponse = await getJobsDropdown();
-				const tasksResponse = await getAllTasks();
+				const jobsResponse = await getAllTimesheetRowsDemo();
 
-				if (!jobsResponse || !tasksResponse) {
+				if (!jobsResponse) {
 					throw new Error("Error fetching data");
 				}
 
 				const jobOptions = jobsResponse.map((job) => ({
-					label: `${job.client_name} : ${job.job_name}`,
+					label: `${job.name} : ${job.job_name}`,
 					value: job.job_id?.toString() || "0",
-				}));
-
-				const taskOptions = tasksResponse.map((task) => ({
-					label: task.task_name || "No Task Found",
-					value: task.task_id.toString() || "0",
+					taskLabel: job.task_name,
 				}));
 
 				setJobs(jobOptions);
+
+				// Fetch tasks from the API and populate allTasks
+				const tasksResponse = await getAllTimesheetRowsDemo(); // Replace with your actual API function
+				if (!tasksResponse) {
+					throw new Error("Error fetching tasks");
+				}
+
+				const taskOptions = tasksResponse.map((task) => ({
+					label: task.task_name,
+					value: task.job_id?.toString() || "0",
+				}));
+
 				setTasks(taskOptions);
 			} catch (error) {
 				console.error("Error fetching jobs and tasks:", error);
@@ -127,17 +135,14 @@ const Timesheet = () => {
 		async function fetchData() {
 			try {
 				if (filterOption === "All Tasks") {
-					const response = await supabase
-						.from("timesheet_jobsresponse_dropdown")
-						.select("client_name, job_name");
+					const FilterResponse = await getAllTimesheetRowsDemo();
 
-					if (response.error) {
+					if (!FilterResponse) {
 						throw new Error("Error fetching data");
 					}
-
-					const jobEntries = response.data.map((entry) => ({
-						job: `${entry.client_name}: ${entry.job_name}`,
-						task: "Opt",
+					const jobEntries = FilterResponse.map((entry) => ({
+						job: `${entry.name}: ${entry.job_name}`,
+						task: entry.task_name,
 						hours: "0",
 						date: "01/09/23",
 						nonBillable: false,
@@ -228,6 +233,17 @@ const Timesheet = () => {
 		setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
 	};
 
+	// Function to handle job selection
+	const handleJobSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+		const selectedJobId = event.target.value as string;
+		setSelectedJob(selectedJobId);
+
+		// Filter tasks based on the selected job
+		const filteredTasks = tasks.filter((task) => task.jobId === selectedJobId);
+		setSelectedTask(""); // Reset the selected task
+		setFilteredTasks(filteredTasks); // Set the filtered tasks
+	};
+
 	return (
 		<>
 			<TimesheetContainer>
@@ -282,7 +298,6 @@ const Timesheet = () => {
 							</NextWeekButton>
 						</ButtonContainer>
 
-						{/* Days selection with clickable buttons */}
 						<div
 							style={{
 								display: "flex",
@@ -323,7 +338,7 @@ const Timesheet = () => {
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
-												fontSize: "smaller",
+												fontSize: "smaller", // Reduce the font size
 											}}
 										>
 											Job
@@ -332,7 +347,7 @@ const Timesheet = () => {
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
-												fontSize: "smaller",
+												fontSize: "smaller", // Reduce the font size
 											}}
 										>
 											Task
@@ -341,7 +356,7 @@ const Timesheet = () => {
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
-												fontSize: "smaller",
+												fontSize: "smaller", // Reduce the font size
 											}}
 										>
 											Allocated Hours Used
@@ -350,7 +365,7 @@ const Timesheet = () => {
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
-												fontSize: "smaller",
+												fontSize: "smaller", // Reduce the font size
 											}}
 										>
 											Days Left
@@ -359,12 +374,19 @@ const Timesheet = () => {
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
-												fontSize: "smaller",
+												fontSize: "smaller", // Reduce the font size
 											}}
 										>
 											Completed
 										</TableCell>
-										<TableCell style={{ textAlign: "center" }}>Timer</TableCell>
+										<TableCell
+											style={{
+												textAlign: "center",
+												fontSize: "smaller", // Reduce the font size
+											}}
+										>
+											Timer
+										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -375,7 +397,7 @@ const Timesheet = () => {
 													borderRight: "1px solid #ccc",
 													textAlign: "center",
 													whiteSpace: "pre-line",
-													fontSize: "smaller",
+													fontSize: "smaller", // Reduce the font size
 												}}
 											>
 												{entry.job.replace(/:/g, ":\n")}
@@ -385,7 +407,7 @@ const Timesheet = () => {
 												style={{
 													borderRight: "1px solid #ccc",
 													textAlign: "center",
-													fontSize: "smaller",
+													fontSize: "smaller", // Reduce the font size
 												}}
 											>
 												{entry.task}
@@ -394,7 +416,7 @@ const Timesheet = () => {
 												style={{
 													borderRight: "1px solid #ccc",
 													textAlign: "center",
-													fontSize: "smaller",
+													fontSize: "smaller", // Reduce the font size
 												}}
 											>
 												{entry.hours} hrs of AL hrs
@@ -403,7 +425,7 @@ const Timesheet = () => {
 												style={{
 													borderRight: "1px solid #ccc",
 													textAlign: "center",
-													fontSize: "smaller",
+													fontSize: "smaller", // Reduce the font size
 												}}
 											>
 												29
@@ -412,19 +434,26 @@ const Timesheet = () => {
 												style={{
 													borderRight: "1px solid #ccc",
 													textAlign: "center",
-													fontSize: "smaller",
+													fontSize: "smaller", // Reduce the font size
 												}}
 											>
 												<Checkbox />
 											</TableCell>
-											<TableCell style={{ cursor: "pointer", textAlign: "center" }}>
-												<MoreTimeIcon onClick={handleAddTimeClick} /> {/* Add this line */}
+											<TableCell
+												style={{
+													cursor: "pointer",
+													textAlign: "center",
+													fontSize: "smaller", // Reduce the font size
+												}}
+											>
+												<MoreTimeIcon onClick={handleAddTimeClick} />
 											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
 							</Table>
 						</TableContainer>
+
 						{/* Add TablePagination component for pagination */}
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
@@ -463,7 +492,7 @@ const Timesheet = () => {
 										select
 										label="Select Job"
 										value={selectedJob}
-										onChange={(event) => setSelectedJob(event.target.value)}
+										onChange={handleJobSelect}
 										style={{
 											width: "100%",
 											marginBottom: "20px",
@@ -482,7 +511,7 @@ const Timesheet = () => {
 											select
 											label="Select Task"
 											value={selectedTask}
-											onChange={(event) => setSelectedTask(event.target.value)}
+											onChange={(event) => setSelectedTask(event.target.value as string)}
 											style={{
 												width: "100%",
 												marginBottom: "20px",
@@ -490,7 +519,7 @@ const Timesheet = () => {
 											}}
 											required
 										>
-											{tasks.map((task) => (
+											{filteredTasks.map((task) => (
 												<MenuItem key={task.value} value={task.value}>
 													{task.label}
 												</MenuItem>
