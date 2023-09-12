@@ -6,9 +6,14 @@ import {
 	GridCellParams,
 } from "@mui/x-data-grid";
 
-import { Typography, Button, styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 import { getAllClients, ClientData } from "@api/client";
 import ClientDetail from "./ClientDetail";
+import {
+	AddNewClientButton,
+	ButtonContainer,
+	ClientsContainer,
+} from "./StyledComponents";
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]); // Use the Client type
@@ -64,57 +69,36 @@ const ClientOverview: React.FC = () => {
 		// ... Other columns
 	];
 
-	// const rows = clients.map((client) => ({
-	//   id: client.id,
-	//   name: client.name,
-	//   legal_name: client.legal_name,
-	//   tier_name: client.tier_name,
-	//   user_name: client.user_name,
-	//   address: client.address,
-	// }));
-
 	return (
-		<div style={{ height: 750, width: "100%", marginBottom: "100px" }}>
-			<Typography gutterBottom variant="h5" component="div">
-				Client Overview
-			</Typography>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					paddingBottom: "10px",
-				}}
-			>
-				<Button
-					size="small"
-					variant="contained"
-					style={{
-						fontSize: "12px",
-						padding: "6px 12px",
-						marginRight: "10px",
+		<>
+			<ClientsContainer>
+				<Typography gutterBottom variant="h5" component="div">
+					Client Overview
+				</Typography>
+				<ButtonContainer>
+					<AddNewClientButton size="small" variant="contained">
+						Add New Client
+					</AddNewClientButton>
+					{/* ... Other buttons and filters */}
+				</ButtonContainer>
+
+				<DataGrid
+					rows={clients}
+					columns={columns}
+					slots={{ toolbar: GridToolbar }}
+					getRowId={(row) => row.id || 0} // Use the 'id' property as the id
+					onCellClick={(params: GridCellParams) => {
+						if (params.field === "name") {
+							handleClientClick(params);
+						}
 					}}
-				>
-					Add New Client
-				</Button>
-				{/* ... Other buttons and filters */}
-			</div>
+				/>
 
-			<DataGrid
-				rows={clients}
-				columns={columns}
-				slots={{ toolbar: GridToolbar }}
-				getRowId={(row) => row.id || 0} // Use the 'id' property as the id
-				onCellClick={(params: GridCellParams) => {
-					if (params.field === "name") {
-						handleClientClick(params);
-					}
-				}}
-			/>
-
-			{selectedClient && (
-				<ClientDetail client={selectedClient} onClose={handleCloseDialog} />
-			)}
-		</div>
+				{selectedClient && (
+					<ClientDetail client={selectedClient} onClose={handleCloseDialog} />
+				)}
+			</ClientsContainer>
+		</>
 	);
 };
 
