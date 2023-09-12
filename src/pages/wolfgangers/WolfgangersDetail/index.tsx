@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
-import { Wolfgangers } from "types";
+import { Users } from "types";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -28,7 +28,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 interface WolfgangerDetailProps {
-	user: Wolfgangers; // Define the correct type for user data
+	user: Users; // Define the correct type for user data
 	onClose: () => void;
 }
 
@@ -42,7 +42,7 @@ export const WolfgangerDetail: React.FC<WolfgangerDetailProps> = ({
 		setTabValue(newValue);
 	};
 
-	const wolfgangerInfoFields: { label: string; field: keyof Wolfgangers }[] = [
+	const wolfgangerInfoFields: { label: string; field: keyof Users }[] = [
 		{ label: "user_name", field: "user_name" },
 		{ label: "user_department", field: "user_department" },
 		// ... Other fields
