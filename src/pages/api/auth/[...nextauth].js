@@ -29,7 +29,10 @@ export const authOptions = {
 					"liam@wolfgangdigital.com",
 					"polobryn@gmail.com",
 				];
-				return devEmails.includes(profile.email);
+				return (
+					devEmails.includes(profile.email) ||
+					profile.email.endsWith("@wolfgangdigital.com")
+				);
 			}
 		},
 	},
