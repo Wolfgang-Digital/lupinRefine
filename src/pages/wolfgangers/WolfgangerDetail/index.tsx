@@ -83,6 +83,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
           aria-label="User Tabs"
         >
           <Tab label="User Info" />
+          <Tab label="Permissions" />
+          <Tab label="Time" />
+          <Tab label="Expenses" />
+          <Tab label="Team" />
         </Tabs>
       </div>
 
@@ -124,6 +128,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
             </Paper>
           </Container>
         </div>
+        {/* ... Content for other tabs */}
       </div>
     </Dialog>
   );
