@@ -12,3 +12,4 @@ export type ClientOverview = Views["client_overview"]["Row"];
 export type JobsOverview = Views["jobs_overview"]["Row"];
 export type UsersOverview = Views["user_dept_join"]["Row"];
 export type TimesheetRows = Views["timesheet_rows_view"]["Row"];
+export type TimesheetRowsDemo = Views["timesheet_rows_demo"]["Row"];

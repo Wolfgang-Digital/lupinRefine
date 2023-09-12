@@ -13,7 +13,11 @@ import {
 	MenuItem,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getAllTimesheetRows, TimesheetData } from "@api/timesheetRows";
+// import { getAllTimesheetRows, TimesheetData } from "@api/timesheetRows";
+import {
+	getAllTimesheetRowsDemo,
+	TimesheetDataDemo,
+} from "@api/timesheetRowsDemo";
 
 import supabase from "../../config/supaBaseClient";
 
@@ -31,17 +35,18 @@ const Timesheet = () => {
 	const [clients, setClients] = useState<
 		Array<{ label: string | null; value: number }>
 	>([]); // Array for clients
-	const [timesheetRows, setTimesheetRows] = useState<TimesheetData[]>([]);
+	const [timesheetRows, setTimesheetRows] = useState<TimesheetDataDemo[]>([]);
 
 	useEffect(() => {
 		const fetchTimesheetRows = async () => {
-			const timesheetResponse = await getAllTimesheetRows();
+			const timesheetResponse = await getAllTimesheetRowsDemo();
 			if (timesheetResponse) {
 				setTimesheetRows(timesheetResponse);
 			}
 		};
 		fetchTimesheetRows();
 		console.log(timesheetRows);
+
 		async function fetchTasksAndClients() {
 			try {
 				const tasksResponse = await supabase

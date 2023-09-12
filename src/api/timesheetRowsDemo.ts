@@ -1,17 +1,17 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { TimesheetRows } from "types";
+import { TimesheetRowsDemo } from "types";
 
-export type TimesheetData = TimesheetRows;
+export type TimesheetDataDemo = TimesheetRowsDemo;
 
-export const getAllTimesheetRows = async (): Promise<
-	TimesheetData[] | undefined
+export const getAllTimesheetRowsDemo = async (): Promise<
+	TimesheetDataDemo[] | undefined
 > => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view")
+			.from("timesheet_rows_demo")
 			.select("*")
 			.order("job_id", { ascending: true })) as unknown as {
-			data: TimesheetData[];
+			data: TimesheetDataDemo[];
 			error: PostgrestError;
 		};
 
