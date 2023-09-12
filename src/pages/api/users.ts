@@ -1,16 +1,15 @@
-import supabase from '@config/supaBaseClient';
+import supabase from '../../config/supaBaseClient';
 
-export const getFinancialTable = async () => {
+export const getAllUsers = async () => {
 	try {
 		const { data, error } = await supabase
-			.from('timesheet_rows_byuser_v4')
+			.from('users')
 			.select('*')
-			.order('id', { ascending: true });
+			.order('user_id', { ascending: true });
 		if (error) {
 			console.error('Error fetching clients:', error);
 			return;
 		}
-		console.log({ data });
 		return data;
 	} catch (error) {
 		console.error('Error fetching clients:', error);
