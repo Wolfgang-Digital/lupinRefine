@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button, styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 import {
 	DataGrid,
 	GridCellParams,
@@ -11,6 +11,11 @@ import {
 import { getAllUsers, UserData } from "@api/users";
 // import { useRouter } from "next/router";
 import UserDetail from "./WolfgangerDetail";
+import {
+	AddNewUserButton,
+	ButtonContainer,
+	WolfgangerContainer,
+} from "./StyledComponents";
 
 const Wolfgangers: React.FC = () => {
 	// const router = useRouter();
@@ -79,36 +84,32 @@ const Wolfgangers: React.FC = () => {
 	//   console.log(rows);
 
 	return (
-		<div style={{ height: "100vh", width: "100%" }}>
-			<Typography gutterBottom variant="h4" component="div">
-				Wolfgangers
-			</Typography>
-			<div
-				style={{ display: "flex", flexDirection: "row", paddingBottom: "10px" }}
-			>
-				<Button
-					size="small"
-					variant="contained"
-					style={{ fontSize: "12px", padding: "6px 12px", marginRight: "10px" }}
-				>
-					Add New User
-				</Button>
-			</div>
-			<DataGrid
-				rows={rows}
-				columns={columns}
-				slots={{ toolbar: GridToolbar }}
-				getRowId={(row) => row.id}
-				onCellClick={(params: GridCellParams) => {
-					if (params.field == "name") {
-						handleUserClick(params);
-					}
-				}}
-			/>
-			{selectedUser && (
-				<UserDetail user={selectedUser} onClose={handleCloseDialog} />
-			)}
-		</div>
+		<>
+			<WolfgangerContainer>
+				<Typography gutterBottom variant="h4" component="div">
+					Wolfgangers
+				</Typography>
+				<ButtonContainer>
+					<AddNewUserButton size="small" variant="contained">
+						Add New User
+					</AddNewUserButton>
+				</ButtonContainer>
+				<DataGrid
+					rows={rows}
+					columns={columns}
+					slots={{ toolbar: GridToolbar }}
+					getRowId={(row) => row.id}
+					onCellClick={(params: GridCellParams) => {
+						if (params.field == "name") {
+							handleUserClick(params);
+						}
+					}}
+				/>
+				{selectedUser && (
+					<UserDetail user={selectedUser} onClose={handleCloseDialog} />
+				)}
+			</WolfgangerContainer>
+		</>
 	);
 };
 
