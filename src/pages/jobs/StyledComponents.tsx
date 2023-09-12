@@ -17,3 +17,16 @@ export const ButtonContainer = styled.div`
 	flex-direction: row;
 	padding-bottom: 10px;
 `;
+
+export const TabContainer = styled.div`
+	width: 100%;
+`;
+
+export const TabContentContainer = styled.div`
+	width: 100%;
+`;
+
+export const TabPanelContainer = styled.div`
+	padding-top: 40px;
+	padding-bottom: 90px;
+`;

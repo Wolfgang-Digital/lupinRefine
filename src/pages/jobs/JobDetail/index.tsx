@@ -18,6 +18,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
 import { JobsData } from "@api/jobs";
 import { JobsOverview } from "types";
+import {
+	TabContainer,
+	TabContentContainer,
+	TabPanelContainer,
+} from "../StyledComponents";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -50,97 +55,102 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	];
 
 	return (
-		<Dialog
-			fullScreen
-			open={true}
-			onClose={onClose}
-			TransitionComponent={Transition}
-			PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
-		>
-			<AppBar sx={{ position: "relative" }}>
-				<Toolbar>
-					<IconButton
-						edge="start"
-						color="inherit"
-						onClick={onClose}
-						aria-label="close"
+		<>
+			<Dialog
+				fullScreen
+				open={true}
+				onClose={onClose}
+				TransitionComponent={Transition}
+				PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
+			>
+				<AppBar sx={{ position: "relative" }}>
+					<Toolbar>
+						<IconButton
+							edge="start"
+							color="inherit"
+							onClick={onClose}
+							aria-label="close"
+						>
+							<CloseIcon />
+						</IconButton>
+						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+							{`${job?.client_name}: ${job?.job_name}`}
+						</Typography>
+						<Button autoFocus color="inherit" onClick={onClose}>
+							Save
+						</Button>
+					</Toolbar>
+				</AppBar>
+				{/* Tabs */}
+				<TabContainer>
+					<Tabs
+						value={tabValue || 0}
+						onChange={handleTabChange}
+						aria-label="Job Tabs"
 					>
-						<CloseIcon />
-					</IconButton>
-					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						{`${job?.client_name}: ${job?.job_name}`}
-					</Typography>
-					<Button autoFocus color="inherit" onClick={onClose}>
-						Save
-					</Button>
-				</Toolbar>
-			</AppBar>
-			{/* Tabs */}
-			<div style={{ width: "100%" }}>
-				<Tabs
-					value={tabValue || 0}
-					onChange={handleTabChange}
-					aria-label="Job Tabs"
-				>
-					<Tab label="Job Info" />
-					<Tab label="Financials" />
-				</Tabs>
-			</div>
+						<Tab label="Job Info" />
+						<Tab label="Financials" />
+					</Tabs>
+				</TabContainer>
 
-			{/* Tab Content */}
-			<div style={{ width: "100%" }}>
-				<div
-					role="tabpanel"
-					hidden={tabValue !== 0}
-					id={`tabpanel-0`}
-					aria-labelledby={`tab-0`}
-					style={{ paddingTop: "40px", paddingBottom: "90px" }}
-				>
-					{/* Job Info Tab Content */}
-					<Container component="main" maxWidth="lg">
-						<CssBaseline />
-						<Paper elevation={3} sx={{ padding: "20px" }}>
-							<Typography component="h1" variant="h5">
-								Edit Job Info
-							</Typography>
-							<form>
-								{jobInfoFields.map((field) => (
-									<TextField
-										key={field?.field}
-										margin="normal"
+				{/* Tab Content */}
+				<TabContentContainer>
+					<TabPanelContainer
+						role="tabpanel"
+						hidden={tabValue !== 0}
+						id={`tabpanel-0`}
+						aria-labelledby={`tab-0`}
+					>
+						{/* Job Info Tab Content */}
+						<Container component="main" maxWidth="lg">
+							<CssBaseline />
+							<Paper elevation={3} sx={{ padding: "20px" }}>
+								<Typography component="h1" variant="h5">
+									Edit Job Info
+								</Typography>
+								<form>
+									{jobInfoFields.map((field) => (
+										<TextField
+											key={field?.field}
+											margin="normal"
+											fullWidth
+											label={field.label}
+											value={job?.[field.field] || ""}
+											// onChange={9e) => () => {}}
+										/>
+									))}
+									<Button
+										type="submit"
 										fullWidth
-										label={field.label}
-										value={job?.[field.field] || ""}
-										// onChange={9e) => () => {}}
-									/>
-								))}
-								<Button
-									type="submit"
-									fullWidth
-									variant="contained"
-									color="primary"
-									sx={{ mt: 3 }}
-								>
-									Save Changed
-								</Button>
-							</form>
-						</Paper>
-					</Container>
-				</div>
+										variant="contained"
+										color="primary"
+										sx={{ mt: 3 }}
+									>
+										Save Changed
+									</Button>
+								</form>
+							</Paper>
+						</Container>
+					</TabPanelContainer>
 
-				<div
-					role="tabpanel"
-					hidden={tabValue !== 1}
-					id={`tabpanel-1`}
-					aria-labelledby={`tab-1`}
-					style={{ paddingTop: "20px" }}
-				>
-					<Typography component="h1" variant="h5">
-						Financial Details
-					</Typography>
-				</div>
-			</div>
-		</Dialog>
+					<TabPanelContainer
+						role="tabpanel"
+						hidden={tabValue !== 1}
+						id={`tabpanel-1`}
+						aria-labelledby={`tab-1`}
+					>
+						<Container component="main" maxWidth="lg">
+							<CssBaseline />
+							<Paper elevation={3} sx={{ padding: "20px" }}>
+								<Typography component="h1" variant="h5">
+									Financial Details
+								</Typography>
+							</Paper>
+						</Container>
+					</TabPanelContainer>
+				</TabContentContainer>
+			</Dialog>
+		</>
 	);
 };
 
