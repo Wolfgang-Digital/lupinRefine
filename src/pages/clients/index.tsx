@@ -5,30 +5,19 @@ import {
 	GridRenderCellParams,
 	GridCellParams,
 } from "@mui/x-data-grid";
+
+import { Typography, styled } from "@mui/material";
+import { getAllClients, ClientData } from "@api/client";
+import ClientDetail from "./ClientDetail";
 import {
-	Typography,
-	Button,
-	styled,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
-	AppBar,
-	Toolbar,
-	IconButton,
-} from "@mui/material";
-
-import CloseIcon from "@mui/icons-material/Close";
-
-import { getAllClients, ClientData } from '@api/client';
-import ClientDetail from './ClientDetail';
+	AddNewClientButton,
+	ButtonContainer,
+	ClientsContainer,
+} from "./StyledComponents";
 
 const ClientOverview: React.FC = () => {
-	const [clients, setClients] = useState<ClientData[]>([]);
-	const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
-	const [openAddClientDialog, setOpenAddClientDialog] = useState(false);
-	const [newClientName, setNewClientName] = useState("");
+	const [clients, setClients] = useState<ClientData[]>([]); // Use the Client type
+	const [selectedClient, setSelectedClient] = useState<ClientData | null>(null); // Use the Client type
 
 	useEffect(() => {
 		const fetchClients = async () => {
@@ -37,6 +26,7 @@ const ClientOverview: React.FC = () => {
 				setClients(clientsResponse);
 			}
 		};
+		console.log(clients);
 		fetchClients();
 	}, []);
 
@@ -48,24 +38,9 @@ const ClientOverview: React.FC = () => {
 		setSelectedClient(null);
 	};
 
-	const handleAddClientClick = () => {
-		setOpenAddClientDialog(true);
-	};
-
-	const handleAddClientDialogClose = () => {
-		setOpenAddClientDialog(false);
-	};
-
-	const handleSaveClient = async () => {
-		// Handle saving the new client data here, e.g., by making an API call
-		// You can use newClientName state and any other required data
-		// After successfully adding the client, you can close the dialog
-		setOpenAddClientDialog(false);
-	};
-
 	const HoverableCell = styled("div")({
 		cursor: "pointer",
-		transition: "all 0.2s ease-in-out",
+		transition: "all 0.2s ease-in-out", // Add a smooth transition
 		"&:hover": {
 			textDecoration: "underline",
 			fontWeight: "bold",
@@ -89,106 +64,41 @@ const ClientOverview: React.FC = () => {
 			headerName: "legal_name",
 			width: 250,
 		},
-		{ field: "tier", headerName: "tier", width: 200 },
-		{ field: "team_lead", headerName: "team_lead", width: 200 },
+		{ field: "tier_name", headerName: "tier", width: 200 },
+		{ field: "user_name", headerName: "team_lead", width: 200 },
 		// ... Other columns
 	];
 
-	const rows = clients.map((client) => ({
-		id: client.id,
-		name: client.name,
-		legal_name: client.legal_name,
-		tier: client.tier_name,
-		team_lead: client.user_name,
-	}));
-
 	return (
-		<div style={{ height: 750, width: "100%", marginBottom: "100px" }}>
-			<Typography gutterBottom variant="h5" component="div">
-				Client Overview
-			</Typography>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					paddingBottom: "10px",
-				}}
-			>
-				<Button
-					size="small"
-					variant="contained"
-					style={{
-						fontSize: "12px",
-						padding: "6px 12px",
-						marginRight: "10px",
+		<>
+			<ClientsContainer>
+				<Typography gutterBottom variant="h5" component="div">
+					Client Overview
+				</Typography>
+				<ButtonContainer>
+					<AddNewClientButton size="small" variant="contained">
+						Add New Client
+					</AddNewClientButton>
+					{/* ... Other buttons and filters */}
+				</ButtonContainer>
+
+				<DataGrid
+					rows={clients}
+					columns={columns}
+					slots={{ toolbar: GridToolbar }}
+					getRowId={(row) => row.id || 0} // Use the 'id' property as the id
+					onCellClick={(params: GridCellParams) => {
+						if (params.field === "name") {
+							handleClientClick(params);
+						}
 					}}
-					onClick={handleAddClientClick}
-				>
-					Add New Client
-				</Button>
-				{/* ... Other buttons and filters */}
-			</div>
+				/>
 
-			<DataGrid
-				rows={rows}
-				columns={columns}
-				slots={{ toolbar: GridToolbar }}
-				getRowId={(row) => row.id}
-				onCellClick={(params: GridCellParams) => {
-					if (params.field === "name") {
-						handleClientClick(params);
-					}
-				}}
-			/>
-
-			{selectedClient && (
-				<ClientDetail client={selectedClient} onClose={handleCloseDialog} />
-			)}
-
-			{
-				/* Dialog for adding a new client */
-				<Dialog
-					fullScreen
-					open={openAddClientDialog}
-					onClose={handleAddClientDialogClose}
-					PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
-				>
-					<AppBar sx={{ position: "relative" }}>
-						<Toolbar>
-							<IconButton
-								edge="start"
-								color="inherit"
-								onClick={handleAddClientDialogClose}
-								aria-label="close"
-							>
-								<CloseIcon />
-							</IconButton>
-							<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-								Add New User
-							</Typography>
-							<Button autoFocus color="inherit" onClick={handleAddClientDialogClose}>
-								Save
-							</Button>
-						</Toolbar>
-					</AppBar>
-					<DialogTitle>Add New Client</DialogTitle>
-					<DialogContent>
-						<TextField
-							label="Client Name"
-							fullWidth
-							value={newClientName}
-							onChange={(e) => setNewClientName(e.target.value)}
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleAddClientDialogClose}>Cancel</Button>
-						<Button onClick={handleSaveClient} color="primary">
-							Save
-						</Button>
-					</DialogActions>
-				</Dialog>
-			}
-		</div>
+				{selectedClient && (
+					<ClientDetail client={selectedClient} onClose={handleCloseDialog} />
+				)}
+			</ClientsContainer>
+		</>
 	);
 };
 

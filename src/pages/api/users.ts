@@ -1,17 +1,23 @@
-import supabase from '../../config/supaBaseClient';
+import supabase, { PostgrestError } from "@config/supaBaseClient";
+import { UsersOverview } from "types";
 
-export const getAllUsers = async () => {
+export type UserData = UsersOverview;
+
+export const getAllUsers = async (): Promise<UserData[] | undefined> => {
 	try {
-		const { data, error } = await supabase
-			.from('users')
-			.select('*')
-			.order('user_id', { ascending: true });
+		const { data, error } = (await supabase
+			.from("user_dept_join")
+			.select("*")
+			.order("user_name", { ascending: true })) as unknown as {
+			data: UserData[];
+			error: PostgrestError;
+		};
 		if (error) {
-			console.error('Error fetching clients:', error);
+			console.error("Error fetching clients:", error);
 			return;
 		}
 		return data;
 	} catch (error) {
-		console.error('Error fetching clients:', error);
+		console.error("Error fetching clients:", error);
 	}
 };

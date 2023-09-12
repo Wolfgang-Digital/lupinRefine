@@ -8,52 +8,45 @@ import {
 	Toolbar,
 	IconButton,
 	Tabs,
-	Tab,
 	Container,
 	CssBaseline,
 	Paper,
-	// styled,
 	Slide,
+	Tab,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
-import { ClientData } from "@api/client";
-import { ClientOverview } from "types";
-import {
-	TabContainer,
-	TabContentContainer,
-	TabPanelContainer,
-} from "../StyledComponents";
+import { UserData } from "@api/users";
+import { UsersOverview } from "types";
 
 const Transition = React.forwardRef(function Transition(
-	props: TransitionProps & {
-		children: React.ReactElement;
-	},
+	props: TransitionProps & { children: React.ReactElement },
 	ref: React.Ref<unknown>
 ) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface ClientDetailProps {
-	client: ClientData; // Use the Client interface
-	onClose: () => void; // Callback to close the dialog
+interface UserDetailProps {
+	user: UserData;
+	onClose: () => void;
 }
 
-const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
+const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-
-	// console.log(client);
 
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
 
-	const clientInfoFields: { label: string; field: keyof ClientOverview }[] = [
-		{ label: "name", field: "name" },
-		{ label: "legal_name", field: "legal_name" },
-		{ label: "tier", field: "tier_name" },
-		{ label: "Currency", field: "address" },
-		{ label: "Team Lead", field: "user_name" },
+	const userInfoFields: { label: string; field: keyof UsersOverview }[] = [
+		{ label: "User Name", field: "user_name" },
+		{ label: "Department", field: "department_name" },
+		{ label: "Email", field: "user_email" },
+		{ label: "Job Rate #1", field: "user_job_rate_1" },
+		{ label: "Job Rate #2", field: "user_job_rate_2" },
+		{ label: "Job Rate #3", field: "user_job_rate_3" },
+		{ label: "Job Rate #4", field: "user_job_rate_4" },
+		{ label: "Job Rate #5", field: "user_job_rate_5" },
 	];
 
 	return (
@@ -62,7 +55,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 			open={true}
 			onClose={onClose}
 			TransitionComponent={Transition}
-			PaperProps={{ style: { marginLeft: "10%", width: "90%" } }} // Adjust padding here
+			PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
 		>
 			<AppBar sx={{ position: "relative" }}>
 				<Toolbar>
@@ -75,51 +68,51 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 						<CloseIcon />
 					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						{client?.name}
+						{`${user?.user_name}`}
 					</Typography>
 					<Button autoFocus color="inherit" onClick={onClose}>
 						Save
 					</Button>
 				</Toolbar>
 			</AppBar>
-
 			{/* Tabs */}
-			<TabContainer>
+			<div style={{ width: "100%" }}>
 				<Tabs
 					value={tabValue || 0}
 					onChange={handleTabChange}
-					aria-label="Client Tabs"
+					aria-label="User Tabs"
 				>
-					<Tab label="Client Info" />
-					<Tab label="Financials" />
-					{/* ... Other tabs */}
+					<Tab label="User Info" />
+					<Tab label="Permissions" />
+					<Tab label="Time" />
+					<Tab label="Expenses" />
+					<Tab label="Team" />
 				</Tabs>
-			</TabContainer>
+			</div>
 
-			{/* Tab Content */}
-			<TabContentContainer>
-				<TabPanelContainer
+			<div style={{ width: "100%" }}>
+				<div
 					role="tabpanel"
 					hidden={tabValue !== 0}
 					id={`tabpanel-0`}
 					aria-labelledby={`tab-0`}
+					style={{ paddingTop: "40px", paddingBottom: "90px" }}
 				>
-					{/* Client Info Tab Content */}
+					{/* User Info Tab Content */}
 					<Container component="main" maxWidth="lg">
 						<CssBaseline />
 						<Paper elevation={3} sx={{ padding: "20px" }}>
 							<Typography component="h1" variant="h5">
-								Edit Client Info
+								Edit Wolfganger Info
 							</Typography>
 							<form>
-								{clientInfoFields.map((field) => (
+								{userInfoFields.map((field) => (
 									<TextField
 										key={field?.field}
 										margin="normal"
 										fullWidth
 										label={field.label}
-										value={client?.[field?.field] || ""}
-										// onChange={(e) => () => {}}
+										value={user?.[field.field] || ""}
 									/>
 								))}
 								<Button
@@ -134,29 +127,11 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							</form>
 						</Paper>
 					</Container>
-				</TabPanelContainer>
-
-				<TabPanelContainer
-					role="tabpanel"
-					hidden={tabValue !== 1}
-					id={`tabpanel-1`}
-					aria-labelledby={`tab-1`}
-				>
-					{/* Financials Tab Content */}
-					<Container component="main" maxWidth="lg">
-						<CssBaseline />
-						<Paper elevation={3} sx={{ padding: "20px" }}>
-							<Typography component="h1" variant="h5">
-								Financial Details
-							</Typography>
-							{/* Additional financials content */}
-						</Paper>
-					</Container>
-				</TabPanelContainer>
+				</div>
 				{/* ... Content for other tabs */}
-			</TabContentContainer>
+			</div>
 		</Dialog>
 	);
 };
 
-export default ClientDetail;
+export default UserDetail;

@@ -1,4 +1,4 @@
-import supabase from "../../config/supaBaseClient";
+import supabase from "@config/supaBaseClient";
 // import { JobTask } from "types";
 
 export const getAllTasks = async () => {

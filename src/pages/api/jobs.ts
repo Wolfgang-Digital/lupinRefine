@@ -1,37 +1,44 @@
-import supabase from "../../config/supaBaseClient";
+import supabase, { PostgrestError } from "@config/supaBaseClient";
+import { JobsOverview } from "types";
 
-export const getAllJobs = async () => {
+export type JobsData = JobsOverview;
+
+export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
 	try {
-		const { data, error } = await supabase
-			.from("jobs")
+		const { data, error } = (await supabase
+			.from("jobs_overview")
 			.select("*")
-			.order("job_id", { ascending: true });
+			.order("job_id", { ascending: true })) as unknown as {
+			data: JobsData[];
+			error: PostgrestError;
+		};
 
 		if (error) {
-			console.error("Error fetching jobs:", error);
+			console.error("Error fetching clients:", error);
 			return;
 		}
 		return data;
 	} catch (error) {
-		console.error("Error fetching jobs:", error);
+		console.error("Error fetching clients:", error);
 	}
 };
 
-// export const getRatesByJobId = async (jobId: string) => {
-// 	try {
-// 		const { data, error } = await supabase
-// 			.from("job_rates")
-// 			.select("*")
-// 			.eq("job_id", jobId);
+export const getJob = async ({ id }: { id: string }) => {
+	try {
+		const { data, error } = await supabase
+			.from("jobs")
+			.select("*")
+			.eq("job_id", id)
+			.single();
 
-// 		if (error) {
-// 			console.error("Error fetching job rates:", error);
-// 			return;
-// 		}
-// 		return data[0];
-// 	} catch (error) {
-// 		console.error("Error fetching job rates:", error);
-// 	}
-// };
+		if (error) {
+			console.error("Error fetching clients:", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error fetching clients:", error);
+	}
+};
 
 export const CreateJob = async () => {};
