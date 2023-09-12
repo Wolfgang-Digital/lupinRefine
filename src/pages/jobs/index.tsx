@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import { useRouter } from "next/router";
-import { Typography, Button, styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 import {
 	DataGrid,
 	GridCellParams,
@@ -14,7 +14,7 @@ import {
 	AddNewJobButton,
 	ButtonContainer,
 	JobsContainer,
-} from "./JobDetail/StyledComponents";
+} from "./StyledComponents";
 // import { JobsOverview } from "types";
 
 const JobList: React.FC = () => {
