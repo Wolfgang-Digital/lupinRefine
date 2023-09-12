@@ -19,6 +19,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
 import { ClientData } from "@api/client";
 import { ClientOverview } from "types";
+import {
+	TabContainer,
+	TabContentContainer,
+	TabPanelContainer,
+} from "../StyledComponents";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -79,7 +84,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 			</AppBar>
 
 			{/* Tabs */}
-			<div style={{ width: "100%" }}>
+			<TabContainer>
 				<Tabs
 					value={tabValue || 0}
 					onChange={handleTabChange}
@@ -89,16 +94,15 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 					<Tab label="Financials" />
 					{/* ... Other tabs */}
 				</Tabs>
-			</div>
+			</TabContainer>
 
 			{/* Tab Content */}
-			<div style={{ width: "100%" }}>
-				<div
+			<TabContentContainer>
+				<TabPanelContainer
 					role="tabpanel"
 					hidden={tabValue !== 0}
 					id={`tabpanel-0`}
 					aria-labelledby={`tab-0`}
-					style={{ paddingTop: "40px", paddingBottom: "90px" }}
 				>
 					{/* Client Info Tab Content */}
 					<Container component="main" maxWidth="lg">
@@ -130,14 +134,13 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							</form>
 						</Paper>
 					</Container>
-				</div>
+				</TabPanelContainer>
 
-				<div
+				<TabPanelContainer
 					role="tabpanel"
 					hidden={tabValue !== 1}
 					id={`tabpanel-1`}
 					aria-labelledby={`tab-1`}
-					style={{ paddingTop: "20px" }}
 				>
 					{/* Financials Tab Content */}
 					<Container component="main" maxWidth="lg">
@@ -149,9 +152,9 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							{/* Additional financials content */}
 						</Paper>
 					</Container>
-				</div>
+				</TabPanelContainer>
 				{/* ... Content for other tabs */}
-			</div>
+			</TabContentContainer>
 		</Dialog>
 	);
 };
