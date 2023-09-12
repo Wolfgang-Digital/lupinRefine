@@ -10,6 +10,11 @@ import {
 } from "@mui/x-data-grid";
 import { getAllJobs, JobsData } from "@api/jobs";
 import JobDetail from "./JobDetail";
+import {
+	AddNewJobButton,
+	ButtonContainer,
+	JobsContainer,
+} from "./JobDetail/StyledComponents";
 // import { JobsOverview } from "types";
 
 const JobList: React.FC = () => {
@@ -74,39 +79,31 @@ const JobList: React.FC = () => {
 		department: job.department_name,
 	}));
 	return (
-		<div style={{ height: "160vh!important", width: "100%" }}>
-			<Typography gutterBottom variant="h6" component="div">
-				Job List
-			</Typography>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					paddingBottom: "10px",
-				}}
-			>
-				<Button
-					size="small"
-					variant="contained"
-					style={{ fontSize: "12px", padding: "6px 12px", marginRight: "10px" }}
-				>
-					Add New Job
-				</Button>
-			</div>
-			<DataGrid
-				rows={rows}
-				columns={columns}
-				slots={{ toolbar: GridToolbar }}
-				getRowId={(row) => row.id}
-				onCellClick={(params: GridCellParams) => {
-					if (params.field == "name") {
-						handleJobClick(params);
-					}
-				}}
-				// onCellClick={(params) => router.push(`/jobs/${params.id}`)}
-			/>
-			{selectedJob && <JobDetail job={selectedJob} onClose={handleCloseDialog} />}
-		</div>
+		<>
+			<JobsContainer>
+				<Typography gutterBottom variant="h6" component="div">
+					Job List
+				</Typography>
+				<ButtonContainer>
+					<AddNewJobButton size="small" variant="contained">
+						Add New Job
+					</AddNewJobButton>
+				</ButtonContainer>
+				<DataGrid
+					rows={rows}
+					columns={columns}
+					slots={{ toolbar: GridToolbar }}
+					getRowId={(row) => row.id}
+					onCellClick={(params: GridCellParams) => {
+						if (params.field == "name") {
+							handleJobClick(params);
+						}
+					}}
+					// onCellClick={(params) => router.push(`/jobs/${params.id}`)}
+				/>
+				{selectedJob && <JobDetail job={selectedJob} onClose={handleCloseDialog} />}
+			</JobsContainer>
+		</>
 	);
 };
 
