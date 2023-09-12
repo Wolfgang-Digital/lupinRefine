@@ -1,26 +1,12 @@
 import styled from "styled-components";
 import { Button } from "@mui/material";
 
-export const PreviousWeekButton = styled(Button)`
+export const WeekButton = styled(Button)`
 	background-color: #3a2462;
 	color: white; // Change text color to white
 	&:hover {
 		background-color: #3a2462; // Keep the background color the same on hover
 	}
-`;
-
-export const NextWeekButton = styled(Button)`
-	background-color: #3a2462;
-	color: white; // Change text color to white
-	&:hover {
-		background-color: #3a2462; // Keep the background color the same on hover
-	}
-`;
-
-export const ButtonContainer = styled.div`
-	display: flex;
-	align-items: center;
-	padding-bottom: 20px;
 `;
 
 export const TimesheetContainer = styled.div`

@@ -17,4 +17,21 @@ export const getAllJobs = async () => {
 	}
 };
 
+// export const getRatesByJobId = async (jobId: string) => {
+// 	try {
+// 		const { data, error } = await supabase
+// 			.from("job_rates")
+// 			.select("*")
+// 			.eq("job_id", jobId);
+
+// 		if (error) {
+// 			console.error("Error fetching job rates:", error);
+// 			return;
+// 		}
+// 		return data[0];
+// 	} catch (error) {
+// 		console.error("Error fetching job rates:", error);
+// 	}
+// };
+
 export const CreateJob = async () => {};

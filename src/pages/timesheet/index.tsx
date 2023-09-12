@@ -4,10 +4,10 @@ import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 import {
 	Grid,
 	Paper,
+	Button,
 	TableContainer,
 	Table,
 	TableHead,
-	Button,
 	TableCell,
 	TableRow,
 	TableBody,
@@ -22,12 +22,14 @@ import {
 } from "@mui/material";
 
 import { getAllTimesheetRowsDemo } from "../api/timesheetRowsDemo";
+import { getTaskByJobId } from "@pages/api/tasks";
 import {
-	ButtonContainer,
-	NextWeekButton,
-	PreviousWeekButton,
+	// WeekSelectorContainer,
+	WeekButton,
 	TimesheetContainer,
 } from "./StyledComponents";
+// import { getRatesByJobId } from "@pages/api/jobs";
+import { PostTimeEntry } from "@pages/api/timesheet";
 
 type TimeEntry = {
 	task: string;
@@ -45,7 +47,6 @@ type JobOption = {
 type TaskOption = {
 	label: string;
 	value: string;
-	jobId: string; // Add a jobId field to TaskOption
 };
 
 // Create the Timesheet component
@@ -60,8 +61,8 @@ const Timesheet = () => {
 	const [selectedJob, setSelectedJob] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
+	// const [rate, setRate] = useState(0);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
-	const [filteredTasks, setFilteredTasks] = useState<TaskOption[]>([]); // Store tasks filtered by selected job
 	const [filterOption, setFilterOption] = useState("All Tasks");
 
 	// Create a selected day state
@@ -117,7 +118,7 @@ const Timesheet = () => {
 				}
 
 				const taskOptions = tasksResponse.map((task) => ({
-					label: task.task_name,
+					label: task.task_name || "",
 					value: task.job_id?.toString() || "0",
 				}));
 
@@ -239,11 +240,51 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobId);
 
 		// Filter tasks based on the selected job
-		const filteredTasks = tasks.filter((task) => task.jobId === selectedJobId);
 		setSelectedTask(""); // Reset the selected task
-		setFilteredTasks(filteredTasks); // Set the filtered tasks
 	};
 
+	useEffect(() => {
+		// async function fetchRate() {
+		// 	const response = await getRatesByJobId(selectedJob);
+		// 	if (response) {
+		// 		setRate(response?.job_rate_value || 0);
+		// 	}
+		// }
+		async function fetchTasks() {
+			if (selectedJob) {
+				const response = await getTaskByJobId(selectedJob);
+				if (response) {
+					console.log(
+						response?.map((task) => ({
+							value: task.task_id.toString(),
+							label: task.task_name || "",
+						}))
+					);
+					setTasks(
+						response?.map((task) => ({
+							value: task.task_id.toString(),
+							label: task.task_name || "",
+						}))
+					);
+				}
+			}
+		}
+		// fetchRate();
+		fetchTasks();
+	}, [selectedJob]);
+
+	function saveTimeEntry() {
+		const dataToPost = {
+			notes,
+			timeSpent: Number(timeSpent),
+			jobId: Number(selectedJob),
+			taskId: Number(selectedTask),
+			selectedDate,
+			rate: 150,
+		};
+		const response = PostTimeEntry(dataToPost);
+		console.log({ response });
+	}
 	return (
 		<>
 			<TimesheetContainer>
@@ -267,14 +308,21 @@ const Timesheet = () => {
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={6}>
-						<ButtonContainer>
-							<PreviousWeekButton
+						<TimesheetContainer
+							style={{
+								display: "flex",
+								margin: "20px 0px;",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<WeekButton
 								variant="contained"
 								color="primary"
 								onClick={() => navigateWeeks(-1)}
 							>
 								Previous Week
-							</PreviousWeekButton>
+							</WeekButton>
 							<Typography
 								style={{
 									marginLeft: "20px",
@@ -289,14 +337,14 @@ const Timesheet = () => {
 									"MMM d"
 								)}
 							</Typography>
-							<NextWeekButton
+							<WeekButton
 								variant="contained"
 								color="primary"
 								onClick={() => navigateWeeks(1)}
 							>
 								Next Week
-							</NextWeekButton>
-						</ButtonContainer>
+							</WeekButton>
+						</TimesheetContainer>
 
 						<div
 							style={{
@@ -519,7 +567,7 @@ const Timesheet = () => {
 											}}
 											required
 										>
-											{filteredTasks.map((task) => (
+											{tasks.map((task) => (
 												<MenuItem key={task.value} value={task.value}>
 													{task.label}
 												</MenuItem>
@@ -565,6 +613,7 @@ const Timesheet = () => {
 										type="submit"
 										style={{ padding: "10px" }}
 										disabled={!selectedTask || !timeSpent}
+										onClick={saveTimeEntry}
 									>
 										Save Time Entry
 									</Button>
