@@ -19,7 +19,7 @@ import {
 	TimesheetDataDemo,
 } from "@api/timesheetRowsDemo";
 
-import supabase from "../../config/supaBaseClient";
+import supabase from "@config/supaBaseClient";
 
 const Timesheet = () => {
 	const [showForm, setShowForm] = useState(false);
