@@ -21,6 +21,6 @@ export const getAllTimesheetRows = async (): Promise<
     }
     return data;
   } catch (error) {
-    console.error("Error fetching clients: ", error);
+    console.error("Error fetching timesheet rows: ", error);
   }
 };
