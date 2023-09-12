@@ -1,7 +1,7 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { TimesheetRows } from "types";
+import { JobsDropdownViewDemo } from "types";
 
-export type TimesheetData = TimesheetRows;
+export type TimesheetData = JobsDropdownViewDemo;
 
 export const getAllTimesheetRows = async (): Promise<
 	TimesheetData[] | undefined

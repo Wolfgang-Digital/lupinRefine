@@ -9,9 +9,9 @@ export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
 			.from("jobs_overview")
 			.select("*")
 			.order("job_id", { ascending: true })) as unknown as {
-      data: JobsData[];
-      error: PostgrestError;
-    };
+			data: JobsData[];
+			error: PostgrestError;
+		};
 
 		if (error) {
 			console.error("Error fetching clients:", error);

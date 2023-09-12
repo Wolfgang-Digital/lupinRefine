@@ -71,7 +71,7 @@ const Wolfgangers: React.FC = () => {
 	];
 
 	const rows = users.map((user) => ({
-		id: user.user_id,
+		user_id: user.user_id,
 		user_name: user.user_name,
 		user_email: user.user_email,
 		department_name: user.department_name,
@@ -81,7 +81,6 @@ const Wolfgangers: React.FC = () => {
 		user_job_rate_4: `€` + user.user_job_rate_4,
 		user_job_rate_5: `€` + user.user_job_rate_5,
 	}));
-	//   console.log(rows);
 
 	return (
 		<>
@@ -98,7 +97,7 @@ const Wolfgangers: React.FC = () => {
 					rows={rows}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
-					getRowId={(row) => row.id}
+					getRowId={(row) => row.user_id}
 					onCellClick={(params: GridCellParams) => {
 						if (params.field == "name") {
 							handleUserClick(params);

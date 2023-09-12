@@ -103,6 +103,3 @@ const ClientOverview: React.FC = () => {
 };
 
 export default ClientOverview;
-// function handleClientInfoChange(field: string, value: string): void {
-// 	throw new Error('Function not implemented.');
-// }
