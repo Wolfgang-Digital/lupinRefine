@@ -25,7 +25,8 @@
 			"@styles/*": ["src/styles/*"],
 			"@styles": ["src/styles"],
 			"@public/*": ["public/*"],
-			"@public": ["public"]
+			"@public": ["public"],
+			"@styled-components/*": ["src/styled-components/*"]
 		},
 		"incremental": true
 	},

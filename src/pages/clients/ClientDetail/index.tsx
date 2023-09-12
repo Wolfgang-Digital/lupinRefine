@@ -23,7 +23,7 @@ import {
 	TabContainer,
 	TabContentContainer,
 	TabPanelContainer,
-} from "../StyledComponents";
+} from "@styled-components/clients";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {

@@ -27,7 +27,7 @@ import {
 	// WeekSelectorContainer,
 	WeekButton,
 	TimesheetContainer,
-} from "./StyledComponents";
+} from "@styled-components/timesheet";
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
 

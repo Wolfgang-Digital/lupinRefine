@@ -13,7 +13,7 @@ import {
 	AddNewClientButton,
 	ButtonContainer,
 	ClientsContainer,
-} from "./StyledComponents";
+} from "@styled-components/clients";
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]); // Use the Client type

@@ -15,7 +15,7 @@ import {
 	AddNewUserButton,
 	ButtonContainer,
 	WolfgangerContainer,
-} from "./StyledComponents";
+} from "@styled-components/wolfgangers";
 
 const Wolfgangers: React.FC = () => {
 	// const router = useRouter();

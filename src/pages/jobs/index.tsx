@@ -14,7 +14,7 @@ import {
 	AddNewJobButton,
 	ButtonContainer,
 	JobsContainer,
-} from "./StyledComponents";
+} from "@styled-components/jobs";
 // import { JobsOverview } from "types";
 
 const JobList: React.FC = () => {
