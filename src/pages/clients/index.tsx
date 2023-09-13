@@ -9,15 +9,15 @@ import {
 import { Typography, styled } from "@mui/material";
 import { getAllClients, ClientData } from "@api/client";
 import ClientDetail from "./ClientDetail";
-import {
-	AddNewClientButton,
-	ButtonContainer,
-	ClientsContainer,
-} from "@styled-components/clients";
+import { ButtonContainer, ClientsContainer } from "@styled-components/clients";
+
+// Import the AddClientButton and AddClientDialog components
+import { AddClientButton, AddClientDialog } from "./AddClient";
 
 const ClientOverview: React.FC = () => {
-	const [clients, setClients] = useState<ClientData[]>([]); // Use the Client type
-	const [selectedClient, setSelectedClient] = useState<ClientData | null>(null); // Use the Client type
+	const [clients, setClients] = useState<ClientData[]>([]);
+	const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+	const [openAddClientDialog, setOpenAddClientDialog] = useState(false);
 
 	useEffect(() => {
 		const fetchClients = async () => {
@@ -38,9 +38,17 @@ const ClientOverview: React.FC = () => {
 		setSelectedClient(null);
 	};
 
+	const handleAddClientClick = () => {
+		setOpenAddClientDialog(true);
+	};
+
+	const handleCloseAddClientDialog = () => {
+		setOpenAddClientDialog(false);
+	};
+
 	const HoverableCell = styled("div")({
 		cursor: "pointer",
-		transition: "all 0.2s ease-in-out", // Add a smooth transition
+		transition: "all 0.2s ease-in-out",
 		"&:hover": {
 			textDecoration: "underline",
 			fontWeight: "bold",
@@ -76,9 +84,8 @@ const ClientOverview: React.FC = () => {
 					Client Overview
 				</Typography>
 				<ButtonContainer>
-					<AddNewClientButton size="small" variant="contained">
-						Add New Client
-					</AddNewClientButton>
+					{/* Use the AddClientButton component to add a new client */}
+					<AddClientButton onAddClient={handleAddClientClick} />
 					{/* ... Other buttons and filters */}
 				</ButtonContainer>
 
@@ -86,7 +93,7 @@ const ClientOverview: React.FC = () => {
 					rows={clients}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
-					getRowId={(row) => row.id || 0} // Use the 'id' property as the id
+					getRowId={(row) => row.id || 0}
 					onCellClick={(params: GridCellParams) => {
 						if (params.field === "name") {
 							handleClientClick(params);
@@ -97,6 +104,24 @@ const ClientOverview: React.FC = () => {
 				{selectedClient && (
 					<ClientDetail client={selectedClient} onClose={handleCloseDialog} />
 				)}
+
+				{/* AddClientDialog for adding a new client */}
+				<AddClientDialog
+					open={openAddClientDialog}
+					onClose={handleCloseAddClientDialog}
+					tabValue={0} // You can set the initial tab value here
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					handleTabChange={(event: React.SyntheticEvent, newValue: number) => {
+						// Handle tab changes if needed
+					}}
+					clientInfoFields={[
+						{ label: "Client Name", field: "clientName" },
+						{ label: "Legal Name", field: "legalName" },
+						{ label: "Tier", field: "tier" },
+						{ label: "Team Lead", field: "teamLead" },
+						// Add more fields as needed
+					]}
+				/>
 			</ClientsContainer>
 		</>
 	);

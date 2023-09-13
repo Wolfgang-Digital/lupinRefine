@@ -1,3 +1,4 @@
+// Wolfgangers.tsx
 import React, { useState, useEffect } from "react";
 import { Typography, styled } from "@mui/material";
 import {
@@ -7,18 +8,16 @@ import {
 	GridRenderCellParams,
 	GridToolbar,
 } from "@mui/x-data-grid";
-// import { Users } from "types";
-import { getAllUsers, UserData } from "@api/users";
-// import { useRouter } from "next/router";
 import UserDetail from "./WolfgangerDetail";
 import {
 	AddNewUserButton,
 	ButtonContainer,
 	WolfgangerContainer,
 } from "@styled-components/wolfgangers";
+import AddUserDialog from "./AddUserDialog"; // Assuming you have an AddUserDialog component in a separate file
+import { getAllUsers, UserData } from "@pages/api/users";
 
 const Wolfgangers: React.FC = () => {
-	// const router = useRouter();
 	const [users, setUsers] = useState<UserData[]>([]);
 	const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
@@ -30,7 +29,6 @@ const Wolfgangers: React.FC = () => {
 			}
 		};
 		fetchUsers();
-		// console.log(users);
 	}, []);
 
 	const handleUserClick = (params: GridCellParams) => {
@@ -82,14 +80,33 @@ const Wolfgangers: React.FC = () => {
 		user_job_rate_5: `€` + user.user_job_rate_5,
 	}));
 
+	const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
+	const [tabValue, setTabValue] = useState(0);
+
+	const handleOpenAddUserDialog = () => {
+		setOpenAddUserDialog(true);
+	};
+
+	const handleCloseAddUserDialog = () => {
+		setOpenAddUserDialog(false);
+	};
+
+	const userInfoFields = [
+		{ label: "First Name", field: "firstName" },
+		{ label: "Last Name", field: "lastName" },
+		{ label: "Email", field: "email" },
+		{ label: "Phone Number", field: "phoneNumber" },
+		{ label: "Address", field: "address" },
+	];
+
 	return (
 		<>
 			<WolfgangerContainer>
-				<Typography gutterBottom variant="h4" component="div">
+				<Typography gutterBottom variant="h5" component="div">
 					Wolfgangers
 				</Typography>
 				<ButtonContainer>
-					<AddNewUserButton size="small" variant="contained">
+					<AddNewUserButton variant="contained" onClick={handleOpenAddUserDialog}>
 						Add New User
 					</AddNewUserButton>
 				</ButtonContainer>
@@ -108,6 +125,17 @@ const Wolfgangers: React.FC = () => {
 					<UserDetail user={selectedUser} onClose={handleCloseDialog} />
 				)}
 			</WolfgangerContainer>
+
+			{/* Add New User Dialog */}
+			<AddUserDialog
+				open={openAddUserDialog}
+				onClose={handleCloseAddUserDialog}
+				tabValue={tabValue}
+				handleTabChange={(event: React.SyntheticEvent, newValue: number) => {
+					setTabValue(newValue);
+				}}
+				userInfoFields={userInfoFields}
+			/>
 		</>
 	);
 };

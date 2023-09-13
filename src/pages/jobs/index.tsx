@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { useRouter } from "next/router";
-import { Typography, styled } from "@mui/material";
 import {
 	DataGrid,
 	GridCellParams,
@@ -8,17 +6,15 @@ import {
 	GridRenderCellParams,
 	GridToolbar,
 } from "@mui/x-data-grid";
+import { Typography, styled } from "@mui/material";
 import { getAllJobs, JobsData } from "@api/jobs";
 import JobDetail from "./JobDetail";
-import {
-	AddNewJobButton,
-	ButtonContainer,
-	JobsContainer,
-} from "@styled-components/jobs";
-// import { JobsOverview } from "types";
+import { ButtonContainer, JobsContainer } from "@styled-components/jobs";
+
+// Import the AddJob component
+import AddJob from "./AddJob";
 
 const JobList: React.FC = () => {
-	// const router = useRouter();
 	const [jobs, setJobs] = useState<JobsData[]>([]);
 	const [selectedJob, setSelectedJob] = useState<JobsData | null>(null);
 
@@ -30,7 +26,6 @@ const JobList: React.FC = () => {
 			}
 		};
 		fetchJobs();
-		// console.log(jobs);
 	}, []);
 
 	const handleJobClick = (params: GridCellParams) => {
@@ -49,6 +44,7 @@ const JobList: React.FC = () => {
 			fontWeight: "bold",
 		},
 	});
+
 	const columns: (GridColDef & { field: keyof JobsData })[] = [
 		{ field: "job_id", headerName: "Job ID", width: 200 },
 		{
@@ -78,17 +74,22 @@ const JobList: React.FC = () => {
 		status: job.status_code_name,
 		department: job.department_name,
 	}));
+
 	return (
 		<>
 			<JobsContainer>
-				<Typography gutterBottom variant="h6" component="div">
+				<Typography gutterBottom variant="h5" component="div">
 					Job List
 				</Typography>
 				<ButtonContainer>
-					<AddNewJobButton size="small" variant="contained">
-						Add New Job
-					</AddNewJobButton>
+					{/* Use the AddJob component to add a new job */}
+					<AddJob
+						onAddJob={function (): void {
+							throw new Error("Function not implemented.");
+						}}
+					/>
 				</ButtonContainer>
+
 				<DataGrid
 					rows={rows}
 					columns={columns}
@@ -99,8 +100,8 @@ const JobList: React.FC = () => {
 							handleJobClick(params);
 						}
 					}}
-					// onCellClick={(params) => router.push(`/jobs/${params.id}`)}
 				/>
+
 				{selectedJob && <JobDetail job={selectedJob} onClose={handleCloseDialog} />}
 			</JobsContainer>
 		</>

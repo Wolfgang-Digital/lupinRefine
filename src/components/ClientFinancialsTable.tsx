@@ -1,20 +1,20 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React from "react";
+import { useEffect, useState } from "react";
 import {
 	Accordion,
 	AccordionDetails,
 	AccordionSummary,
 	Paper,
 	Typography,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
 	DataGrid,
 	GridToolbarContainer,
 	GridToolbarExport,
-} from '@mui/x-data-grid';
-import { getFinancialTable } from '@api/financialTable';
-import { FinancialTable } from 'types';
+} from "@mui/x-data-grid";
+import { getFinancialTable } from "@api/financialTable";
+import { FinancialTable } from "types";
 
 type RowData = FinancialTable & {
 	month: string;
@@ -56,16 +56,16 @@ type RowData = FinancialTable & {
 // }
 
 const columns = [
-	{ field: 'job', headerName: 'Job', width: 150 },
-	{ field: 'task', headerName: 'Task', width: 150 },
-	{ field: 'staff', headerName: 'Staff', width: 150 },
-	{ field: 'hours', headerName: 'Hours', width: 100 },
-	{ field: 'rate', headerName: 'Rate', width: 100 },
-	{ field: 'value', headerName: 'Value', width: 100 },
-	{ field: 'budgetToInvoice', headerName: 'Budget to Invoice', width: 150 },
-	{ field: 'invoiced', headerName: 'Invoiced', width: 120 },
-	{ field: 'balRemaining', headerName: 'Bal Remaining', width: 150 },
-	{ field: 'balanced', headerName: 'Balanced', width: 120, type: 'boolean' },
+	{ field: "job", headerName: "Job", width: 150 },
+	{ field: "task", headerName: "Task", width: 150 },
+	{ field: "staff", headerName: "Staff", width: 150 },
+	{ field: "hours", headerName: "Hours", width: 100 },
+	{ field: "rate", headerName: "Rate", width: 100 },
+	{ field: "value", headerName: "Value", width: 100 },
+	{ field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
+	{ field: "invoiced", headerName: "Invoiced", width: 120 },
+	{ field: "balRemaining", headerName: "Bal Remaining", width: 150 },
+	{ field: "balanced", headerName: "Balanced", width: 120, type: "boolean" },
 ];
 
 function CustomToolbar() {
@@ -90,9 +90,7 @@ function CollapsibleGrid() {
 					(item: FinancialTable) => ({
 						...item,
 						// id: item.id,
-						month: formatDate(
-							item.date?.toString() || new Date().toString()
-						), // Format the month name
+						month: formatDate(item.date?.toString() || new Date().toString()), // Format the month name
 						// job: item.job_name,
 						// task: item.task_name,
 						// staff: item.user_name,
@@ -115,8 +113,8 @@ function CollapsibleGrid() {
 	// Function to format the date
 	function formatDate(dateString: string) {
 		const date = new Date(dateString);
-		return `${date.toLocaleString('default', {
-			month: 'long',
+		return `${date.toLocaleString("default", {
+			month: "long",
 		})} ${date.getFullYear()}`;
 	}
 
@@ -131,7 +129,7 @@ function CollapsibleGrid() {
 	});
 
 	return (
-		<div style={{ height: 400, width: '100%' }}>
+		<div style={{ height: 400, width: "100%" }}>
 			{Object.keys(groupedRows).map((month) => (
 				<Accordion key={month}>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>

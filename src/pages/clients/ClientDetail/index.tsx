@@ -24,6 +24,7 @@ import {
 	TabContentContainer,
 	TabPanelContainer,
 } from "@styled-components/clients";
+import CollapsibleGrid from "@components/ClientFinancialsTable";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -149,7 +150,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							<Typography component="h1" variant="h5">
 								Financial Details
 							</Typography>
-							{/* Additional financials content */}
+							<CollapsibleGrid />
 						</Paper>
 					</Container>
 				</TabPanelContainer>

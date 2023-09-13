@@ -17,6 +17,7 @@ export const AddNewClientButton = styled(Button)`
 	font-size: 12px;
 	padding: 6px 12px;
 	margin-right: 10px;
+	margin-bottom: 10px;
 `;
 
 export const TabContainer = styled.div`
