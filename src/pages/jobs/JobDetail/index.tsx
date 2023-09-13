@@ -51,7 +51,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 		{ label: "Job Name", field: "job_name" },
 		{ label: "Job Type", field: "job_type_name" },
 		{ label: "Tier", field: "tier_name" },
-		{ label: "Currency", field: "currency_symbol" },
+		// { label: "Currency", field: "currency_symbol" },
 	];
 
 	return (
