@@ -16,4 +16,5 @@ export const AddNewUserButton = styled(Button)`
 	font-size: 12px;
 	padding: 6px 12px;
 	margin-right: 10px;
+	margin-bottom: 10px;
 `;

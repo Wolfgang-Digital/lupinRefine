@@ -307,13 +307,11 @@ const Timesheet = () => {
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
-					<Grid item xs={6}>
+					<Grid item xs={7}>
 						<TimesheetContainer
 							style={{
 								display: "flex",
 								margin: "20px 0px;",
-								alignItems: "center",
-								justifyContent: "center",
 							}}
 						>
 							<WeekButton
@@ -515,7 +513,7 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={6}>
+					<Grid item xs={5}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "80px" }}
