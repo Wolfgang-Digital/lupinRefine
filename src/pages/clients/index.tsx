@@ -5,14 +5,11 @@ import {
 	GridRenderCellParams,
 	GridCellParams,
 } from "@mui/x-data-grid";
-
-import { Typography, styled } from "@mui/material";
+import { Typography, styled, Button } from "@mui/material";
 import { getAllClients, ClientData } from "@api/client";
 import ClientDetail from "./ClientDetail";
 import { ButtonContainer, ClientsContainer } from "@styled-components/clients";
-
-// Import the AddClientButton and AddClientDialog components
-import { AddClientButton, AddClientDialog } from "./AddClient";
+import AddClientDialog from "./AddClient";
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]);
@@ -26,7 +23,6 @@ const ClientOverview: React.FC = () => {
 				setClients(clientsResponse);
 			}
 		};
-		console.log(clients);
 		fetchClients();
 	}, []);
 
@@ -84,8 +80,10 @@ const ClientOverview: React.FC = () => {
 					Client Overview
 				</Typography>
 				<ButtonContainer>
-					{/* Use the AddClientButton component to add a new client */}
-					<AddClientButton onAddClient={handleAddClientClick} />
+					{/* Use a button to open the AddClientDialog */}
+					<Button size="small" variant="contained" onClick={handleAddClientClick}>
+						Add New Client
+					</Button>
 					{/* ... Other buttons and filters */}
 				</ButtonContainer>
 

@@ -11,6 +11,7 @@ export const ButtonContainer = styled.div`
 	display: flex;
 	flex-direction: row;
 	padding-bottom: 10px;
+	margin-bottom: 10px;
 `;
 
 export const AddNewClientButton = styled(Button)`

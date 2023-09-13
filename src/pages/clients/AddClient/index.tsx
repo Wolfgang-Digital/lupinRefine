@@ -45,7 +45,7 @@ const AddClientDialog: React.FC<AddClientDialogProps> = ({
 						onClick={onClose}
 						aria-label="close"
 					>
-						<CloseIcon /> {/* Add the Close icon here */}
+						<CloseIcon />
 					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
 						Add New Client
@@ -98,16 +98,4 @@ const AddClientDialog: React.FC<AddClientDialogProps> = ({
 	);
 };
 
-interface AddClientButtonProps {
-	onAddClient: () => void;
-}
-
-const AddClientButton: React.FC<AddClientButtonProps> = ({ onAddClient }) => {
-	return (
-		<Button size="small" variant="contained" onClick={onAddClient}>
-			Add New Client
-		</Button>
-	);
-};
-
-export { AddClientDialog, AddClientButton };
+export default AddClientDialog;
