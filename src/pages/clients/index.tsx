@@ -59,7 +59,7 @@ const ClientOverview: React.FC = () => {
 		{ field: "id", headerName: "id", width: 100 },
 		{
 			field: "name",
-			headerName: "name",
+			headerName: "Name",
 			width: 250,
 			renderCell: (params: GridRenderCellParams) => (
 				<HoverableCell onClick={() => handleClientClick(params)}>
@@ -69,11 +69,11 @@ const ClientOverview: React.FC = () => {
 		},
 		{
 			field: "legal_name",
-			headerName: "legal_name",
+			headerName: "Legal Name",
 			width: 250,
 		},
-		{ field: "tier_name", headerName: "tier", width: 200 },
-		{ field: "user_name", headerName: "team_lead", width: 200 },
+		{ field: "tier_name", headerName: "Tier", width: 200 },
+		{ field: "user_name", headerName: "Team Lead", width: 200 },
 		// ... Other columns
 	];
 
