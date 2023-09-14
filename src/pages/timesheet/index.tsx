@@ -311,7 +311,7 @@ const Timesheet = () => {
 						<TimesheetContainer
 							style={{
 								display: "flex",
-								margin: "20px 0px;",
+								margin: "20px 0px",
 							}}
 						>
 							<WeekButton
@@ -329,7 +329,7 @@ const Timesheet = () => {
 							>
 								{format(selectedWeekStart, "MMM d")} -{" "}
 								{format(
-									endOfWeek(addWeeks(selectedWeekStart, 1), {
+									endOfWeek(addWeeks(selectedWeekStart, 0), {
 										weekStartsOn: 1,
 									}),
 									"MMM d"
