@@ -19,7 +19,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
 import { UserData } from "@api/users";
-import { UsersOverview } from "types";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & { children: React.ReactElement },
@@ -40,7 +39,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 		setTabValue(newValue);
 	};
 
-	const userInfoFields: { label: string; field: keyof UsersOverview }[] = [
+	const userInfoFields: { label: string; field: keyof UserData }[] = [
 		{ label: "User Name", field: "user_name" },
 		{ label: "Department", field: "department_name" },
 		{ label: "Email", field: "user_email" },

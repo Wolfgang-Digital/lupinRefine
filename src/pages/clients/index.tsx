@@ -5,11 +5,23 @@ import {
 	GridRenderCellParams,
 	GridCellParams,
 } from "@mui/x-data-grid";
-import { Typography, styled, Button } from "@mui/material";
+import {
+	Typography,
+	styled,
+	Button,
+	Dialog,
+	AppBar,
+	Toolbar,
+	IconButton,
+	Container,
+	CssBaseline,
+	Paper,
+	TextField,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { getAllClients, ClientData } from "@api/client";
 import ClientDetail from "./ClientDetail";
 import { ButtonContainer, ClientsContainer } from "@styled-components/clients";
-import AddClientDialog from "./AddClient";
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]);
@@ -73,6 +85,14 @@ const ClientOverview: React.FC = () => {
 		// ... Other columns
 	];
 
+	const clientInfoFields = [
+		{ label: "Client Name", field: "clientName" },
+		{ label: "Legal Name", field: "legalName" },
+		{ label: "Tier", field: "tier" },
+		{ label: "Team Lead", field: "teamLead" },
+		// Add more fields as needed
+	];
+
 	return (
 		<>
 			<ClientsContainer>
@@ -104,22 +124,60 @@ const ClientOverview: React.FC = () => {
 				)}
 
 				{/* AddClientDialog for adding a new client */}
-				<AddClientDialog
+				<Dialog
+					fullScreen
 					open={openAddClientDialog}
 					onClose={handleCloseAddClientDialog}
-					tabValue={0} // You can set the initial tab value here
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					handleTabChange={(event: React.SyntheticEvent, newValue: number) => {
-						// Handle tab changes if needed
-					}}
-					clientInfoFields={[
-						{ label: "Client Name", field: "clientName" },
-						{ label: "Legal Name", field: "legalName" },
-						{ label: "Tier", field: "tier" },
-						{ label: "Team Lead", field: "teamLead" },
-						// Add more fields as needed
-					]}
-				/>
+					PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
+				>
+					<AppBar sx={{ position: "relative" }}>
+						<Toolbar>
+							<IconButton
+								edge="start"
+								color="inherit"
+								onClick={handleCloseAddClientDialog}
+								aria-label="close"
+							>
+								<CloseIcon />
+							</IconButton>
+							<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+								Add New Client
+							</Typography>
+							<Button autoFocus color="inherit" onClick={handleCloseAddClientDialog}>
+								Save
+							</Button>
+						</Toolbar>
+					</AppBar>
+
+					<Container component="main" maxWidth="lg" sx={{ marginTop: "40px" }}>
+						<CssBaseline />
+						<Paper elevation={3} sx={{ padding: "20px" }}>
+							<Typography component="h1" variant="h5">
+								Client Information
+							</Typography>
+							<form>
+								{clientInfoFields.map((field) => (
+									<TextField
+										key={field.field}
+										margin="normal"
+										fullWidth
+										label={field.label}
+										// Add your field value and onChange handling here
+									/>
+								))}
+								<Button
+									type="submit"
+									fullWidth
+									variant="contained"
+									color="primary"
+									sx={{ mt: 3 }}
+								>
+									Save Client
+								</Button>
+							</form>
+						</Paper>
+					</Container>
+				</Dialog>
 			</ClientsContainer>
 		</>
 	);

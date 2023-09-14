@@ -8,7 +8,7 @@ export const getAllUsers = async (): Promise<UserData[] | undefined> => {
 		const { data, error } = (await supabase
 			.from("user_dept_join")
 			.select("*")
-			.order("user_name", { ascending: true })) as unknown as {
+			.order("user_id", { ascending: true })) as unknown as {
 			data: UserData[];
 			error: PostgrestError;
 		};

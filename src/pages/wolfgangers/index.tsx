@@ -1,4 +1,3 @@
-// Wolfgangers.tsx
 import React, { useState, useEffect } from "react";
 import { Typography, styled } from "@mui/material";
 import {
@@ -8,18 +7,33 @@ import {
 	GridRenderCellParams,
 	GridToolbar,
 } from "@mui/x-data-grid";
+import {
+	Dialog,
+	AppBar,
+	Toolbar,
+	IconButton,
+	Button,
+	Tabs,
+	Tab,
+	Container,
+	CssBaseline,
+	Paper,
+	TextField,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import UserDetail from "./WolfgangerDetail";
 import {
 	AddNewUserButton,
 	ButtonContainer,
 	WolfgangerContainer,
 } from "@styled-components/wolfgangers";
-import AddUserDialog from "./AddUserDialog"; // Assuming you have an AddUserDialog component in a separate file
 import { getAllUsers, UserData } from "@pages/api/users";
 
 const Wolfgangers: React.FC = () => {
 	const [users, setUsers] = useState<UserData[]>([]);
 	const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+	const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
+	const [tabValue, setTabValue] = useState(0);
 
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -80,9 +94,6 @@ const Wolfgangers: React.FC = () => {
 		user_job_rate_5: `€` + user.user_job_rate_5,
 	}));
 
-	const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
-	const [tabValue, setTabValue] = useState(0);
-
 	const handleOpenAddUserDialog = () => {
 		setOpenAddUserDialog(true);
 	};
@@ -127,15 +138,72 @@ const Wolfgangers: React.FC = () => {
 			</WolfgangerContainer>
 
 			{/* Add New User Dialog */}
-			<AddUserDialog
+			<Dialog
+				fullScreen
 				open={openAddUserDialog}
 				onClose={handleCloseAddUserDialog}
-				tabValue={tabValue}
-				handleTabChange={(event: React.SyntheticEvent, newValue: number) => {
-					setTabValue(newValue);
-				}}
-				userInfoFields={userInfoFields}
-			/>
+				PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
+			>
+				<AppBar position="relative">
+					<Toolbar>
+						<IconButton
+							edge="start"
+							color="inherit"
+							onClick={handleCloseAddUserDialog}
+							aria-label="close"
+						>
+							<CloseIcon />
+						</IconButton>
+						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+							Add New User
+						</Typography>
+						<Button autoFocus color="inherit" onClick={handleCloseAddUserDialog}>
+							Save
+						</Button>
+					</Toolbar>
+				</AppBar>
+
+				{/* Tabs */}
+				<Tabs
+					value={tabValue}
+					onChange={(event, newValue) => {
+						setTabValue(newValue);
+					}}
+					aria-label="Add User Tabs"
+				>
+					<Tab label="User Info" />
+				</Tabs>
+
+				{/* Tab Content */}
+				<Container component="main" maxWidth="lg" sx={{ marginTop: "40px" }}>
+					<CssBaseline />
+					<Paper elevation={3} sx={{ padding: "20px" }}>
+						<Typography component="h1" variant="h5">
+							User Information
+						</Typography>
+						<form>
+							{userInfoFields.map((field) => (
+								<TextField
+									key={field.field}
+									margin="normal"
+									fullWidth
+									label={field.label}
+									// Add your field value and onChange handling here
+								/>
+							))}
+							<Button
+								type="submit"
+								fullWidth
+								variant="contained"
+								color="primary"
+								sx={{ mt: 3 }}
+							>
+								Save User
+							</Button>
+						</form>
+					</Paper>
+				</Container>
+			</Dialog>
 		</>
 	);
 };
