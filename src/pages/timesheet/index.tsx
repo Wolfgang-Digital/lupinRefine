@@ -21,8 +21,11 @@ import {
 	TablePagination,
 } from "@mui/material";
 
-import { getAllTimesheetRowsDemo } from "../api/timesheetRowsDemo";
+import { getAllTimesheetRowsDemo } from "@api/timesheetRowsDemo";
+import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
 import { getTaskByJobId } from "@pages/api/tasks";
+import { getAllWolfgangTasksDemo } from "@pages/api/wolfgangTasksDemo";
+
 import {
 	// WeekSelectorContainer,
 	WeekButton,
@@ -135,7 +138,7 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				if (filterOption === "All Tasks") {
+				if (filterOption === "Allocated Tasks") {
 					const FilterResponse = await getAllTimesheetRowsDemo();
 
 					if (!FilterResponse) {
@@ -151,10 +154,48 @@ const Timesheet = () => {
 					})) as TimeEntry[];
 
 					setTimeEntries(jobEntries);
+				} else if (filterOption === "All Tasks") {
+					setTimeEntries([]);
+					const FilterResponse = await getAllJobTasksDemo();
+
+					if (!FilterResponse) {
+						throw new Error("Error fetching data");
+					}
+
+					const jobEntries = FilterResponse.map((entry) => ({
+						job: `${entry.name}: ${entry.job_name}`,
+						task: entry.task_name,
+						hours: "0",
+						date: "01/09/23",
+						nonBillable: false,
+						notes: "",
+					})) as TimeEntry[];
+					// Handle other filter options here
+					// Clear rows or fetch data as needed for other filter options
+					setTimeEntries(jobEntries);
+				} else if (filterOption === "Wolfgang Tasks") {
+					setTimeEntries([]);
+					const FilterResponse = await getAllWolfgangTasksDemo();
+
+					if (!FilterResponse) {
+						throw new Error("Error fetching data");
+					}
+
+					const jobEntries = FilterResponse.map((entry) => ({
+						job: `${entry.name}: ${entry.job_name}`,
+						task: entry.task_name,
+						hours: "0",
+						date: "01/09/23",
+						nonBillable: false,
+						notes: "",
+					})) as TimeEntry[];
+					// Handle other filter options here
+					// Clear rows or fetch data as needed for other filter options
+					setTimeEntries(jobEntries);
 				} else {
 					// Handle other filter options here
 					// Clear rows or fetch data as needed for other filter options
-					setTimeEntries([]); // Clear rows for other options
+					setTimeEntries([]);
 				}
 			} catch (error) {
 				console.error("Error fetching data:", error);
