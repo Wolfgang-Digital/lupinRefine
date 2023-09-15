@@ -21,10 +21,14 @@ import {
 	TablePagination,
 } from "@mui/material";
 
+//  get rows for "Allocated Tasks"
 import { getAllTimesheetRowsDemo } from "@api/timesheetRowsDemo";
+// get rows for "All Tasks"
 import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
-import { getTaskByJobId } from "@pages/api/tasks";
+// get rows for "Wolfgang Tasks"
 import { getAllWolfgangTasksDemo } from "@pages/api/wolfgangTasksDemo";
+
+import { getTaskByJobId } from "@pages/api/tasks";
 
 import {
 	// WeekSelectorContainer,
@@ -138,6 +142,7 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchData() {
 			try {
+				//  Render "Allocated Tasks" when selected in Drop Down
 				if (filterOption === "Allocated Tasks") {
 					const FilterResponse = await getAllTimesheetRowsDemo();
 
@@ -154,8 +159,10 @@ const Timesheet = () => {
 					})) as TimeEntry[];
 
 					setTimeEntries(jobEntries);
-				} else if (filterOption === "All Tasks") {
-					setTimeEntries([]);
+				}
+				// Render "All Tasks" when selected in Drop Down
+				else if (filterOption === "All Tasks") {
+					// setTimeEntries([]);
 					const FilterResponse = await getAllJobTasksDemo();
 
 					if (!FilterResponse) {
@@ -173,8 +180,10 @@ const Timesheet = () => {
 					// Handle other filter options here
 					// Clear rows or fetch data as needed for other filter options
 					setTimeEntries(jobEntries);
-				} else if (filterOption === "Wolfgang Tasks") {
-					setTimeEntries([]);
+				}
+				// Render "Wolfgang Tasks" when selected in Drop Down
+				else if (filterOption === "Wolfgang Tasks") {
+					// setTimeEntries([]);
 					const FilterResponse = await getAllWolfgangTasksDemo();
 
 					if (!FilterResponse) {
