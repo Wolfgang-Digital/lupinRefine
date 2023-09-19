@@ -1,13 +1,13 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
-	Paper,
-	Typography,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+// import {
+// 	Accordion,
+// 	AccordionDetails,
+// 	AccordionSummary,
+// 	Paper,
+// 	Typography,
+// } from "@mui/material";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
 	DataGrid,
 	GridToolbarContainer,
@@ -15,7 +15,6 @@ import {
 } from "@mui/x-data-grid";
 import {
 	getFinancialTable,
-	groupedFinancialData,
 	groupFinancialTableData,
 } from "@api/financialTable";
 import { FinancialTable } from "types";
@@ -82,7 +81,7 @@ function CustomToolbar() {
 	);
 }
 
-function CollapsibleGrid({ clientId }: { clientId: number }) {
+function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [financialData, setFinancialData] = useState<FinancialTable[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
@@ -113,7 +112,7 @@ function CollapsibleGrid({ clientId }: { clientId: number }) {
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const financialTable = await getFinancialTable(clientId);
+			const financialTable = await getFinancialTable(clientId || 0);
 			if (financialTable) {
 				setFinancialData(financialTable);
 				fetchGroupedData(financialTable, selectedMonth);

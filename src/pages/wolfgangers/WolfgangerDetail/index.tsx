@@ -67,11 +67,11 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 					<form>
 						{userInfoFields.map((field) => (
 							<TextField
-								key={field.field}
+								key={field?.field}
 								margin="normal"
 								fullWidth
-								label={field.label}
-								value={user[field.field] || ""}
+								label={field?.label}
+								value={user?.[field?.field] || ""}
 								// Add onChange or other logic
 							/>
 						))}
@@ -167,7 +167,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 							paddingRight: "90px",
 						}}
 					>
-						Below is a list of the departments <strong>{user.user_name}</strong>{" "}
+						Below is a list of the departments <strong>{user?.user_name}</strong>{" "}
 						manages (giving this manager authority to view/edit or approve
 						time/expenses logged by staffers in those departments).
 					</Typography>
@@ -253,7 +253,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 						<CloseIcon />
 					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						{user.user_name}
+						{user?.user_name}
 					</Typography>
 					<Button autoFocus color="inherit" onClick={onClose}>
 						Save

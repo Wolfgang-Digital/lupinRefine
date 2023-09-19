@@ -68,10 +68,10 @@ function CollapsibleHoursGrid() {
 
 	// Group the fetched rows by month
 	fetchedRows.forEach((row) => {
-		if (!groupedRows[row.month]) {
-			groupedRows[row.month] = [];
+		if (!groupedRows[row.month || 0]) {
+			groupedRows[row.month || 0] = [];
 		}
-		groupedRows[row.month].push(row);
+		groupedRows[row.month || 0].push(row);
 	});
 
 	return (
