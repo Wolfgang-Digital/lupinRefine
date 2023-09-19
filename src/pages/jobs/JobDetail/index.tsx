@@ -23,7 +23,9 @@ import {
 	TabContentContainer,
 	TabPanelContainer,
 } from "@styled-components/jobs";
+
 import CollapsibleGrid from "@components/ClientFinancialsTable";
+import CollapsibleHoursGrid from "@components/AllocateHoursTable";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -181,6 +183,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Allocations
 								</Typography>
+								<CollapsibleHoursGrid />
 							</Paper>
 						</Container>
 					</TabPanelContainer>
