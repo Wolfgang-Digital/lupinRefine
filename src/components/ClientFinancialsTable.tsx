@@ -18,6 +18,7 @@ import { FinancialTable } from "types";
 
 type RowData = FinancialTable & {
 	month: string;
+	// date: string;
 	// value: number;
 	// budgetToInvoice: number;
 	// invoiced: number;
@@ -56,16 +57,17 @@ type RowData = FinancialTable & {
 // }
 
 const columns = [
+	{ field: "job_id", headerName: "Job ID", width: 150 },
 	{ field: "job", headerName: "Job", width: 150 },
 	{ field: "task", headerName: "Task", width: 150 },
 	{ field: "staff", headerName: "Staff", width: 150 },
 	{ field: "hours", headerName: "Hours", width: 100 },
 	{ field: "rate", headerName: "Rate", width: 100 },
 	{ field: "value", headerName: "Value", width: 100 },
-	{ field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
-	{ field: "invoiced", headerName: "Invoiced", width: 120 },
-	{ field: "balRemaining", headerName: "Bal Remaining", width: 150 },
-	{ field: "balanced", headerName: "Balanced", width: 120, type: "boolean" },
+	// { field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
+	// { field: "invoiced", headerName: "Invoiced", width: 120 },
+	// { field: "balRemaining", headerName: "Bal Remaining", width: 150 },
+	// { field: "balanced", headerName: "Balanced", width: 120, type: "boolean" },
 ];
 
 function CustomToolbar() {
@@ -89,12 +91,13 @@ function CollapsibleGrid() {
 				const mappedData: RowData[] = financialTable.map(
 					(item: FinancialTable) => ({
 						...item,
-						// id: item.id,
+						id: item.id,
+						job_id: item.job_id,
 						month: formatDate(item.date?.toString() || new Date().toString()), // Format the month name
-						// job: item.job_name,
-						// task: item.task_name,
-						// staff: item.user_name,
-						// hours: item.time,
+						job: item.job_name,
+						task: item.task_name,
+						staff: item.user_name,
+						hours: item.time,
 						// rate: item.rate,
 						// value: 0, // Add to table
 						// budgetToInvoice: 0, // Add to table

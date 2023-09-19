@@ -18,3 +18,4 @@ export type TimesheetRowsView = Views["timesheet_rows_view"]["Row"];
 export type JobsDropdownViewDemo = Views["timesheet_rows_demo"]["Row"];
 export type AllTasksDemo = Views["all_tasks_demo"]["Row"];
 export type WolfgangTasksDemo = Views["wolfgang_jobs_demo"]["Row"];
+export type AllocateHoursView = Views["allocate_hours_view"]["Row"];
