@@ -13,7 +13,11 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import { getFinancialTable } from "@api/financialTable";
+import {
+	getFinancialTable,
+	groupedFinancialData,
+	groupFinancialTableData,
+} from "@api/financialTable";
 import { FinancialTable } from "types";
 
 type RowData = FinancialTable & {
@@ -78,14 +82,42 @@ function CustomToolbar() {
 	);
 }
 
-function CollapsibleGrid() {
+function CollapsibleGrid({ clientId }: { clientId: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
+	const [financialData, setFinancialData] = useState<FinancialTable[]>([]);
+	const [filteredFinancialData, setFilteredFinancialData] = useState<
+		FinancialTable[]
+	>([]);
+
+	const [selectedMonth, setSelectedMonth] = useState(6);
+
+	function fetchGroupedData(
+		financialTable: FinancialTable[],
+		selectedMonth: number
+	) {
+		const myArr: FinancialTable[] = [];
+		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
+		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
+		Object.values(groupedData).forEach((item) => {
+			Object.values(item).forEach((myItem) => {
+				myArr.push(myItem);
+			});
+		});
+		setFilteredFinancialData(myArr);
+	}
+
+	useEffect(() => {
+		fetchGroupedData(financialData, selectedMonth);
+	}, [selectedMonth]);
 
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const financialTable = await getFinancialTable();
-
+			const financialTable = await getFinancialTable(clientId);
+			if (financialTable) {
+				setFinancialData(financialTable);
+				fetchGroupedData(financialTable, selectedMonth);
+			}
 			if (financialTable) {
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = financialTable.map(
@@ -133,29 +165,34 @@ function CollapsibleGrid() {
 
 	return (
 		<div style={{ height: 400, width: "100%" }}>
-			{Object.keys(groupedRows).map((month) => (
-				<Accordion key={month}>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography>{month}</Typography>
-					</AccordionSummary>
-					<AccordionDetails>
-						<Paper>
-							<DataGrid
-								rows={groupedRows[month]}
-								columns={columns.map((col) => ({
-									...col,
-									editable: true, // Set all columns as editable
-								}))}
-								components={{
-									Toolbar: CustomToolbar,
-								}}
-								hideFooter
-								autoHeight
-							/>
-						</Paper>
-					</AccordionDetails>
-				</Accordion>
-			))}
+			<button
+				onClick={() => {
+					setSelectedMonth(selectedMonth - 1);
+				}}
+			>
+				Previous month
+			</button>
+			selectedMonth: {selectedMonth}
+			<button
+				onClick={() => {
+					setSelectedMonth(selectedMonth + 1);
+				}}
+			>
+				Next month
+			</button>
+			<DataGrid
+				rows={filteredFinancialData}
+				columns={columns.map((col) => ({
+					...col,
+					editable: true, // Set all columns as editable
+				}))}
+				components={{
+					Toolbar: CustomToolbar,
+				}}
+				hideFooter
+				autoHeight
+				getRowId={(row) => row.id || 0}
+			/>
 		</div>
 	);
 }
