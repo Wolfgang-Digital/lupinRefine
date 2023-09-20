@@ -18,6 +18,7 @@ import {
 	groupFinancialTableData,
 } from "@api/financialTable";
 import { FinancialTable } from "types";
+import { WeekButton } from "@styled-components/timesheet";
 
 type RowData = FinancialTable & {
 	month: string;
@@ -61,7 +62,7 @@ type RowData = FinancialTable & {
 
 const columns = [
 	{ field: "job_id", headerName: "Job ID", width: 100 },
-	{ field: "job_name", headerName: "Job", width: 350 },
+	{ field: "job_name", headerName: "Job", width: 200 },
 	{ field: "task_name", headerName: "Task", width: 250 },
 	{ field: "user_name", headerName: "Staff", width: 150 },
 	{ field: "time", headerName: "Hours", width: 75 },
@@ -163,35 +164,49 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	});
 
 	return (
-		<div style={{ height: 400, width: "100%" }}>
-			<button
-				onClick={() => {
-					setSelectedMonth(selectedMonth - 1);
-				}}
-			>
-				Previous month
-			</button>
-			selectedMonth: {selectedMonth}
-			<button
-				onClick={() => {
-					setSelectedMonth(selectedMonth + 1);
-				}}
-			>
-				Next month
-			</button>
-			<DataGrid
-				rows={filteredFinancialData}
-				columns={columns.map((col) => ({
-					...col,
-					editable: true, // Set all columns as editable
-				}))}
-				components={{
-					Toolbar: CustomToolbar,
-				}}
-				hideFooter
-				autoHeight
-				getRowId={(row) => row.id || 0}
-			/>
+		<div
+			style={{
+				height: "100%",
+				width: "100%",
+				overflow: "auto",
+			}}
+		>
+			<div style={{ display: "flex", paddingTop: "20px" }}>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth - 1);
+					}}
+				>
+					Previous month
+				</WeekButton>
+				<div
+					style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
+				>
+					selectedMonth: {selectedMonth}
+				</div>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth + 1);
+					}}
+				>
+					Next month
+				</WeekButton>
+			</div>
+			<div style={{ paddingTop: "20px" }}>
+				<DataGrid
+					rows={filteredFinancialData}
+					columns={columns.map((col) => ({
+						...col,
+						editable: true, // Set all columns as editable
+					}))}
+					components={{
+						Toolbar: CustomToolbar,
+					}}
+					hideFooter
+					autoHeight
+					getRowId={(row) => row.id || 0}
+				/>
+			</div>
 		</div>
 	);
 }

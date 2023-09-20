@@ -135,13 +135,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 							paddingRight: "90px",
 						}}
 					>
-						<FormControlLabel control={<Checkbox />} label="System Administrators" />
-						<FormControlLabel control={<Checkbox />} label="Everyone" />
-						<FormControlLabel control={<Checkbox />} label="Client Leads" />
-						<FormControlLabel control={<Checkbox />} label="Time entry" />
-						<FormControlLabel control={<Checkbox />} label="Heads / Deputies" />
-						<FormControlLabel control={<Checkbox />} label="Office / HR" />
-						<FormControlLabel control={<Checkbox />} label="Finance" />
+						<FormControlLabel control={<Checkbox />} label="Admin" />
+						<FormControlLabel control={<Checkbox />} label="Finance Admin" />
+						<FormControlLabel control={<Checkbox />} label="Team Lead" />
+						<FormControlLabel control={<Checkbox />} label="User" />
 					</div>
 					{/* Add more checkboxes as needed */}
 
@@ -187,47 +184,6 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 						<FormControlLabel control={<Checkbox />} label="Finance" />
 						<FormControlLabel control={<Checkbox />} label="Client Services" />
 						<FormControlLabel control={<Checkbox />} label="Dev" />
-					</div>
-
-					{/* Staff Teams */}
-					<Typography
-						component="h1"
-						variant="h6" // Smaller variant for headings
-						style={{
-							paddingLeft: "20px",
-							paddingBottom: "5px",
-							paddingTop: "5px",
-							background: "#3A2462", // Background color for the heading
-							color: "#fff", // Text color for the heading
-						}}
-					>
-						Staff Teams
-					</Typography>
-					<Typography
-						paragraph
-						style={{
-							paddingTop: "20px",
-							paddingLeft: "20px",
-							paddingRight: "90px",
-						}}
-					>
-						Below is a list of available staff teams. These can be used to assign a
-						group of staffers to a job. Check off the teams you would like this
-						staffer to be a part of.
-					</Typography>
-					<div
-						style={{
-							paddingLeft: "20px",
-							paddingBottom: "20px",
-						}}
-					>
-						<FormControlLabel control={<Checkbox />} label="Leads" />
-						<FormControlLabel control={<Checkbox />} label="Heads" />
-						<FormControlLabel control={<Checkbox />} label="Deputies" />
-						<FormControlLabel control={<Checkbox />} label="Google Ads Mgt" />
-						<FormControlLabel control={<Checkbox />} label="Social Mgt" />
-						<FormControlLabel control={<Checkbox />} label="SEO / Content Mgt" />
-						<FormControlLabel control={<Checkbox />} label="Client Services Mgt" />
 					</div>
 				</Paper>
 			</Container>
