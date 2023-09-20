@@ -64,8 +64,8 @@ const columns = [
 	{ field: "job_name", headerName: "Job", width: 350 },
 	{ field: "task_name", headerName: "Task", width: 250 },
 	{ field: "user_name", headerName: "Staff", width: 150 },
-	{ field: "time", headerName: "Hours", width: 100 },
-	{ field: "rate", headerName: "Rate", width: 100 },
+	{ field: "time", headerName: "Hours", width: 75 },
+	{ field: "rate", headerName: "Rate", width: 75 },
 	{ field: "value", headerName: "Value", width: 100 },
 	// { field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
 	// { field: "invoiced", headerName: "Invoiced", width: 120 },
@@ -88,7 +88,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		FinancialTable[]
 	>([]);
 
-	const [selectedMonth, setSelectedMonth] = useState(6);
+	const [selectedMonth, setSelectedMonth] = useState(7);
 
 	function fetchGroupedData(
 		financialTable: FinancialTable[],
