@@ -60,11 +60,11 @@ type RowData = FinancialTable & {
 // }
 
 const columns = [
-	{ field: "job_id", headerName: "Job ID", width: 150 },
-	{ field: "job", headerName: "Job", width: 150 },
-	{ field: "task", headerName: "Task", width: 150 },
-	{ field: "staff", headerName: "Staff", width: 150 },
-	{ field: "hours", headerName: "Hours", width: 100 },
+	{ field: "job_id", headerName: "Job ID", width: 100 },
+	{ field: "job_name", headerName: "Job", width: 350 },
+	{ field: "task_name", headerName: "Task", width: 250 },
+	{ field: "user_name", headerName: "Staff", width: 150 },
+	{ field: "time", headerName: "Hours", width: 100 },
 	{ field: "rate", headerName: "Rate", width: 100 },
 	{ field: "value", headerName: "Value", width: 100 },
 	// { field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
