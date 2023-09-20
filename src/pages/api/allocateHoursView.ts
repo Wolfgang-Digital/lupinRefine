@@ -8,6 +8,7 @@ export const getAllAllocatedHours = async (): Promise<
 		const { data, error } = (await supabase
 			.from("allocate_hours_view")
 			.select("*")
+			// .eq("job_id", 3549)
 			.order("job_id", { ascending: true })) as unknown as {
 			data: AllocateHoursView[];
 			error: PostgrestError;
