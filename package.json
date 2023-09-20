@@ -58,7 +58,8 @@
 		"react-chartjs-2": "^5.2.0",
 		"react-dom": "^18.0.0",
 		"react-router-dom": "^6.15.0",
-		"styled-components": "^6.0.5"
+		"styled-components": "^6.0.5",
+		"supabase": "^1.99.5"
 	},
 	"devDependencies": {
 		"@types/node": "^12.20.11",

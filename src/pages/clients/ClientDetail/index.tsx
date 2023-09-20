@@ -151,6 +151,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 							<Typography component="h1" variant="h5">
 								Financial Details
 							</Typography>
+
 							<ClientFinancials clientId={client?.id || 0} />
 						</Paper>
 					</Container>
