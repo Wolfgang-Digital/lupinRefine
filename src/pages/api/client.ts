@@ -7,7 +7,7 @@ export const getAllClients = async (): Promise<ClientData[] | undefined> => {
 		const { data, error } = (await supabase
 			.from("client_overview")
 			.select("*")
-			.order("id", { ascending: true })) as unknown as {
+			.order("name", { ascending: true })) as unknown as {
 			data: ClientData[];
 			error: PostgrestError;
 		};

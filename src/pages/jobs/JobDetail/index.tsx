@@ -24,7 +24,9 @@ import {
 	TabPanelContainer,
 } from "@styled-components/jobs";
 
-import CollapsibleGrid from "@components/ClientFinancialsTable";
+import CollapsibleGrid, {
+	ClientFinancials,
+} from "@components/ClientFinancialsTable";
 import CollapsibleHoursGrid from "@components/AllocateHoursTable";
 import CollapsibleTasksGrid from "@components/JobTasksTable";
 
@@ -151,6 +153,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Financial Details
 								</Typography>
+								{/* <ClientFinancials clientId={client?.id || 0} /> */}
 								<CollapsibleGrid />
 							</Paper>
 						</Container>
@@ -183,7 +186,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 							<CssBaseline />
 							<Paper elevation={3} sx={{ padding: "20px" }}>
 								<Typography component="h1" variant="h5">
-									Allocations
+									Allocations: {job.job_name}
 								</Typography>
 								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
 							</Paper>

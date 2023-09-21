@@ -18,8 +18,8 @@ import { AllocateHoursView } from "types";
 type RowData = AllocateHoursView;
 
 const columns = [
-	{ field: "job_id", headerName: "Job ID", width: 150 },
-	{ field: "job_name", headerName: "Job", width: 150 },
+	// { field: "job_id", headerName: "Job ID", width: 150 },
+	// { field: "job_name", headerName: "Job", width: 150 },
 	{ field: "task_name", headerName: "Task", width: 150 },
 	{ field: "user_name", headerName: "User", width: 150 },
 	{ field: "hours", headerName: "Hours", width: 150 },
