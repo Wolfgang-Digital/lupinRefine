@@ -1,18 +1,17 @@
-import supabase, { PostgrestError } from "@config/supaBaseClient";
+import supabase from "@config/supaBaseClient";
 import { AllocateHoursView } from "types";
 
-export const getAllAllocatedHours = async (): Promise<
-	AllocateHoursView[] | undefined
-> => {
+export type groupedAllocateHours = {
+	[key: number]: { [key: number]: AllocateHoursView };
+};
+
+export const getAllAllocatedHours = async (jobId: number) => {
 	try {
-		const { data, error } = (await supabase
+		const { data, error } = await supabase
 			.from("allocate_hours_view")
 			.select("*")
-			// .eq("job_id", 3549)
-			.order("job_id", { ascending: true })) as unknown as {
-			data: AllocateHoursView[];
-			error: PostgrestError;
-		};
+			.order("job_id", { ascending: true })
+			.eq("job_id", jobId);
 
 		if (error) {
 			console.error("Error fetching all allocated hours: ", error);

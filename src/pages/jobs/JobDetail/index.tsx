@@ -183,7 +183,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Allocations
 								</Typography>
-								<CollapsibleHoursGrid />
+								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
 							</Paper>
 						</Container>
 					</TabPanelContainer>

@@ -23,8 +23,8 @@ const columns = [
 	{ field: "task_name", headerName: "Task", width: 150 },
 	{ field: "user_name", headerName: "User", width: 150 },
 	{ field: "hours", headerName: "Hours", width: 150 },
-	{ field: "month", headerName: "Month", width: 150 },
-	{ field: "year", headerName: "Year", width: 150 },
+	// { field: "month", headerName: "Month", width: 150 },
+	// { field: "year", headerName: "Year", width: 150 },
 ];
 
 function CustomToolbar() {
@@ -35,13 +35,13 @@ function CustomToolbar() {
 	);
 }
 
-function CollapsibleHoursGrid() {
+function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const allocateHoursTable = await getAllAllocatedHours();
+			const allocateHoursTable = await getAllAllocatedHours(jobId || 0);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -54,8 +54,8 @@ function CollapsibleHoursGrid() {
 						task_name: item.task_name,
 						user_name: item.user_name,
 						hours: item.hours,
-						year: item.year,
-						month: item.month,
+						// year: item.year,
+						// month: item.month,
 					})
 				);
 				setFetchedRows(mappedData);
