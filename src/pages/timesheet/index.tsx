@@ -455,8 +455,18 @@ const Timesheet = () => {
 												fontSize: "smaller", // Reduce the font size
 											}}
 										>
-											Allocated Hours Used
+											Allocated v Used
 										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller", // Reduce the font size
+											}}
+										>
+											Overall Hrs Remaining
+										</TableCell>
+
 										<TableCell
 											style={{
 												borderRight: "1px solid #ccc",
@@ -498,7 +508,6 @@ const Timesheet = () => {
 											>
 												{entry.job.replace(/:/g, ":\n")}
 											</TableCell>
-
 											<TableCell
 												style={{
 													borderRight: "1px solid #ccc",
@@ -507,7 +516,26 @@ const Timesheet = () => {
 												}}
 											>
 												{entry.task}
+												<br />
+												{entry.task}
+												<br />
+												{entry.task}
 											</TableCell>
+
+											<TableCell
+												style={{
+													borderRight: "1px solid #ccc",
+													textAlign: "center",
+													fontSize: "smaller",
+													color: "green",
+												}}
+											>
+												2 hrs of 10
+												<br />2 hrs of 8
+												<br />
+												<span style={{ color: "red" }}>2 hrs of 0</span>
+											</TableCell>
+
 											<TableCell
 												style={{
 													borderRight: "1px solid #ccc",
@@ -515,8 +543,9 @@ const Timesheet = () => {
 													fontSize: "smaller", // Reduce the font size
 												}}
 											>
-												{entry.hours} hrs of AL hrs
+												6.5
 											</TableCell>
+
 											<TableCell
 												style={{
 													borderRight: "1px solid #ccc",
