@@ -26,6 +26,7 @@ import {
 
 import CollapsibleGrid from "@components/ClientFinancialsTable";
 import CollapsibleHoursGrid from "@components/AllocateHoursTable";
+import CollapsibleTasksGrid from "@components/JobTasksTable";
 
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
@@ -167,6 +168,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Tasks
 								</Typography>
+								<CollapsibleTasksGrid jobId={job?.job_id || 0} />
 							</Paper>
 						</Container>
 					</TabPanelContainer>
