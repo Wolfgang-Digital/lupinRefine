@@ -33,7 +33,9 @@ import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user for per month
 import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 
-console.log(getUserAllocatedHoursPerMonth(57, 9));
+const usersAllocatedHours = getUserAllocatedHoursPerMonth(57, 9);
+
+console.log(usersAllocatedHours);
 
 import {
 	// WeekSelectorContainer,
