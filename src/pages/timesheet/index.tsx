@@ -20,9 +20,9 @@ import {
 	Checkbox,
 	TablePagination,
 } from "@mui/material";
-
+import { TimesheetRowsView } from "@types";
 //  get rows for "Allocated Tasks"
-import { getAllTimesheetRowsDemo } from "@api/timesheetRowsDemo";
+import { getAllTimesheetRows } from "@api/timesheetRows";
 // get rows for "All Tasks"
 import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
 // get rows for "Wolfgang Tasks"
@@ -49,6 +49,7 @@ type TimeEntry = {
 type JobOption = {
 	label: string;
 	value: string;
+	taskLabel: string;
 };
 
 type TaskOption = {
@@ -67,6 +68,9 @@ const Timesheet = () => {
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+	const [filteredTimesheets, setFilteredTimesheets] = useState<
+		TimesheetRowsView[]
+	>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	// const [rate, setRate] = useState(0);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
@@ -101,122 +105,157 @@ const Timesheet = () => {
 	const { page, rowsPerPage } = pagination;
 
 	// Fetch tasks and jobs data
-	useEffect(() => {
-		async function fetchTasksAndJobs() {
-			try {
-				const jobsResponse = await getAllTimesheetRowsDemo();
-
-				if (!jobsResponse) {
-					throw new Error("Error fetching data");
-				}
-
-				const jobOptions = jobsResponse.map((job) => ({
-					label: `${job.name} : ${job.job_name}`,
-					value: job.job_id?.toString() || "0",
-					taskLabel: job.task_name,
-				}));
-
-				setJobs(jobOptions);
-
-				// Fetch tasks from the API and populate allTasks
-				const tasksResponse = await getAllTimesheetRowsDemo(); // Replace with your actual API function
-				if (!tasksResponse) {
-					throw new Error("Error fetching tasks");
-				}
-
-				const taskOptions = tasksResponse.map((task) => ({
-					label: task.task_name || "",
-					value: task.job_id?.toString() || "0",
-				}));
-
-				setTasks(taskOptions);
-			} catch (error) {
-				console.error("Error fetching jobs and tasks:", error);
+	async function fetchTasksAndJobsWithFilter() {
+		try {
+			const timesheetsResponse = await getAllTimesheetRows();
+			let filteredResponse: typeof timesheetsResponse = [];
+			if (!timesheetsResponse) {
+				throw new Error("Error fetching data");
 			}
-		}
+			if (filterOption === "Wolfgang Tasks") {
+				filteredResponse = timesheetsResponse.filter(
+					(entry) => entry.client_id === 6
+				);
+			} else if (filterOption === "Allocated Tasks") {
+				filteredResponse = timesheetsResponse.filter(
+					(timesheet) => !!timesheet.hours
+				);
+			} else if (filterOption === "All Tasks") {
+				filteredResponse = timesheetsResponse;
+			}
+			console.log({ filteredResponse });
+			const jobOptions: JobOption[] = [];
+			const taskOptions: TaskOption[] = [];
 
-		fetchTasksAndJobs();
+			filteredResponse.forEach((timesheet) => {
+				jobOptions.push({
+					label: `${timesheet.name} : ${timesheet.job_name}`,
+					value: timesheet.job_id?.toString() || "0",
+					taskLabel: timesheet.task_name || "",
+				});
+				taskOptions.push({
+					label: timesheet.task_name || "",
+					value: timesheet.job_id?.toString() || "0",
+				});
+			});
+
+			setJobs(jobOptions);
+			setTasks(taskOptions);
+			// group filteredResponse by the job_id and accumulate the hours for each task_id
+			console.log(filteredResponse);
+			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
+				const existingEntry = acc.find(
+					(entry) => entry.job_id === curr.job_id && entry.task_id === curr.task_id
+				);
+				if (existingEntry) {
+					existingEntry.hours = (existingEntry.hours || 0) + (curr.hours || 0);
+				} else {
+					acc.push({
+						...curr,
+						hours: curr.hours || 0,
+					});
+				}
+				return acc;
+			}, [] as TimesheetRowsView[]);
+			setFilteredTimesheets(groupedTimesheets);
+		} catch (error) {
+			console.error("Error fetching jobs and tasks:", error);
+		}
+	}
+	useEffect(() => {
+		fetchTasksAndJobsWithFilter();
 	}, []);
 
-	// Fetch data based on filter option
 	useEffect(() => {
-		async function fetchData() {
-			try {
-				//  Render "Allocated Tasks" when selected in Drop Down
-				if (filterOption === "Allocated Tasks") {
-					const FilterResponse = await getAllTimesheetRowsDemo();
-
-					if (!FilterResponse) {
-						throw new Error("Error fetching data");
-					}
-					const jobEntries = FilterResponse.map((entry) => ({
-						job: `${entry.name}: ${entry.job_name}`,
-						task: entry.task_name,
-						hours: "0",
-						date: "01/09/23",
-						nonBillable: false,
-						notes: "",
-					})) as TimeEntry[];
-
-					setTimeEntries(jobEntries);
-				}
-				// Render "All Tasks" when selected in Drop Down
-				else if (filterOption === "All Tasks") {
-					// setTimeEntries([]);
-					const FilterResponse = await getAllJobTasksDemo();
-
-					if (!FilterResponse) {
-						throw new Error("Error fetching data");
-					}
-
-					const jobEntries = FilterResponse.map((entry) => ({
-						job: `${entry.name}: ${entry.job_name}`,
-						task: entry.task_name,
-						hours: "0",
-						date: "01/09/23",
-						nonBillable: false,
-						notes: "",
-					})) as TimeEntry[];
-					// Handle other filter options here
-					// Clear rows or fetch data as needed for other filter options
-					setTimeEntries(jobEntries);
-				}
-				// Render "Wolfgang Tasks" when selected in Drop Down
-				else if (filterOption === "Wolfgang Tasks") {
-					// setTimeEntries([]);
-					const FilterResponse = await getAllWolfgangTasksDemo();
-
-					if (!FilterResponse) {
-						throw new Error("Error fetching data");
-					}
-
-					const jobEntries = FilterResponse.map((entry) => ({
-						job: `${entry.name}: ${entry.job_name}`,
-						task: entry.task_name,
-						hours: "0",
-						date: "01/09/23",
-						nonBillable: false,
-						notes: "",
-					})) as TimeEntry[];
-					// Handle other filter options here
-					// Clear rows or fetch data as needed for other filter options
-					setTimeEntries(jobEntries);
-				} else {
-					// Handle other filter options here
-					// Clear rows or fetch data as needed for other filter options
-					setTimeEntries([]);
-				}
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		}
-
-		fetchData();
-		setPagination((previousPagination) => ({
-			...previousPagination,
-			page: 0,
-		}));
+		fetchTasksAndJobsWithFilter();
 	}, [filterOption]);
+
+	// Fetch data based on filter option
+	// useEffect(() => {
+	// 	async function fetchData() {
+	// 		try {
+	// 			const response = await getAllTimesheetRowsDemo();
+	// 			const filteredResponse = [];
+
+	// 			console.log({ response });
+	// 			if (filterOption === "Allocated Tasks") {
+	// 				response?.filter((entry) => (
+	// 					entry.client_id === 6;
+	// 				);
+	// 			}
+	// if (filterOption === "Allocated Tasks") {
+	// 	filteredResponse
+	// 	}
+	// const jobEntries = FilterResponse.map((entry) => ({
+	// 	job: `${entry.name}: ${entry.job_name}`,
+	// 	task: entry.task_name,
+	// 	hours: "0",
+	// 	date: "01/09/23",
+	// 	nonBillable: false,
+	// 	notes: "",
+	// })) as TimeEntry[];
+
+	// setTimeEntries(jobEntries);
+	//  Render "Allocated Tasks" when selected in Drop Down
+	// if (filterOption === "Allocated Tasks") {
+
+	// }
+	// Render "All Tasks" when selected in Drop Down
+	// else if (filterOption === "All Tasks") {
+	// 	// setTimeEntries([]);
+	// 	const FilterResponse = await getAllJobTasksDemo();
+
+	// 	console.log({ FilterResponse });
+	// 	if (!FilterResponse) {
+	// 		throw new Error("Error fetching data");
+	// 	}
+
+	// 	const jobEntries = FilterResponse.map((entry) => ({
+	// 		job: `${entry.name}: ${entry.job_name}`,
+	// 		task: entry.task_name,
+	// 		hours: "0",
+	// 		date: "01/09/23",
+	// 		nonBillable: false,
+	// 		notes: "",
+	// 	})) as TimeEntry[];
+	// 	// Handle other filter options here
+	// 	// Clear rows or fetch data as needed for other filter options
+	// 	setTimeEntries(jobEntries);
+	// }
+	// // Render "Wolfgang Tasks" when selected in Drop Down
+	// else if (filterOption === "Wolfgang Tasks") {
+	// 	// setTimeEntries([]);
+	// 	const FilterResponse = await getAllWolfgangTasksDemo();
+
+	// 	if (!FilterResponse) {
+	// 		throw new Error("Error fetching data");
+	// 	}
+
+	// 	const jobEntries = FilterResponse.map((entry) => ({
+	// 		job: `${entry.name}: ${entry.job_name}`,
+	// 		task: entry.task_name,
+	// 		hours: "0",
+	// 		date: "01/09/23",
+	// 		nonBillable: false,
+	// 		notes: "",
+	// 	})) as TimeEntry[];
+	// 	// Handle other filter options here
+	// 	// Clear rows or fetch data as needed for other filter options
+	// 	setTimeEntries(jobEntries);
+	// } else {
+	// Handle other filter options here
+	// Clear rows or fetch data as needed for other filter options
+	// 		} catch (error) {
+	// 			console.error("Error fetching data:", error);
+	// 		}
+	// 	}
+
+	// 	fetchData();
+	// 	setPagination((previousPagination) => ({
+	// 		...previousPagination,
+	// 		page: 0,
+	// 	}));
+	// }, [filterOption]);
 
 	// Function to navigate between weeks
 	const navigateWeeks = (weeks: number) => {
@@ -260,8 +299,8 @@ const Timesheet = () => {
 		setShowForm(false);
 	};
 
-	// Update the TimeEntries based on the current page and rows per page
-	const displayedTimeEntries = timeEntries.slice(
+	// Update the time sheets based on the current page and rows per page
+	const displayedTimesheets = filteredTimesheets.slice(
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
@@ -334,6 +373,24 @@ const Timesheet = () => {
 		};
 		const response = PostTimeEntry(dataToPost);
 		console.log({ response });
+	}
+
+	function daysUntilEndOfMonth() {
+		// Get the current date
+		const currentDate = new Date();
+
+		// Get the last day of the current month
+		const lastDayOfMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth() + 1,
+			0
+		);
+
+		// Calculate the difference in days
+		const timeDifference = lastDayOfMonth.getTime() - currentDate.getTime();
+		const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+		return daysDifference;
 	}
 	return (
 		<>
@@ -496,85 +553,86 @@ const Timesheet = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{displayedTimeEntries.map((entry, index) => (
-										<TableRow key={index}>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													whiteSpace: "pre-line",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												{entry.job.replace(/:/g, ":\n")}
-											</TableCell>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												{entry.task}
-												<br />
-												{entry.task}
-												<br />
-												{entry.task}
-											</TableCell>
+									{displayedTimesheets.map((entry, index) => {
+										const remainingHours = Math.max(
+											0,
+											(entry.hours || 0) - (entry.time || 0)
+										);
+										const areAllHoursUsed = remainingHours === 0;
+										return (
+											<TableRow key={index}>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														whiteSpace: "pre-line",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													{entry.job_name?.replace(/:/g, ":\n")}
+												</TableCell>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													{entry.task_name}
+												</TableCell>
 
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller",
-													color: "green",
-												}}
-											>
-												2 hrs of 10
-												<br />2 hrs of 8
-												<br />
-												<span style={{ color: "red" }}>2 hrs of 0</span>
-											</TableCell>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														fontSize: "smaller",
+														color: areAllHoursUsed ? "red" : "green",
+													}}
+												>
+													{entry.time} hrs of {entry.hours}
+												</TableCell>
 
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												6.5
-											</TableCell>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													{remainingHours}
+												</TableCell>
 
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												29
-											</TableCell>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												<Checkbox />
-											</TableCell>
-											<TableCell
-												style={{
-													cursor: "pointer",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												<MoreTimeIcon onClick={handleAddTimeClick} />
-											</TableCell>
-										</TableRow>
-									))}
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													{/** days left till end of this month */}
+													{daysUntilEndOfMonth()}
+												</TableCell>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													<Checkbox />
+												</TableCell>
+												<TableCell
+													style={{
+														cursor: "pointer",
+														textAlign: "center",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													<MoreTimeIcon onClick={handleAddTimeClick} />
+												</TableCell>
+											</TableRow>
+										);
+									})}
 								</TableBody>
 							</Table>
 						</TableContainer>
@@ -583,7 +641,7 @@ const Timesheet = () => {
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
 							component="div"
-							count={timeEntries.length}
+							count={filteredTimesheets.length}
 							rowsPerPage={rowsPerPage}
 							page={page}
 							onPageChange={handleChangePage}
