@@ -28,6 +28,11 @@ import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
 // get rows for "Wolfgang Tasks"
 import { getAllWolfgangTasksDemo } from "@pages/api/wolfgangTasksDemo";
 
+// get allocated hours for user per month
+import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+
+console.log(getUserAllocatedHoursPerMonth(57, 9));
+
 import { getTaskByJobId } from "@pages/api/tasks";
 
 import {
