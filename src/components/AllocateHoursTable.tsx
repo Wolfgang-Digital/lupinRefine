@@ -20,9 +20,9 @@ type RowData = AllocateHoursView;
 const columns = [
 	// { field: "job_id", headerName: "Job ID", width: 150 },
 	// { field: "job_name", headerName: "Job", width: 150 },
-	{ field: "task_name", headerName: "Task", width: 150 },
-	{ field: "user_name", headerName: "User", width: 150 },
-	{ field: "hours", headerName: "Hours", width: 150 },
+	{ field: "task_name", headerName: "Task", width: 300 },
+	{ field: "user_name", headerName: "Wolfganger", width: 150 },
+	{ field: "hours", headerName: "Hours Allocated", width: 150 },
 	// { field: "month", headerName: "Month", width: 150 },
 	// { field: "year", headerName: "Year", width: 150 },
 ];
@@ -65,7 +65,6 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	}, []);
 
 	const groupedRows: { [key: string]: RowData[] } = {};
-
 	// Group the fetched rows by month
 	fetchedRows.forEach((row) => {
 		if (!groupedRows[row.month || 0]) {

@@ -18,7 +18,7 @@ import { JobTasksView } from "types";
 
 type RowData = JobTasksView;
 
-const columns = [{ field: "task_name", headerName: " ", width: 300 }];
+const columns = [{ field: "task_name", headerName: "Task", width: 300 }];
 
 function CustomToolbar() {
 	return (
