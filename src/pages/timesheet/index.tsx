@@ -125,7 +125,7 @@ const Timesheet = () => {
 				);
 			} else if (filterOption === "Allocated Tasks") {
 				filteredResponse = timesheetsResponse.filter(
-					(timesheet) => !!timesheet.hours
+					(timesheet) => !!timesheet.time
 				);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
@@ -155,11 +155,11 @@ const Timesheet = () => {
 					(entry) => entry.job_id === curr.job_id && entry.task_id === curr.task_id
 				);
 				if (existingEntry) {
-					existingEntry.hours = (existingEntry.hours || 0) + (curr.hours || 0);
+					existingEntry.time = (existingEntry.time || 0) + (curr.time || 0);
 				} else {
 					acc.push({
 						...curr,
-						hours: curr.hours || 0,
+						time: curr.time || 0,
 					});
 				}
 				return acc;
@@ -519,7 +519,7 @@ const Timesheet = () => {
 												fontSize: "smaller", // Reduce the font size
 											}}
 										>
-											Allocated v Used
+											Used v Allocated
 										</TableCell>
 										<TableCell
 											style={{
@@ -576,7 +576,7 @@ const Timesheet = () => {
 														fontSize: "smaller", // Reduce the font size
 													}}
 												>
-													{entry.job_name?.replace(/:/g, ":\n")}
+													{entry.name} :{entry.job_name?.replace(/:/g, ":\n")}
 												</TableCell>
 												<TableCell
 													style={{
