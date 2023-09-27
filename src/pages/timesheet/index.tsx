@@ -501,6 +501,15 @@ const Timesheet = () => {
 												fontSize: "smaller", // Reduce the font size
 											}}
 										>
+											ID
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller", // Reduce the font size
+											}}
+										>
 											Job
 										</TableCell>
 										<TableCell
@@ -576,8 +585,17 @@ const Timesheet = () => {
 														fontSize: "smaller", // Reduce the font size
 													}}
 												>
-													{entry.job_id} : {entry.name} :
-													{entry.job_name?.replace(/:/g, ":\n")}
+													{entry.job_id}
+												</TableCell>
+												<TableCell
+													style={{
+														borderRight: "1px solid #ccc",
+														textAlign: "center",
+														whiteSpace: "pre-line",
+														fontSize: "smaller", // Reduce the font size
+													}}
+												>
+													{entry.name} :{entry.job_name?.replace(/:/g, ":\n")}
 												</TableCell>
 												<TableCell
 													style={{
