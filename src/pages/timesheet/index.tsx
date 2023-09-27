@@ -421,7 +421,7 @@ const Timesheet = () => {
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
-					<Grid item xs={7}>
+					<Grid item xs={8}>
 						<TimesheetContainer
 							style={{
 								display: "flex",
@@ -676,7 +676,7 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "80px" }}
