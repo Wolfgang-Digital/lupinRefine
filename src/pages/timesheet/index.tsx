@@ -576,7 +576,8 @@ const Timesheet = () => {
 														fontSize: "smaller", // Reduce the font size
 													}}
 												>
-													{entry.name} :{entry.job_name?.replace(/:/g, ":\n")}
+													{entry.job_id} : {entry.name} :
+													{entry.job_name?.replace(/:/g, ":\n")}
 												</TableCell>
 												<TableCell
 													style={{
