@@ -4,15 +4,16 @@ import { JobsDropdownViewDemo, TimesheetRowsView } from "types";
 export type TimesheetData = JobsDropdownViewDemo;
 export type TimesheetDataDemo = JobsDropdownViewDemo;
 
-export const getAllTimesheetRows = async (): Promise<
-	TimesheetRowsView[] | undefined
-> => {
+export const getAllTimesheetRows = async (
+	userID: number
+): Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
 			.from("timesheet_rows_view_v5")
 			.select("*")
 			.order("name", { ascending: true })
-			.order("job_id", { ascending: true })) as unknown as {
+			.order("job_id", { ascending: true })
+			.eq("user_id", userID)) as unknown as {
 			data: TimesheetRowsView[];
 			error: PostgrestError;
 		};

@@ -22,10 +22,7 @@ import {
 } from "@mui/material";
 import { TimesheetRowsView } from "@types";
 //  get rows for "Allocated Tasks"
-import {
-	getAllTimesheetRows,
-	getAllTimesheetRowsV2,
-} from "@pages/api/timesheetRows";
+import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 // get rows for "All Tasks"
 import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
 // get rows for "Wolfgang Tasks"
@@ -65,6 +62,27 @@ type TaskOption = {
 	value: string;
 };
 
+type TimesheetEntries = {
+	name: string | null;
+	hours: number | null;
+	job_id: number | null;
+	subTasks: [
+		{
+			task_id: number | null;
+			task_name: string | null;
+			time: number | null;
+			hours: number | null;
+		}
+	];
+};
+
+// const timesheetEntries: {
+// 	name: string | null;
+// 	hours: number | null;
+// 	job_id: number | null;
+// 	tasks: { task_id: number | null; task_name: string | null };
+// } = [];
+
 // Create the Timesheet component
 const Timesheet = () => {
 	// Initialize state variables
@@ -79,6 +97,9 @@ const Timesheet = () => {
 	const [filteredTimesheets, setFilteredTimesheets] = useState<
 		TimesheetRowsView[]
 	>([]);
+	const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntries[]>(
+		[]
+	);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
@@ -114,12 +135,10 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRows();
+			const timesheetsResponse = await getAllTimesheetRows(57);
+			console.log(timesheetsResponse);
 			let filteredResponse: typeof timesheetsResponse = [];
-
-			//const timesheetTasksResponse = await getAllTimesheetRowsV2();
-			// let tasksResponse: typeof timesheetTasksResponse = [];
-
+			setTimesheetEntries([]);
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -155,6 +174,7 @@ const Timesheet = () => {
 
 			//group filteredResponse by the job_id and accumulate the hours for each task_id
 			// console.log(filteredResponse);
+
 			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
 				const existingEntry = acc.find(
 					(entry) => entry.job_id === curr.job_id && entry.task_id === curr.task_id
@@ -170,13 +190,59 @@ const Timesheet = () => {
 				return acc;
 			}, [] as TimesheetRowsView[]);
 			setFilteredTimesheets(groupedTimesheets);
+			// console.log(groupedTimesheets);
+			const timesheetRowsEntries: typeof timesheetEntries = [];
+			groupedTimesheets.map((item) => {
+				timesheetRowsEntries.push({
+					name: item.name || "",
+					hours: item.hours || 0,
+					job_id: item.job_id || 0,
+					subTasks: {
+						task_id: item.task_id || 0,
+						task_name: item.task_name || "",
+						time: item.time || 0,
+						hours: item.hours || 0,
+					},
+				});
+			}) || [];
+			setTimesheetEntries(timesheetRowsEntries);
+			const someVar = timesheetRowsEntries.reduce((acc, curr) => {
+				const existingEntry = acc.find((entry) => entry.job_id === curr.job_id);
+				if (!existingEntry) {
+					acc.splice(-2, 0, {
+						subTasks: {
+							task_id: curr.subTasks.task_id,
+							task_name: curr.subTasks.task_name,
+						},
+					});
+				}
+				return acc;
+			}, [] as TimesheetEntries[]);
+			console.log(filteredTimesheets);
+
+			// const newGroupedTimesheets = groupedTimesheets.reduce((acc, curr) => {
+			// 	const existingEntry2 = acc.find(
+			// 		(entry) => entry.job_id === curr.job_id && entry.task_id != curr.task_id
+			// 	);
+			// 	if (existingEntry2) {
+			// 		acc.push({
+			// 			...curr,
+			// 		});
+			// 	}
+			// 	return acc;
+			// }, [] as TimesheetRowsView[]);
+			// console.log(newGroupedTimesheets);
+			// const result = groupedTimesheets.map((item) => ({
+			// 	[item.job_id || 0]: { jobId: item.name },
+			// }));
+			// console.log(result);
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
 	}
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
-	});
+	}, []);
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption]);
@@ -406,6 +472,18 @@ const Timesheet = () => {
 								<TableHead>
 									<TableRow>
 										<TableCell
+											colSpan={8}
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller", // Reduce the font size
+											}}
+										>
+											ID
+										</TableCell>
+									</TableRow>
+									<TableRow>
+										<TableCell
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
@@ -440,6 +518,15 @@ const Timesheet = () => {
 											}}
 										>
 											Used V Allocated
+										</TableCell>
+										<TableCell
+											style={{
+												borderRight: "1px solid #ccc",
+												textAlign: "center",
+												fontSize: "smaller", // Reduce the font size
+											}}
+										>
+											Hours Left
 										</TableCell>
 										<TableCell
 											style={{
