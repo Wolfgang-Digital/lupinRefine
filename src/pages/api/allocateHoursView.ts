@@ -5,13 +5,14 @@ export type groupedAllocateHours = {
 	[key: number]: { [key: number]: AllocateHoursView };
 };
 
-export const getAllAllocatedHours = async (jobId: number) => {
+export const getAllAllocatedHours = async (userID: number, month: number) => {
 	try {
 		const { data, error } = await supabase
 			.from("allocate_hours_view")
 			.select("*")
 			.order("job_id", { ascending: true })
-			.eq("job_id", jobId);
+			.eq("month", month)
+			.eq("user_id", userID);
 
 		if (error) {
 			console.error("Error fetching all allocated hours: ", error);
