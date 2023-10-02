@@ -218,7 +218,7 @@ const Timesheet = () => {
 				}
 				return acc;
 			}, [] as TimesheetEntries[]);
-			console.log(filteredTimesheets);
+			console.log(timesheetRowsEntries);
 
 			// const newGroupedTimesheets = groupedTimesheets.reduce((acc, curr) => {
 			// 	const existingEntry2 = acc.find(
