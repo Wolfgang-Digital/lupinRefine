@@ -20,13 +20,10 @@ import {
 	Checkbox,
 	TablePagination,
 } from "@mui/material";
-import { TimesheetRowsView, TimesheetRowsTest } from "@types";
+import { TimesheetRowsView } from "@types";
 //  get rows for "Allocated Tasks"
-import { getAllTimesheetRows, getAllTimesheetRowsV2 } from "@api/timesheetRows";
-// get rows for "All Tasks"
-import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
-// get rows for "Wolfgang Tasks"
-import { getAllWolfgangTasksDemo } from "@pages/api/wolfgangTasksDemo";
+import { getAllTimesheetRows } from "@api/timesheetRows";
+// get rows for "All Tasks"";
 
 import { getTaskByJobId } from "@pages/api/tasks";
 
