@@ -20,14 +20,7 @@ import {
 	Checkbox,
 	TablePagination,
 } from "@mui/material";
-import { TimesheetRowsView } from "@types";
-//  get rows for "Allocated Tasks"
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
-// get rows for "All Tasks"
-import { getAllJobTasksDemo } from "@pages/api/allTasksDemo";
-// get rows for "Wolfgang Tasks"
-import { getAllWolfgangTasksDemo } from "@pages/api/wolfgangTasksDemo";
-
 import { getTaskByJobId } from "@pages/api/tasks";
 
 // get allocated hours for user per month
@@ -82,6 +75,21 @@ type TimesheetEntries = {
 // 	job_id: number | null;
 // 	tasks: { task_id: number | null; task_name: string | null };
 // } = [];
+type Task = {
+	task_id: number;
+	task_name: string;
+	time: number;
+	hours?: number;
+};
+
+type Job = {
+	job_id: number;
+	job_name: string;
+	client_name: string;
+	tasks: Task[];
+};
+
+type GroupedTimesheets = Job[];
 
 // Create the Timesheet component
 const Timesheet = () => {
@@ -90,16 +98,14 @@ const Timesheet = () => {
 		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
 
+	const [openedAccordions, setOpenedAccordions] = useState<object>({});
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-	const [filteredTimesheets, setFilteredTimesheets] = useState<
-		TimesheetRowsView[]
-	>([]);
-	const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntries[]>(
-		[]
-	);
+
+	const [filteredTimesheets, setFilteredTimesheets] =
+		useState<GroupedTimesheets>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
@@ -136,9 +142,9 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRows(57);
-			console.log(timesheetsResponse);
+			console.log({ timesheetsResponse });
+
 			let filteredResponse: typeof timesheetsResponse = [];
-			setTimesheetEntries([]);
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -153,7 +159,13 @@ const Timesheet = () => {
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
-			// console.log({ filteredResponse });
+			filteredResponse = filteredResponse.filter(({ date }) => {
+				const dateObj = new Date(date || new Date());
+				return (
+					dateObj.getMonth() === selectedWeekStart.getMonth() &&
+					dateObj.getFullYear() === selectedWeekStart.getFullYear()
+				);
+			});
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
 
@@ -172,70 +184,45 @@ const Timesheet = () => {
 			setJobs(jobOptions);
 			setTasks(taskOptions);
 
-			//group filteredResponse by the job_id and accumulate the hours for each task_id
-			// console.log(filteredResponse);
-
 			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
-				const existingEntry = acc.find(
-					(entry) => entry.job_id === curr.job_id && entry.task_id === curr.task_id
-				);
-				if (existingEntry) {
-					existingEntry.time = (existingEntry.time || 0) + (curr.time || 0);
+				const existingJobEntry = acc.find((entry) => entry.job_id === curr.job_id);
+
+				if (existingJobEntry) {
+					const existingTaskEntry = existingJobEntry.tasks.find(
+						(task) => task.task_id === curr.task_id
+					);
+
+					if (existingTaskEntry) {
+						existingTaskEntry.time += curr.time || 0;
+					} else {
+						existingJobEntry.tasks.push({
+							task_id: curr.task_id || 0,
+							task_name: curr.task_name || "",
+							time: curr.time || 0,
+						});
+					}
 				} else {
 					acc.push({
-						...curr,
-						time: curr.time || 0,
+						job_id: curr.job_id || 0,
+						job_name: curr.job_name || "",
+						client_name: curr?.name || "",
+						tasks: [
+							{
+								task_id: curr.task_id || 0,
+								task_name: curr.task_name || "",
+								time: curr.time || 0,
+								hours: curr.hours || 0,
+							},
+						],
 					});
 				}
-				return acc;
-			}, [] as TimesheetRowsView[]);
-			setFilteredTimesheets(groupedTimesheets);
-			// console.log(groupedTimesheets);
-			const timesheetRowsEntries: typeof timesheetEntries = [];
-			groupedTimesheets.map((item) => {
-				timesheetRowsEntries.push({
-					name: item.name || "",
-					hours: item.hours || 0,
-					job_id: item.job_id || 0,
-					subTasks: {
-						task_id: item.task_id || 0,
-						task_name: item.task_name || "",
-						time: item.time || 0,
-						hours: item.hours || 0,
-					},
-				});
-			}) || [];
-			setTimesheetEntries(timesheetRowsEntries);
-			const someVar = timesheetRowsEntries.reduce((acc, curr) => {
-				const existingEntry = acc.find((entry) => entry.job_id === curr.job_id);
-				if (!existingEntry) {
-					acc.splice(-2, 0, {
-						subTasks: {
-							task_id: curr.subTasks.task_id,
-							task_name: curr.subTasks.task_name,
-						},
-					});
-				}
-				return acc;
-			}, [] as TimesheetEntries[]);
-			// console.log(timesheetRowsEntries);
 
-			// const newGroupedTimesheets = groupedTimesheets.reduce((acc, curr) => {
-			// 	const existingEntry2 = acc.find(
-			// 		(entry) => entry.job_id === curr.job_id && entry.task_id != curr.task_id
-			// 	);
-			// 	if (existingEntry2) {
-			// 		acc.push({
-			// 			...curr,
-			// 		});
-			// 	}
-			// 	return acc;
-			// }, [] as TimesheetRowsView[]);
-			// console.log(newGroupedTimesheets);
-			// const result = groupedTimesheets.map((item) => ({
-			// 	[item.job_id || 0]: { jobId: item.name },
-			// }));
-			// console.log(result);
+				return acc;
+			}, [] as GroupedTimesheets);
+			//   This code will create an array of objects where each object represents a job, and within each job object, there is an array of tasks. If a task with the same task_id already exists for a job, it will update the time for that task; otherwise, it will create a new task object. If a job with the same job_id already exists, it will add tasks to the existing job; otherwise, it will create a new job object.
+
+			setFilteredTimesheets(groupedTimesheets);
+			console.log({ groupedTimesheets });
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
@@ -245,9 +232,8 @@ const Timesheet = () => {
 	}, []);
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
-	}, [filterOption]);
+	}, [filterOption, selectedWeekStart]);
 
-	// Function to navigate between weeks
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
 	};
@@ -558,10 +544,15 @@ const Timesheet = () => {
 								</TableHead>
 								<TableBody>
 									{displayedTimeEntries.map((entry, index) => {
-										const remainingHours = Math.max(
-											0,
-											(entry.hours || 0) - (entry.time || 0)
+										const totalHours = entry.tasks.reduce(
+											(acc, curr) => acc + (curr.hours || 0),
+											0
 										);
+										const totalSpentHours = entry.tasks.reduce(
+											(acc, curr) => acc + curr.time,
+											0
+										);
+										const remainingHours = Math.max(0, totalHours - totalSpentHours);
 										const areAllHoursUsed = remainingHours === 0;
 										return (
 											<TableRow key={index}>
@@ -583,7 +574,7 @@ const Timesheet = () => {
 														fontSize: "smaller", // Reduce the font size
 													}}
 												>
-													{entry.name} : {entry.job_name?.replace(/:/g, ":\n")}
+													{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
 												</TableCell>
 
 												<TableCell
@@ -593,17 +584,30 @@ const Timesheet = () => {
 														fontSize: "smaller", // Reduce the font size
 													}}
 												>
-													{entry.task_name}
+													{entry.tasks.map((task) => (
+														<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+															{task.task_name}
+														</div>
+													))}
 												</TableCell>
 												<TableCell
 													style={{
 														borderRight: "1px solid #ccc",
 														textAlign: "center",
 														fontSize: "smaller", // Reduce the font size
-														color: areAllHoursUsed ? "red" : "green",
 													}}
 												>
-													{entry.time} hrs of {entry.hours}
+													{entry.tasks.map((task) => (
+														<div
+															style={{
+																whiteSpace: "nowrap",
+																color: (task.hours || 0) < task.time ? "red" : "green",
+															}}
+															key={task.task_id}
+														>
+															{task.time} hrs of {task.hours}
+														</div>
+													))}
 												</TableCell>
 												<TableCell
 													style={{
