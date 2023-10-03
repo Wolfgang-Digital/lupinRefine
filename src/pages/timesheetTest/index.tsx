@@ -8,119 +8,149 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Checkbox, withStyles } from "@mui/material";
+import { Checkbox } from "@mui/material";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 
-import { TimesheetRowsView } from "@types";
+interface SubTask {
+	task_id: number | null;
+	task_name: string | null;
+	time: number | null;
+	hours: number | null;
+}
 
-//  get rows for "Allocated Tasks"
-import { getAllAllocatedHours } from "@pages/api/allocateHoursView";
+interface TimesheetEntries {
+	name: string | null;
+	hours: number | null;
+	job_id: number | null;
+	subTasks: SubTask[];
+}
 
-import { getAllTimesheetRows } from "@pages/api/timesheetRows";
-
-import { getTaskByJobId } from "@pages/api/tasks";
-import { useEffect } from "react";
-
-function createData(
-	job: string,
-	task: string,
-	usedvallocated: string,
-	hrsremaining: number,
-	daysleft: number,
-	completed: string,
-	timer: string,
-	history: [{ task_name: string; time: string; hours: number }]
-) {
+function createTimesheetEntry(
+	name: string | null,
+	hours: number | null,
+	job_id: number | null,
+	subTasks: SubTask[]
+): TimesheetEntries {
 	return {
-		job,
-		task,
-		usedvallocated,
-		hrsremaining,
-		daysleft,
-		completed,
-		timer,
-		history: [
-			{
-				task_name: "Opt",
-				time: 1,
-				hours: 3,
-			},
-			{
-				task_name: "Reporting",
-				time: 1.5,
-				hours: 4,
-			},
-			{
-				task_name: "Reviews",
-				time: 0.5,
-				hours: 2,
-			},
-		],
+		name,
+		hours,
+		job_id,
+		subTasks,
 	};
 }
 
-async function fetchTasksAndJobsWithFilter() {
-	try {
-		const allocatedHoursResponse = await getAllAllocatedHours(57, 10);
-		const timesheetResponse = await getAllTimesheetRows(57);
-		// console.log(allocatedHoursResponse);
-		// console.log(timesheetResponse);
+// Example usage
+const subTasks1: SubTask[] = [
+	{
+		task_id: 100,
+		task_name: "CRO",
+		time: 2,
+		hours: 4,
+	},
+	{
+		task_id: 94,
+		task_name: "Opt",
+		time: 1,
+		hours: 3,
+	},
+	{
+		task_id: 98,
+		task_name: "Insights",
+		time: 0.5,
+		hours: 2,
+	},
+];
 
-		if (!allocatedHoursResponse || !timesheetResponse) {
-			throw new Error("Error fetching data");
-		}
-		for (let i: number = 0; i < allocatedHoursResponse.length; i++) {
-			for (let j: number = 0; j < timesheetResponse.length; j++) {
-				if (timesheetResponse[j].job_id === allocatedHoursResponse[i].job_id) {
-					if (
-						timesheetResponse[j].task_name === allocatedHoursResponse[i].task_name
-					) {
-						// console.log(timesheetResponse[j]);
-						const task_name = timesheetResponse[j].name;
-						const time = timesheetResponse[j].name;
-						const hours = timesheetResponse[j].job_id;
-						console.log(
-							createData(
-								timesheetResponse[j].name || "",
-								timesheetResponse[j].task_name || "",
-								`${timesheetResponse[j].time} of ${allocatedHoursResponse[i].hours}`,
-								allocatedHoursResponse[i].hours ||
-									0 - Math.floor(timesheetResponse[j].time || 0),
-								0,
-								" ",
-								" ",
-								{ task_name, time, hours }
-								// [
-								// 	{
-								// 		timesheetResponse[j].task_name,
-								// 		timesheetResponse[j].time,
-								// 		allocatedHoursResponse[i].hours,
-								// 	},
-								// ]
-							)
-						);
-					}
-				}
-			}
-		}
-	} catch (error) {
-		console.error("Error fetching jobs and tasks: ", error);
-	}
-}
+const subTasks2: SubTask[] = [
+	{
+		task_id: 4,
+		task_name: "Reviews",
+		time: 1.5,
+		hours: 3,
+	},
+	{
+		task_id: 5,
+		task_name: "One on Ones",
+		time: 1,
+		hours: 2,
+	},
+	{
+		task_id: 36,
+		task_name: "Reporting",
+		time: 2,
+		hours: 3,
+	},
+];
 
-fetchTasksAndJobsWithFilter();
+const subTasks3: SubTask[] = [
+	{
+		task_id: 97,
+		task_name: "Comms",
+		time: 3,
+		hours: 4,
+	},
+	{
+		task_id: 96,
+		task_name: "Project Management",
+		time: 1.5,
+		hours: 2,
+	},
+	{
+		task_id: 99,
+		task_name: "Outsourcing - Cost & Margin",
+		time: 2.25,
+		hours: 3,
+	},
+];
 
-function Row(props: { row: ReturnType<typeof createData> }) {
+const subTasks4: SubTask[] = [
+	{
+		task_id: 2,
+		task_name: "Client Meetings",
+		time: 2,
+		hours: 4,
+	},
+	{
+		task_id: 3,
+		task_name: "Client Comms",
+		time: 1,
+		hours: 2,
+	},
+];
+
+const subTasks5: SubTask[] = [
+	{
+		task_id: 6,
+		task_name: "Big Time",
+		time: 1.25,
+		hours: 3,
+	},
+	{
+		task_id: 10,
+		task_name: "Team Building",
+		time: 1,
+		hours: 2,
+	},
+];
+
+const rows2 = [
+	createTimesheetEntry("Abbey Seals:Google Ads", 4.5, 3549, subTasks1),
+	createTimesheetEntry("Camile Thai: Social", 3.5, 3550, subTasks2),
+	createTimesheetEntry("Actavo: Google Ads", 2.25, 3551, subTasks3),
+	createTimesheetEntry("Wolfgang Digital: Admin", 3, 3552, subTasks4),
+	createTimesheetEntry("Wolfgang Digital: Lupin Project", 2.75, 3553, subTasks5),
+];
+
+function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 	const { row } = props;
 	const [open, setOpen] = React.useState(false);
 
 	return (
 		<React.Fragment>
-			<TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+			<TableRow sx={{ "& > *": { borderBottom: 1, backgroundColor: "#ccc" } }}>
 				<TableCell>
 					<IconButton
 						aria-label="expand row"
@@ -131,12 +161,12 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 					</IconButton>
 				</TableCell>
 				<TableCell component="th" scope="row">
-					{row.job}
+					{row.name}
 				</TableCell>
-				<TableCell align="right">{row.task}</TableCell>
-				<TableCell align="right">{row.usedvallocated}</TableCell>
-				<TableCell align="right">{row.hrsremaining}</TableCell>
-				<TableCell align="right">{row.daysleft}</TableCell>
+				<TableCell align="right"></TableCell>
+				<TableCell align="right"></TableCell>
+				<TableCell align="right">{row.hours}</TableCell>
+				<TableCell align="right"></TableCell>
 				<TableCell align="right">
 					<Checkbox />
 				</TableCell>
@@ -153,8 +183,8 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 									<TableRow></TableRow>
 								</TableHead>
 								<TableBody>
-									{row.history.map((historyRow) => (
-										<TableRow key={historyRow.task_name}>
+									{row.subTasks.map((historyRow) => (
+										<TableRow key={historyRow.task_id}>
 											<TableCell />
 											<TableCell />
 											<TableCell />
@@ -176,13 +206,6 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 	);
 }
 
-const rows = [
-	createData("Abbey Seals: Google Ads", " ", " ", 7.5, 29, " ", " "),
-	createData("Camile Thai: Social", " ", " ", 7.5, 29, " ", " "),
-	createData("Wolfgang Digital: Admin", " ", " ", 7.5, 29, " ", " "),
-	createData("Wolfgang Digital: Lupin Project", " ", " ", 7.5, 29, " ", " "),
-];
-
 export default function CollapsibleTable() {
 	return (
 		<TableContainer component={Paper}>
@@ -200,8 +223,8 @@ export default function CollapsibleTable() {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{rows.map((row) => (
-						<Row key={row.job} row={row} />
+					{rows2.map((row) => (
+						<Row key={row.job_id} row={row} />
 					))}
 				</TableBody>
 			</Table>
