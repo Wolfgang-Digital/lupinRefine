@@ -152,7 +152,12 @@ function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 		<React.Fragment>
 			<TableRow
 				sx={{
-					"& > *": { borderBottom: 1, backgroundColor: "#ddd", fontWeight: "bold" },
+					"& > *": {
+						borderBottom: 1,
+						borderTop: 1,
+						backgroundColor: "#ddd",
+						fontWeight: "bold",
+					},
 				}}
 			>
 				<TableCell>
@@ -164,12 +169,21 @@ function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 					</IconButton>
 				</TableCell>
-				<TableCell component="th" scope="row">
+				<TableCell
+					sx={{ borderRight: 1, borderBottom: 1, fontWeight: "bold" }}
+					component="th"
+					scope="row"
+				>
 					{row.name}
 				</TableCell>
 				<TableCell align="right"></TableCell>
 				<TableCell align="right"></TableCell>
-				<TableCell align="right">{row.hours}</TableCell>
+				<TableCell
+					sx={{ borderRight: 1, borderLeft: 1, borderBottom: 1, fontWeight: "bold" }}
+					align="center"
+				>
+					{row.hours}
+				</TableCell>
 				<TableCell align="right"></TableCell>
 				<TableCell align="right">{/* <Checkbox /> */}</TableCell>
 				<TableCell align="right">{/* <MoreTimeIcon /> */}</TableCell>
@@ -219,15 +233,38 @@ export default function CollapsibleTable() {
 		<TableContainer component={Paper}>
 			<Table aria-label="collapsible table">
 				<TableHead>
-					<TableRow>
+					<TableRow
+						sx={{
+							"& > *": {
+								borderBottom: 1,
+								borderTop: 1,
+								backgroundColor: "#027860",
+								fontWeight: "bold",
+							},
+						}}
+					>
 						<TableCell>&nbsp;</TableCell>
-						<TableCell>Job</TableCell>
-						<TableCell align="right">Task</TableCell>
-						<TableCell align="right">Used v Allocated</TableCell>
-						<TableCell align="right">Overall Hrs Remaining</TableCell>
-						<TableCell align="right">Days Left</TableCell>
-						<TableCell align="right">Completed</TableCell>
-						<TableCell align="right">Timer</TableCell>
+						<TableCell sx={{ borderRight: 1, borderBottom: 1, fontWeight: "bold" }}>
+							Job
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Task
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Used v Allocated
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Overall Hrs Remaining
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Days Left
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Completed
+						</TableCell>
+						<TableCell sx={{ border: 1, fontWeight: "bold" }} align="center">
+							Timer
+						</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
