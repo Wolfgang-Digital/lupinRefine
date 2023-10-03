@@ -137,7 +137,7 @@ const subTasks5: SubTask[] = [
 ];
 
 const rows2 = [
-	createTimesheetEntry("Abbey Seals:Google Ads", 4.5, 3549, subTasks1),
+	createTimesheetEntry("Abbey Seals:Google Ads", 5.5, 3549, subTasks1),
 	createTimesheetEntry("Camile Thai: Social", 3.5, 3550, subTasks2),
 	createTimesheetEntry("Actavo: Google Ads", 2.25, 3551, subTasks3),
 	createTimesheetEntry("Wolfgang Digital: Admin", 3, 3552, subTasks4),
@@ -150,7 +150,11 @@ function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 
 	return (
 		<React.Fragment>
-			<TableRow sx={{ "& > *": { borderBottom: 1, backgroundColor: "#ccc" } }}>
+			<TableRow
+				sx={{
+					"& > *": { borderBottom: 1, backgroundColor: "#ddd", fontWeight: "bold" },
+				}}
+			>
 				<TableCell>
 					<IconButton
 						aria-label="expand row"
@@ -167,12 +171,8 @@ function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 				<TableCell align="right"></TableCell>
 				<TableCell align="right">{row.hours}</TableCell>
 				<TableCell align="right"></TableCell>
-				<TableCell align="right">
-					<Checkbox />
-				</TableCell>
-				<TableCell align="right">
-					<MoreTimeIcon />
-				</TableCell>
+				<TableCell align="right">{/* <Checkbox /> */}</TableCell>
+				<TableCell align="right">{/* <MoreTimeIcon /> */}</TableCell>
 			</TableRow>
 			<TableRow sx={{ [`& .${tableCellClasses.root}`]: { borderBottom: "none" } }}>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -188,11 +188,19 @@ function Row(props: { row: ReturnType<typeof createTimesheetEntry> }) {
 											<TableCell />
 											<TableCell />
 											<TableCell />
+											<TableCell />
+											<TableCell />
 											<TableCell component="th" scope="row" width={"150"}>
 												{historyRow.task_name}
 											</TableCell>
 											<TableCell>
 												{historyRow.time} of {historyRow.hours}
+											</TableCell>
+											<TableCell align="right">
+												<Checkbox />
+											</TableCell>
+											<TableCell align="right">
+												<MoreTimeIcon />
 											</TableCell>
 										</TableRow>
 									))}
