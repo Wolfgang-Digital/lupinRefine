@@ -219,7 +219,11 @@ const Timesheet = () => {
 
 				return acc;
 			}, [] as GroupedTimesheets);
-			//   This code will create an array of objects where each object represents a job, and within each job object, there is an array of tasks. If a task with the same task_id already exists for a job, it will update the time for that task; otherwise, it will create a new task object. If a job with the same job_id already exists, it will add tasks to the existing job; otherwise, it will create a new job object.
+			// This code will create an array of objects where each object represents a job,
+			// and within each job object, there is an array of tasks.
+			// If a task with the same task_id already exists for a job, it will update the time for that task;
+			// otherwise, it will create a new task object. If a job with the same job_id already exists,
+			// it will add tasks to the existing job; otherwise, it will create a new job object.
 
 			setFilteredTimesheets(groupedTimesheets);
 			console.log({ groupedTimesheets });
@@ -458,27 +462,6 @@ const Timesheet = () => {
 								<TableHead>
 									<TableRow>
 										<TableCell
-											colSpan={8}
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											ID
-										</TableCell>
-									</TableRow>
-									<TableRow>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											ID
-										</TableCell>
-										<TableCell
 											style={{
 												borderRight: "1px solid #ccc",
 												textAlign: "center",
@@ -556,16 +539,6 @@ const Timesheet = () => {
 										const areAllHoursUsed = remainingHours === 0;
 										return (
 											<TableRow key={index}>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														whiteSpace: "pre-line",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{entry.job_id}
-												</TableCell>
 												<TableCell
 													style={{
 														borderRight: "1px solid #ccc",
@@ -665,7 +638,7 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "30px" }}
