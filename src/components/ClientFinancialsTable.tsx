@@ -162,7 +162,23 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		}
 		groupedRows[row.month].push(row);
 	});
+	const monthNames: string[] = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
 
+	const monthName = monthNames[selectedMonth + 2];
+	console.log(selectedMonth);
 	return (
 		<div
 			style={{
@@ -182,7 +198,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 				<div
 					style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
 				>
-					selectedMonth: {selectedMonth}
+					{monthName}
 				</div>
 				<WeekButton
 					onClick={() => {
