@@ -62,7 +62,6 @@ const TableRowCell = styled(TableCell)`
 `;
 
 type TimeEntry = {
-	user_id: number;
 	task: string;
 	job: string;
 	hours: string;
@@ -294,7 +293,6 @@ const Timesheet = () => {
 		const selectedJobLabel = jobs.find((job) => job.value === selectedJob)?.label;
 
 		const newTimeEntry: TimeEntry = {
-			user_id: 13,
 			job: selectedJobLabel || "",
 			task: selectedTaskLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
@@ -369,11 +367,12 @@ const Timesheet = () => {
 
 	function saveTimeEntry() {
 		const dataToPost = {
+			staffId: 13,
 			notes,
 			timeSpent: Number(timeSpent),
 			jobId: Number(selectedJob),
 			taskId: Number(selectedTask),
-			selectedDate,
+			selectedDate: "2023-10-03",
 			rate: 150,
 		};
 		const response = PostTimeEntry(dataToPost);
