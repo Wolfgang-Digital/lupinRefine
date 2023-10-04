@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 	table: {
 		minWidth: 650,
 		"& .MuiTableCell-root": {
-			border: "1px solid black",
+			border: "2px solid black",
 		},
 	},
 });
@@ -62,6 +62,7 @@ const TableRowCell = styled(TableCell)`
 `;
 
 type TimeEntry = {
+	user_id: number;
 	task: string;
 	job: string;
 	hours: string;
@@ -293,6 +294,7 @@ const Timesheet = () => {
 		const selectedJobLabel = jobs.find((job) => job.value === selectedJob)?.label;
 
 		const newTimeEntry: TimeEntry = {
+			user_id: 13,
 			job: selectedJobLabel || "",
 			task: selectedTaskLabel || "",
 			hours: parseFloat(timeSpent).toFixed(2),
