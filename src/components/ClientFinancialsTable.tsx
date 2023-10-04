@@ -89,7 +89,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		FinancialTable[]
 	>([]);
 
-	const [selectedMonth, setSelectedMonth] = useState(7);
+	const [selectedMonth, setSelectedMonth] = useState(9);
 
 	function fetchGroupedData(
 		financialTable: FinancialTable[],
@@ -177,8 +177,8 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		"December",
 	];
 
-	const monthName = monthNames[selectedMonth + 2];
-	console.log(selectedMonth);
+	const monthName = monthNames[selectedMonth];
+	// console.log(selectedMonth);
 	return (
 		<div
 			style={{
