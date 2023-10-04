@@ -20,6 +20,7 @@ import {
 	Checkbox,
 	TablePagination,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
@@ -35,6 +36,15 @@ import {
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import styled from "styled-components";
+
+const useStyles = makeStyles({
+	table: {
+		minWidth: 650,
+		"& .MuiTableCell-root": {
+			border: "1px solid black",
+		},
+	},
+});
 
 const TableHeaderCell = styled(TableCell)`
 	background-color: #02786d;
@@ -385,6 +395,7 @@ const Timesheet = () => {
 
 		return daysDifference;
 	}
+	const classes = useStyles();
 	return (
 		<>
 			<TimesheetContainer>
@@ -477,7 +488,7 @@ const Timesheet = () => {
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
-							<Table>
+							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
 										<TableHeaderCell>Job</TableHeaderCell>
@@ -506,6 +517,7 @@ const Timesheet = () => {
 										return (
 											<React.Fragment key={entry.job_id}>
 												<TableRow
+													sx={{ backgroundColor: "#ccc", fontWeight: "600" }}
 													key={`${index}-1`}
 													onClick={() => {
 														setOpenedAccordions({
