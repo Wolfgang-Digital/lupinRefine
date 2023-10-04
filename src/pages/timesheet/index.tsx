@@ -517,7 +517,7 @@ const Timesheet = () => {
 										return (
 											<React.Fragment key={entry.job_id}>
 												<TableRow
-													sx={{ backgroundColor: "#ccc", fontWeight: "600" }}
+													sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
 													key={`${index}-1`}
 													onClick={() => {
 														setOpenedAccordions({
@@ -526,13 +526,15 @@ const Timesheet = () => {
 														});
 													}}
 												>
-													<TableRowCell>
+													<TableRowCell sx={{ fontWeight: "600" }}>
 														{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
 													</TableRowCell>
 
 													<TableRowCell></TableRowCell>
 													<TableRowCell></TableRowCell>
-													<TableRowCell>{remainingHours}</TableRowCell>
+													<TableRowCell sx={{ fontWeight: "600" }}>
+														{remainingHours}
+													</TableRowCell>
 													<TableRowCell></TableRowCell>
 													<TableRowCell></TableRowCell>
 													<TableRowCell></TableRowCell>
