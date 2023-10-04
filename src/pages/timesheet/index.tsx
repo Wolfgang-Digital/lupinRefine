@@ -141,7 +141,7 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRows(57);
+			const timesheetsResponse = await getAllTimesheetRows(13);
 			console.log({ timesheetsResponse });
 
 			let filteredResponse: typeof timesheetsResponse = [];
@@ -153,9 +153,9 @@ const Timesheet = () => {
 					(entry) => entry.name === "Wolfgang Digital"
 				);
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(timesheet) => !!timesheet.time
-				);
+				filteredResponse = timesheetsResponse
+					.filter((entry) => entry.name != "Wolfgang Digital")
+					.filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
@@ -166,23 +166,6 @@ const Timesheet = () => {
 					dateObj.getFullYear() === selectedWeekStart.getFullYear()
 				);
 			});
-			const jobOptions: JobOption[] = [];
-			const taskOptions: TaskOption[] = [];
-
-			filteredResponse.forEach((timesheet) => {
-				jobOptions.push({
-					label: `${timesheet.name} : ${timesheet.job_name}`,
-					value: timesheet.job_id?.toString() || "0",
-					taskLabel: timesheet.task_name || "",
-				});
-				taskOptions.push({
-					label: timesheet.task_name || "",
-					value: timesheet.job_id?.toString() || "0",
-				});
-			});
-
-			setJobs(jobOptions);
-			setTasks(taskOptions);
 
 			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
 				const existingJobEntry = acc.find((entry) => entry.job_id === curr.job_id);
@@ -199,6 +182,7 @@ const Timesheet = () => {
 							task_id: curr.task_id || 0,
 							task_name: curr.task_name || "",
 							time: curr.time || 0,
+							hours: curr.hours || 0,
 						});
 					}
 				} else {
@@ -227,6 +211,24 @@ const Timesheet = () => {
 
 			setFilteredTimesheets(groupedTimesheets);
 			console.log({ groupedTimesheets });
+
+			const jobOptions: JobOption[] = [];
+			const taskOptions: TaskOption[] = [];
+
+			groupedTimesheets.forEach((timesheet) => {
+				jobOptions.push({
+					label: `${timesheet.client_name} : ${timesheet.job_name}`,
+					value: timesheet.job_id?.toString() || "0",
+					taskLabel: timesheet.tasks[0].task_name || "",
+				});
+				taskOptions.push({
+					label: timesheet.tasks[0].task_name || "",
+					value: timesheet.job_id?.toString() || "0",
+				});
+			});
+
+			setJobs(jobOptions);
+			setTasks(taskOptions);
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
