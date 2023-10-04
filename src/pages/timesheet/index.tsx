@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
-
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 // const usersAllocatedHours = getUserAllocatedHoursPerMonth(57, 9);
@@ -35,6 +34,22 @@ import {
 } from "@styled-components/timesheet";
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
+import styled from "styled-components";
+
+const TableHeaderCell = styled(TableCell)`
+	background-color: #02786d;
+	color: white;
+	border-right: 1px solid black;
+	text-align: center;
+	font-size: smaller;
+`;
+
+const TableRowCell = styled(TableCell)`
+	border-right: 1px solid #ccc;
+	text-align: center;
+	white-space: pre-line;
+	font-size: smaller;
+`;
 
 type TimeEntry = {
 	task: string;
@@ -98,7 +113,9 @@ const Timesheet = () => {
 		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
 
-	const [openedAccordions, setOpenedAccordions] = useState<object>({});
+	const [openedAccordions, setOpenedAccordions] = useState<{
+		[key: number]: boolean;
+	}>({});
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
@@ -463,68 +480,13 @@ const Timesheet = () => {
 							<Table>
 								<TableHead>
 									<TableRow>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Job
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Task
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Used V Allocated
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Hours Left
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Days Left
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Completed
-										</TableCell>
-										<TableCell
-											style={{
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Timer
-										</TableCell>
+										<TableHeaderCell>Job</TableHeaderCell>
+										<TableHeaderCell>Task</TableHeaderCell>
+										<TableHeaderCell>Used V Allocated</TableHeaderCell>
+										<TableHeaderCell>Overall Hrs Remaining</TableHeaderCell>
+										<TableHeaderCell>Days Left</TableHeaderCell>
+										<TableHeaderCell>Completed</TableHeaderCell>
+										<TableHeaderCell>Timer</TableHeaderCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -537,90 +499,76 @@ const Timesheet = () => {
 											(acc, curr) => acc + curr.time,
 											0
 										);
+										console.log(entry);
 										const remainingHours = Math.max(0, totalHours - totalSpentHours);
-										const areAllHoursUsed = remainingHours === 0;
-										return (
-											<TableRow key={index}>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														whiteSpace: "pre-line",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
-												</TableCell>
+										const isOpened = openedAccordions[entry?.job_id];
 
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
+										return (
+											<React.Fragment key={entry.job_id}>
+												<TableRow
+													key={`${index}-1`}
+													onClick={() => {
+														setOpenedAccordions({
+															...openedAccordions,
+															[entry.job_id]: !isOpened,
+														});
 													}}
 												>
-													{entry.tasks.map((task) => (
-														<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
-															{task.task_name}
-														</div>
-													))}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{entry.tasks.map((task) => (
-														<div
-															style={{
-																whiteSpace: "nowrap",
-																color: (task.hours || 0) < task.time ? "red" : "green",
-															}}
-															key={task.task_id}
-														>
-															{task.time} hrs of {task.hours}
-														</div>
-													))}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{remainingHours}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{daysUntilEndOfMonth()}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													<Checkbox />
-												</TableCell>
-												<TableCell
-													style={{
-														cursor: "pointer",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													<MoreTimeIcon onClick={handleAddTimeClick} />
-												</TableCell>
-											</TableRow>
+													<TableRowCell>
+														{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
+													</TableRowCell>
+
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell>{remainingHours}</TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+												</TableRow>
+												{isOpened && (
+													<TableRow key={`${index}-2`}>
+														<TableRowCell></TableRowCell>
+
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																	{task.task_name}
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div
+																	style={{
+																		whiteSpace: "nowrap",
+																		color: (task.hours || 0) < task.time ? "red" : "green",
+																	}}
+																	key={task.task_id}
+																>
+																	{task.time} hrs of {task.hours}
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div key={task.task_id}>
+																	{/* <Checkbox size="small" /> */}
+																	<input type="checkbox" />
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div key={task.task_id}>
+																	<MoreTimeIcon fontSize="small" onClick={handleAddTimeClick} />
+																</div>
+															))}
+														</TableRowCell>
+													</TableRow>
+												)}
+											</React.Fragment>
 										);
 									})}
 								</TableBody>
