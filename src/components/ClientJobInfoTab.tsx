@@ -57,7 +57,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
 		FinancialTable[]
 	>([]);
-	const [selectedMonth, setSelectedMonth] = useState(7);
+	const [selectedMonth, setSelectedMonth] = useState(9);
 	const [selectedJob, setSelectedJob] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
@@ -133,6 +133,23 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 		setSelectedJob(null);
 	};
 
+	const monthNames: string[] = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+
+	const monthName = monthNames[selectedMonth];
+
 	return (
 		<div
 			style={{
@@ -156,7 +173,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 						paddingTop: "8px",
 					}}
 				>
-					selectedMonth: {selectedMonth}
+					{monthName}
 				</div>
 				<WeekButton
 					onClick={() => {
