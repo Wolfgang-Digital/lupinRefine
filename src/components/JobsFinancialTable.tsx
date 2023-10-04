@@ -8,6 +8,9 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { styled } from "@mui/system"; // Import styled for custom styling
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Import the icon
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import EditIcon from "@mui/icons-material/Edit";
 
 // Define your column headers
 const columns = [
@@ -21,10 +24,11 @@ const columns = [
 	"Hours",
 	"Rate",
 	"Value",
-	"Bdgt to Invoice",
-	"Invoiced",
-	"Used",
-	"Bal Remain",
+	"Fee B forward",
+	"Cur Month Fee",
+	"Avail Fee",
+	"Invoice Adj",
+	"Fee C Frwd",
 	"Bal",
 ];
 
@@ -45,6 +49,7 @@ const januaryData = [
 		"4448",
 		"3248",
 		"1200",
+		"1200",
 		"",
 	],
 ];
@@ -64,6 +69,7 @@ const februaryData = [
 		"4200",
 		"3800",
 		"2900",
+		"900",
 		"900",
 		"",
 	],
@@ -86,7 +92,9 @@ const januarySubTableData = [
 		"",
 		"",
 		"",
-		"No",
+		"",
+		// eslint-disable-next-line react/jsx-key
+		<CheckBoxOutlineBlankIcon fontSize="small" />,
 	],
 	[
 		"", // Empty cell for Additional Data 1
@@ -104,9 +112,11 @@ const januarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"", // Empty cell for Additional Data 1
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
 		"",
 		"", // Empty cell for Sub Task 1
 		"Jack",
@@ -121,9 +131,11 @@ const januarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"", // Empty cell for Additional Data 1
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
 		"",
 		"", // Empty cell for Sub Task 1
 		"George",
@@ -133,6 +145,26 @@ const januarySubTableData = [
 		"2",
 		"125",
 		"250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"", // Empty cell for Additional Data 1
+		"",
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 		"",
 		"",
 		"",
@@ -156,9 +188,11 @@ const januarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"",
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
 		"", // Empty cell for Task 1
 		"", // Empty cell for Sub Task 1
 		"Jack",
@@ -168,6 +202,26 @@ const januarySubTableData = [
 		"0",
 		"150",
 		"0",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 		"",
 		"",
 		"",
@@ -189,12 +243,125 @@ const januarySubTableData = [
 		"",
 		"",
 		"",
-		"No",
+		"",
+		// eslint-disable-next-line react/jsx-key
+		<CheckBoxOutlineBlankIcon fontSize="small" />,
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"- Audit", // Empty cell for Sub Task 1
+		"",
+		"",
+		"",
+		"2100",
+		"",
+		"",
+		"2250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		"Jordan",
+		"10",
+		"150",
+		"1500",
+		"10",
+		"150",
+		"1500",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"- Landing P", // Empty cell for Sub Task 1
+		"",
+		"",
+		"",
+		"2100",
+		"",
+		"",
+		"2250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		"Jordan",
+		"4",
+		"150",
+		"600",
+		"5",
+		"150",
+		"750",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 	],
 	// ... other data rows
 ];
 
-// Fake data for the expanded sub-table
 const februarySubTableData = [
 	[
 		"",
@@ -211,7 +378,9 @@ const februarySubTableData = [
 		"",
 		"",
 		"",
-		"No",
+		"",
+		// eslint-disable-next-line react/jsx-key
+		<CheckBoxOutlineBlankIcon fontSize="small" />,
 	],
 	[
 		"", // Empty cell for Additional Data 1
@@ -229,9 +398,11 @@ const februarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"", // Empty cell for Additional Data 1
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
 		"",
 		"", // Empty cell for Sub Task 1
 		"Jack",
@@ -246,9 +417,11 @@ const februarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"", // Empty cell for Additional Data 1
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
 		"",
 		"", // Empty cell for Sub Task 1
 		"George",
@@ -258,6 +431,26 @@ const februarySubTableData = [
 		"2",
 		"125",
 		"250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"", // Empty cell for Additional Data 1
+		"",
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 		"",
 		"",
 		"",
@@ -281,9 +474,11 @@ const februarySubTableData = [
 		"",
 		"",
 		"",
+		"",
 	],
 	[
-		"",
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
 		"", // Empty cell for Task 1
 		"", // Empty cell for Sub Task 1
 		"Jack",
@@ -293,6 +488,26 @@ const februarySubTableData = [
 		"0",
 		"150",
 		"0",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 		"",
 		"",
 		"",
@@ -314,7 +529,121 @@ const februarySubTableData = [
 		"",
 		"",
 		"",
-		"No",
+		"",
+		// eslint-disable-next-line react/jsx-key
+		<CheckBoxOutlineBlankIcon fontSize="small" />,
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"- Audit", // Empty cell for Sub Task 1
+		"",
+		"",
+		"",
+		"2100",
+		"",
+		"",
+		"2250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		"Jordan",
+		"10",
+		"150",
+		"1500",
+		"10",
+		"150",
+		"1500",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"- Landing P", // Empty cell for Sub Task 1
+		"",
+		"",
+		"",
+		"2100",
+		"",
+		"",
+		"2250",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		// eslint-disable-next-line react/jsx-key
+		<EditIcon fontSize="small" />,
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		"Jordan",
+		"4",
+		"150",
+		"600",
+		"5",
+		"150",
+		"750",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	],
+	[
+		"",
+		"", // Empty cell for Task 1
+		"", // Empty cell for Sub Task 1
+		// eslint-disable-next-line react/jsx-key
+		<PersonAddIcon fontSize="small" />,
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
 	],
 	// ... other data rows
 ];
@@ -325,6 +654,11 @@ const TableCellNoPadding = styled(TableCell)({
 	paddingTop: 5,
 	paddingBottom: 5,
 });
+
+const greyRowStyle = {
+	backgroundColor: "#D9D9D9",
+	color: "black",
+};
 
 function JobsFinancialTable() {
 	return (
@@ -338,7 +672,7 @@ function JobsFinancialTable() {
 								style={{
 									textAlign: "center",
 									cursor: "pointer",
-									width: "7%",
+									width: "6%",
 									paddingRight: 10,
 								}}
 							>
@@ -357,7 +691,7 @@ function JobsFinancialTable() {
 											key={`cell-${monthIndex}-${rowIndex}-${cellIndex}`}
 											style={{
 												textAlign: "center",
-												width: "7%",
+												width: "6%",
 												paddingLeft: 0,
 												backgroundColor: "#3a2462",
 												color: "white",
@@ -385,7 +719,7 @@ function JobsFinancialTable() {
 								</TableRow>
 							))}
 							<TableRow>
-								<TableCellNoPadding colSpan={15}>
+								<TableCellNoPadding colSpan={16}>
 									<Table style={{ minWidth: "100%" }}>
 										<TableBody>
 											{monthIndex === 0
@@ -397,24 +731,28 @@ function JobsFinancialTable() {
 																	key={`sub-cell-${monthIndex}-${subRowIndex}-${subCellIndex}`}
 																	style={{
 																		textAlign: "center",
-																		width: "7%",
-																		paddingRight: "1.5%",
+																		width: "6%",
+																		...(subRowIndex === 0 || subRowIndex === 8
+																			? greyRowStyle
+																			: {}),
 																	}}
 																>
 																	{subCell}
 																</TableCellNoPadding>
 															))}
 														</TableRow>
+														// eslint-disable-next-line no-mixed-spaces-and-tabs
 												  ))
 												: februarySubTableData.map((subRow, subRowIndex) => (
 														<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
 															{subRow.map((subCell, subCellIndex) => (
 																<TableCellNoPadding
-																	key={`sub-cell-${monthIndex}-${subRowIndex}-${subCellIndex}`}
 																	style={{
 																		textAlign: "center",
-																		width: "7%",
-																		paddingRight: "1.5%",
+																		width: "6%",
+																		...(subRowIndex === 0 || subRowIndex === 8
+																			? greyRowStyle
+																			: {}),
 																	}}
 																>
 																	{subCell}
