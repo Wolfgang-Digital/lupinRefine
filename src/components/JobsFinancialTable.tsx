@@ -18,12 +18,54 @@ const columns = [
 	"Task",
 	"Sub Task",
 	"Staff",
-	"Hours",
-	"Rate",
-	"Value",
-	"Hours",
-	"Rate",
-	"Value",
+	{
+		text: "Hours",
+		style: {
+			backgroundColor: "#78c369",
+			color: "white",
+			padding: "2px",
+		},
+	},
+	{
+		text: "Rate",
+		style: {
+			backgroundColor: "#78c369",
+			color: "white",
+			padding: "2px",
+		},
+	},
+	{
+		text: "Value",
+		style: {
+			backgroundColor: "#78c369",
+			color: "white",
+			padding: "2px",
+		},
+	},
+	{
+		text: "Hours",
+		style: {
+			backgroundColor: "#939ed0",
+			color: "white",
+			padding: "2px",
+		},
+	},
+	{
+		text: "Rate",
+		style: {
+			backgroundColor: "#939ed0",
+			color: "white",
+			padding: "2px",
+		},
+	},
+	{
+		text: "Value",
+		style: {
+			backgroundColor: "#939ed0",
+			color: "white",
+			padding: "2px",
+		},
+	},
 	"Fee B forward",
 	"Cur Month Fee",
 	"Avail Fee",
@@ -662,113 +704,147 @@ const greyRowStyle = {
 
 function JobsFinancialTable() {
 	return (
-		<TableContainer component={Paper}>
-			<Table style={{ minWidth: "100%" }} aria-label="custom table">
-				<TableHead>
-					<TableRow>
-						{columns.map((column) => (
+		<div>
+			<TableContainer style={{ paddingTop: 40 }} component={Paper}>
+				<Table style={{ minWidth: "100%" }} aria-label="custom table">
+					<TableHead>
+						{/* Allocated Heading Row */}
+						<TableRow>
 							<TableCellNoPadding
-								key={column}
+								colSpan={4}
+								style={{ borderBottom: "none" }}
+							></TableCellNoPadding>
+							<TableCellNoPadding
+								colSpan={3}
 								style={{
 									textAlign: "center",
-									cursor: "pointer",
-									width: "6%",
-									paddingRight: 10,
+									backgroundColor: "#78c369",
+									color: "white",
+									paddingLeft: "2px",
+									borderBottom: "none",
 								}}
 							>
-								{column}
+								Allocated
 							</TableCellNoPadding>
-						))}
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{[januaryData, februaryData].map((monthData, monthIndex) => (
-						<React.Fragment key={`month-${monthIndex}`}>
-							{monthData.map((row, rowIndex) => (
-								<TableRow key={`row-${monthIndex}-${rowIndex}`}>
-									{row.map((cell, cellIndex) => (
-										<TableCell
-											key={`cell-${monthIndex}-${rowIndex}-${cellIndex}`}
-											style={{
-												textAlign: "center",
-												width: "6%",
-												paddingLeft: 0,
-												backgroundColor: "#3a2462",
-												color: "white",
-											}}
-										>
-											{cellIndex === 0 ? (
-												<span
-													style={{
-														display: "flex",
-														alignItems: "center",
-														cursor: "pointer",
-													}}
-												>
-													<KeyboardArrowDownIcon
-														fontSize="small"
-														style={{ marginRight: "5px" }}
-													/>
-													{cell}
-												</span>
-											) : (
-												cell
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))}
-							<TableRow>
-								<TableCellNoPadding colSpan={16}>
-									<Table style={{ minWidth: "100%" }}>
-										<TableBody>
-											{monthIndex === 0
-												? januarySubTableData.map((subRow, subRowIndex) => (
-														<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
-															{" "}
-															{subRow.map((subCell, subCellIndex) => (
-																<TableCellNoPadding
-																	key={`sub-cell-${monthIndex}-${subRowIndex}-${subCellIndex}`}
-																	style={{
-																		textAlign: "center",
-																		width: "6%",
-																		...(subRowIndex === 0 || subRowIndex === 8
-																			? greyRowStyle
-																			: {}),
-																	}}
-																>
-																	{subCell}
-																</TableCellNoPadding>
-															))}
-														</TableRow>
-														// eslint-disable-next-line no-mixed-spaces-and-tabs
-												  ))
-												: februarySubTableData.map((subRow, subRowIndex) => (
-														<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
-															{subRow.map((subCell, subCellIndex) => (
-																<TableCellNoPadding
-																	style={{
-																		textAlign: "center",
-																		width: "6%",
-																		...(subRowIndex === 0 || subRowIndex === 8
-																			? greyRowStyle
-																			: {}),
-																	}}
-																>
-																	{subCell}
-																</TableCellNoPadding>
-															))}
-														</TableRow>
-												  ))}
-										</TableBody>
-									</Table>
+							<TableCellNoPadding
+								colSpan={3}
+								style={{
+									textAlign: "center",
+									backgroundColor: "#939ed0",
+									color: "white",
+									padding: "2px",
+									borderBottom: "none",
+								}}
+							>
+								Actuals
+							</TableCellNoPadding>
+						</TableRow>
+						{/* Column Headers */}
+						<TableRow>
+							{columns.map((column, columnIndex) => (
+								<TableCellNoPadding
+									key={columnIndex}
+									style={{
+										textAlign: "center",
+										cursor: "pointer",
+										width: "6%",
+										paddingRight: 10,
+										...((typeof column === "object" && column.style) || {}),
+									}}
+								>
+									{typeof column === "object" ? column.text : column}
 								</TableCellNoPadding>
-							</TableRow>
-						</React.Fragment>
-					))}
-				</TableBody>
-			</Table>
-		</TableContainer>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{[januaryData, februaryData].map((monthData, monthIndex) => (
+							<React.Fragment key={`month-${monthIndex}`}>
+								{monthData.map((row, rowIndex) => (
+									<TableRow key={`row-${monthIndex}-${rowIndex}`}>
+										{row.map((cell, cellIndex) => (
+											<TableCell
+												key={`cell-${monthIndex}-${rowIndex}-${cellIndex}`}
+												style={{
+													textAlign: "center",
+													width: "6%",
+													paddingLeft: 0,
+													backgroundColor: "#3a2462",
+													color: "white",
+												}}
+											>
+												{cellIndex === 0 ? (
+													<span
+														style={{
+															display: "flex",
+															alignItems: "center",
+															cursor: "pointer",
+														}}
+													>
+														<KeyboardArrowDownIcon
+															fontSize="small"
+															style={{ marginRight: "5px" }}
+														/>
+														{cell}
+													</span>
+												) : (
+													cell
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+								))}
+								<TableRow>
+									<TableCellNoPadding colSpan={16}>
+										<Table style={{ minWidth: "100%" }}>
+											<TableBody>
+												{monthIndex === 0
+													? januarySubTableData.map((subRow, subRowIndex) => (
+															<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
+																{" "}
+																{subRow.map((subCell, subCellIndex) => (
+																	<TableCellNoPadding
+																		key={`sub-cell-${monthIndex}-${subRowIndex}-${subCellIndex}`}
+																		style={{
+																			textAlign: "center",
+																			width: "6%",
+																			...(subRowIndex === 0 || subRowIndex === 8
+																				? greyRowStyle
+																				: {}),
+																		}}
+																	>
+																		{subCell}
+																	</TableCellNoPadding>
+																))}
+															</TableRow>
+													  ))
+													: februarySubTableData.map((subRow, subRowIndex) => (
+															<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
+																{subRow.map((subCell, subCellIndex) => (
+																	<TableCellNoPadding
+																		style={{
+																			textAlign: "center",
+																			width: "6%",
+																			...(subRowIndex === 0 || subRowIndex === 8
+																				? greyRowStyle
+																				: {}),
+																		}}
+																	>
+																		{subCell}
+																	</TableCellNoPadding>
+																))}
+															</TableRow>
+													  ))}
+											</TableBody>
+										</Table>
+									</TableCellNoPadding>
+								</TableRow>
+							</React.Fragment>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</div>
 	);
 }
 
