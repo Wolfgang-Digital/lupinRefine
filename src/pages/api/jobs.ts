@@ -8,7 +8,7 @@ export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
 		const { data, error } = (await supabase
 			.from("jobs_overview")
 			.select("*")
-			.order("job_id", { ascending: true })) as unknown as {
+			.order("client_name", { ascending: true })) as unknown as {
 			data: JobsData[];
 			error: PostgrestError;
 		};
