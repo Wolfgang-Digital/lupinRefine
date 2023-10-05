@@ -20,19 +20,13 @@ import {
 	Checkbox,
 	TablePagination,
 } from "@mui/material";
-import { TimesheetRowsView } from "@types";
-//  get rows for "Allocated Tasks"
-import { getAllTimesheetRows } from "@api/timesheetRows";
-// get rows for "All Tasks"";
-
+import { makeStyles } from "@mui/styles";
+import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
-
-// get allocated hours for user for per month
-import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
-
-const usersAllocatedHours = getUserAllocatedHoursPerMonth(57, 9);
-
-console.log(usersAllocatedHours);
+// get allocated hours for user per month
+// import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+// const usersAllocatedHours = getUserAllocatedHoursPerMonth(57, 9);
+// console.log(usersAllocatedHours);
 
 import {
 	// WeekSelectorContainer,
@@ -41,6 +35,31 @@ import {
 } from "@styled-components/timesheet";
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
+import styled from "styled-components";
+
+const useStyles = makeStyles({
+	table: {
+		minWidth: 650,
+		"& .MuiTableCell-root": {
+			border: "2px solid black",
+		},
+	},
+});
+
+const TableHeaderCell = styled(TableCell)`
+	background-color: #02786d;
+	color: white;
+	border-right: 1px solid black;
+	text-align: center;
+	font-size: smaller;
+`;
+
+const TableRowCell = styled(TableCell)`
+	border-right: 1px solid black;
+	text-align: center;
+	white-space: pre-line;
+	font-size: smaller;
+`;
 
 type TimeEntry = {
 	task: string;
@@ -61,6 +80,42 @@ type TaskOption = {
 	value: string;
 };
 
+type TimesheetEntries = {
+	name: string | null;
+	hours: number | null;
+	job_id: number | null;
+	subTasks: [
+		{
+			task_id: number | null;
+			task_name: string | null;
+			time: number | null;
+			hours: number | null;
+		}
+	];
+};
+
+// const timesheetEntries: {
+// 	name: string | null;
+// 	hours: number | null;
+// 	job_id: number | null;
+// 	tasks: { task_id: number | null; task_name: string | null };
+// } = [];
+type Task = {
+	task_id: number;
+	task_name: string;
+	time: number;
+	hours?: number;
+};
+
+type Job = {
+	job_id: number;
+	job_name: string;
+	client_name: string;
+	tasks: Task[];
+};
+
+type GroupedTimesheets = Job[];
+
 // Create the Timesheet component
 const Timesheet = () => {
 	// Initialize state variables
@@ -68,15 +123,17 @@ const Timesheet = () => {
 		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
 
+	const [openedAccordions, setOpenedAccordions] = useState<{
+		[key: number]: boolean;
+	}>({});
 	const [showForm, setShowForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-	const [filteredTimesheets, setFilteredTimesheets] = useState<
-		TimesheetRowsView[]
-	>([]);
+
+	const [filteredTimesheets, setFilteredTimesheets] =
+		useState<GroupedTimesheets>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
-	// const [rate, setRate] = useState(0);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
 
@@ -111,157 +168,105 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRows();
+			const timesheetsResponse = await getAllTimesheetRows(13);
+			console.log({ timesheetsResponse });
+
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
 			if (filterOption === "Wolfgang Tasks") {
 				filteredResponse = timesheetsResponse.filter(
-					(entry) => entry.client_id === 6
+					(entry) => entry.name === "Wolfgang Digital"
 				);
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(timesheet) => !!timesheet.time
-				);
+				filteredResponse = timesheetsResponse
+					.filter((entry) => entry.name != "Wolfgang Digital")
+					.filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
-			console.log({ filteredResponse });
+			filteredResponse = filteredResponse.filter(({ date }) => {
+				const dateObj = new Date(date || new Date());
+				return (
+					dateObj.getMonth() === selectedWeekStart.getMonth() &&
+					dateObj.getFullYear() === selectedWeekStart.getFullYear()
+				);
+			});
+
+			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
+				const existingJobEntry = acc.find((entry) => entry.job_id === curr.job_id);
+
+				if (existingJobEntry) {
+					const existingTaskEntry = existingJobEntry.tasks.find(
+						(task) => task.task_id === curr.task_id
+					);
+
+					if (existingTaskEntry) {
+						existingTaskEntry.time += curr.time || 0;
+					} else {
+						existingJobEntry.tasks.push({
+							task_id: curr.task_id || 0,
+							task_name: curr.task_name || "",
+							time: curr.time || 0,
+							hours: curr.hours || 0,
+						});
+					}
+				} else {
+					acc.push({
+						job_id: curr.job_id || 0,
+						job_name: curr.job_name || "",
+						client_name: curr?.name || "",
+						tasks: [
+							{
+								task_id: curr.task_id || 0,
+								task_name: curr.task_name || "",
+								time: curr.time || 0,
+								hours: curr.hours || 0,
+							},
+						],
+					});
+				}
+
+				return acc;
+			}, [] as GroupedTimesheets);
+			// This code will create an array of objects where each object represents a job,
+			// and within each job object, there is an array of tasks.
+			// If a task with the same task_id already exists for a job, it will update the time for that task;
+			// otherwise, it will create a new task object. If a job with the same job_id already exists,
+			// it will add tasks to the existing job; otherwise, it will create a new job object.
+
+			setFilteredTimesheets(groupedTimesheets);
+			console.log({ groupedTimesheets });
+
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
 
-			filteredResponse.forEach((timesheet) => {
+			groupedTimesheets.forEach((timesheet) => {
 				jobOptions.push({
-					label: `${timesheet.name} : ${timesheet.job_name}`,
+					label: `${timesheet.client_name} : ${timesheet.job_name}`,
 					value: timesheet.job_id?.toString() || "0",
-					taskLabel: timesheet.task_name || "",
+					taskLabel: timesheet.tasks[0].task_name || "",
 				});
 				taskOptions.push({
-					label: timesheet.task_name || "",
+					label: timesheet.tasks[0].task_name || "",
 					value: timesheet.job_id?.toString() || "0",
 				});
 			});
 
 			setJobs(jobOptions);
 			setTasks(taskOptions);
-			// group filteredResponse by the job_id and accumulate the hours for each task_id
-			console.log(filteredResponse);
-			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
-				const existingEntry = acc.find(
-					(entry) => entry.job_id === curr.job_id && entry.task_id === curr.task_id
-				);
-				if (existingEntry) {
-					existingEntry.time = (existingEntry.time || 0) + (curr.time || 0);
-				} else {
-					acc.push({
-						...curr,
-						time: curr.time || 0,
-					});
-				}
-				return acc;
-			}, [] as TimesheetRowsView[]);
-			setFilteredTimesheets(groupedTimesheets);
 		} catch (error) {
-			console.error("Error fetching jobs and tasks:", error);
+			console.error("Error fetching jobs and tasks: ", error);
 		}
 	}
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, []);
-
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
-	}, [filterOption]);
+	}, [filterOption, selectedWeekStart]);
 
-	// Fetch data based on filter option
-	// useEffect(() => {
-	// 	async function fetchData() {
-	// 		try {
-	// 			const response = await getAllTimesheetRowsDemo();
-	// 			const filteredResponse = [];
-
-	// 			console.log({ response });
-	// 			if (filterOption === "Allocated Tasks") {
-	// 				response?.filter((entry) => (
-	// 					entry.client_id === 6;
-	// 				);
-	// 			}
-	// if (filterOption === "Allocated Tasks") {
-	// 	filteredResponse
-	// 	}
-	// const jobEntries = FilterResponse.map((entry) => ({
-	// 	job: `${entry.name}: ${entry.job_name}`,
-	// 	task: entry.task_name,
-	// 	hours: "0",
-	// 	date: "01/09/23",
-	// 	nonBillable: false,
-	// 	notes: "",
-	// })) as TimeEntry[];
-
-	// setTimeEntries(jobEntries);
-	//  Render "Allocated Tasks" when selected in Drop Down
-	// if (filterOption === "Allocated Tasks") {
-
-	// }
-	// Render "All Tasks" when selected in Drop Down
-	// else if (filterOption === "All Tasks") {
-	// 	// setTimeEntries([]);
-	// 	const FilterResponse = await getAllJobTasksDemo();
-
-	// 	console.log({ FilterResponse });
-	// 	if (!FilterResponse) {
-	// 		throw new Error("Error fetching data");
-	// 	}
-
-	// 	const jobEntries = FilterResponse.map((entry) => ({
-	// 		job: `${entry.name}: ${entry.job_name}`,
-	// 		task: entry.task_name,
-	// 		hours: "0",
-	// 		date: "01/09/23",
-	// 		nonBillable: false,
-	// 		notes: "",
-	// 	})) as TimeEntry[];
-	// 	// Handle other filter options here
-	// 	// Clear rows or fetch data as needed for other filter options
-	// 	setTimeEntries(jobEntries);
-	// }
-	// // Render "Wolfgang Tasks" when selected in Drop Down
-	// else if (filterOption === "Wolfgang Tasks") {
-	// 	// setTimeEntries([]);
-	// 	const FilterResponse = await getAllWolfgangTasksDemo();
-
-	// 	if (!FilterResponse) {
-	// 		throw new Error("Error fetching data");
-	// 	}
-
-	// 	const jobEntries = FilterResponse.map((entry) => ({
-	// 		job: `${entry.name}: ${entry.job_name}`,
-	// 		task: entry.task_name,
-	// 		hours: "0",
-	// 		date: "01/09/23",
-	// 		nonBillable: false,
-	// 		notes: "",
-	// 	})) as TimeEntry[];
-	// 	// Handle other filter options here
-	// 	// Clear rows or fetch data as needed for other filter options
-	// 	setTimeEntries(jobEntries);
-	// } else {
-	// Handle other filter options here
-	// Clear rows or fetch data as needed for other filter options
-	// 		} catch (error) {
-	// 			console.error("Error fetching data:", error);
-	// 		}
-	// 	}
-
-	// 	fetchData();
-	// 	setPagination((previousPagination) => ({
-	// 		...previousPagination,
-	// 		page: 0,
-	// 	}));
-	// }, [filterOption]);
-
-	// Function to navigate between weeks
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
 	};
@@ -303,8 +308,8 @@ const Timesheet = () => {
 		setShowForm(false);
 	};
 
-	// Update the time sheets based on the current page and rows per page
-	const displayedTimesheets = filteredTimesheets.slice(
+	// Update the TimeEntries based on the current page and rows per page
+	const displayedTimeEntries = filteredTimesheets.slice(
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
@@ -337,12 +342,6 @@ const Timesheet = () => {
 	};
 
 	useEffect(() => {
-		// async function fetchRate() {
-		// 	const response = await getRatesByJobId(selectedJob);
-		// 	if (response) {
-		// 		setRate(response?.job_rate_value || 0);
-		// 	}
-		// }
 		async function fetchTasks() {
 			if (selectedJob) {
 				const response = await getTaskByJobId(selectedJob);
@@ -368,22 +367,23 @@ const Timesheet = () => {
 
 	function saveTimeEntry() {
 		const dataToPost = {
+			staffId: 13,
 			notes,
 			timeSpent: Number(timeSpent),
 			jobId: Number(selectedJob),
 			taskId: Number(selectedTask),
-			selectedDate,
+			selectedDate: "2023-10-03",
 			rate: 150,
 		};
 		const response = PostTimeEntry(dataToPost);
-		console.log({ response });
+		console.log(`PostTimeEntry ${response}`);
 	}
 
 	function daysUntilEndOfMonth() {
 		// Get the current date
 		const currentDate = new Date();
 
-		// Get the last day of the current month
+		//Get the last day of the current month
 		const lastDayOfMonth = new Date(
 			currentDate.getFullYear(),
 			currentDate.getMonth() + 1,
@@ -396,6 +396,7 @@ const Timesheet = () => {
 
 		return daysDifference;
 	}
+	const classes = useStyles();
 	return (
 		<>
 			<TimesheetContainer>
@@ -488,172 +489,101 @@ const Timesheet = () => {
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
-							<Table>
+							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											ID
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Job
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Task
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Used v Allocated
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Overall Hrs Remaining
-										</TableCell>
-
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Days Left
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Completed
-										</TableCell>
-										<TableCell
-											style={{
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Timer
-										</TableCell>
+										<TableHeaderCell>Job</TableHeaderCell>
+										<TableHeaderCell>Task</TableHeaderCell>
+										<TableHeaderCell>Used V Allocated</TableHeaderCell>
+										<TableHeaderCell>Overall Hrs Remaining</TableHeaderCell>
+										<TableHeaderCell>Days Left</TableHeaderCell>
+										<TableHeaderCell>Completed</TableHeaderCell>
+										<TableHeaderCell>Timer</TableHeaderCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{displayedTimesheets.map((entry, index) => {
-										const remainingHours = Math.max(
-											0,
-											(entry.hours || 0) - (entry.time || 0)
+									{displayedTimeEntries.map((entry, index) => {
+										const totalHours = entry.tasks.reduce(
+											(acc, curr) => acc + (curr.hours || 0),
+											0
 										);
-										const areAllHoursUsed = remainingHours === 0;
+										const totalSpentHours = entry.tasks.reduce(
+											(acc, curr) => acc + curr.time,
+											0
+										);
+										console.log(entry);
+										const remainingHours = Math.max(0, totalHours - totalSpentHours);
+										const isOpened = openedAccordions[entry?.job_id];
+
 										return (
-											<TableRow key={index}>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														whiteSpace: "pre-line",
-														fontSize: "smaller", // Reduce the font size
+											<React.Fragment key={entry.job_id}>
+												<TableRow
+													sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
+													key={`${index}-1`}
+													onClick={() => {
+														setOpenedAccordions({
+															...openedAccordions,
+															[entry.job_id]: !isOpened,
+														});
 													}}
 												>
-													{entry.job_id}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														whiteSpace: "pre-line",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{entry.name} :{entry.job_name?.replace(/:/g, ":\n")}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{entry.task_name}
-												</TableCell>
+													<TableRowCell sx={{ fontWeight: "600" }}>
+														{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
+													</TableRowCell>
 
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller",
-														color: areAllHoursUsed ? "red" : "green",
-													}}
-												>
-													{entry.time} hrs of {entry.hours}
-												</TableCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell sx={{ fontWeight: "600" }}>
+														{remainingHours}
+													</TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell>
+												</TableRow>
+												{isOpened && (
+													<TableRow key={`${index}-2`}>
+														<TableRowCell></TableRowCell>
 
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{remainingHours}
-												</TableCell>
-
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													{/** days left till end of this month */}
-													{daysUntilEndOfMonth()}
-												</TableCell>
-												<TableCell
-													style={{
-														borderRight: "1px solid #ccc",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													<Checkbox />
-												</TableCell>
-												<TableCell
-													style={{
-														cursor: "pointer",
-														textAlign: "center",
-														fontSize: "smaller", // Reduce the font size
-													}}
-												>
-													<MoreTimeIcon onClick={handleAddTimeClick} />
-												</TableCell>
-											</TableRow>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																	{task.task_name}
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div
+																	style={{
+																		whiteSpace: "nowrap",
+																		color: (task.hours || 0) < task.time ? "red" : "green",
+																	}}
+																	key={task.task_id}
+																>
+																	{task.time} hrs of {task.hours}
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div key={task.task_id}>
+																	{/* <Checkbox size="small" /> */}
+																	<input type="checkbox" />
+																</div>
+															))}
+														</TableRowCell>
+														<TableRowCell>
+															{entry.tasks.map((task) => (
+																<div key={task.task_id}>
+																	<MoreTimeIcon fontSize="small" onClick={handleAddTimeClick} />
+																</div>
+															))}
+														</TableRowCell>
+													</TableRow>
+												)}
+											</React.Fragment>
 										);
 									})}
 								</TableBody>
@@ -676,7 +606,7 @@ const Timesheet = () => {
 					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
-							style={{ textAlign: "center", padding: "80px" }}
+							style={{ textAlign: "center", padding: "30px" }}
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>

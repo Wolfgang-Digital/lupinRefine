@@ -705,7 +705,7 @@ const greyRowStyle = {
 function JobsFinancialTable() {
 	return (
 		<div>
-			<TableContainer style={{ paddingTop: 40 }} component={Paper}>
+			<TableContainer component={Paper}>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
 					<TableHead>
 						{/* Allocated Heading Row */}
