@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
@@ -169,8 +170,9 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRows(13);
-			console.log({ timesheetsResponse });
-
+			// console.log({ timesheetsResponse });
+			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
+			console.log({ unworkedHoursResponse });
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
@@ -237,7 +239,7 @@ const Timesheet = () => {
 			// it will add tasks to the existing job; otherwise, it will create a new job object.
 
 			setFilteredTimesheets(groupedTimesheets);
-			console.log({ groupedTimesheets });
+			// console.log({ groupedTimesheets });
 
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
@@ -511,7 +513,7 @@ const Timesheet = () => {
 											(acc, curr) => acc + curr.time,
 											0
 										);
-										console.log(entry);
+										/* console.log(entry); */
 										const remainingHours = Math.max(0, totalHours - totalSpentHours);
 										const isOpened = openedAccordions[entry?.job_id];
 

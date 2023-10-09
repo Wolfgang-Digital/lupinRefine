@@ -45,3 +45,19 @@ export const getUserAllocatedHoursPerMonth = async (
 		console.error("Error fetching users allocated hours for Job: ", error);
 	}
 };
+
+export const getUnworkedAllocatedHours = async (userID: number) => {
+	try {
+		const { data, error } = await supabase.rpc("unworked_allocated_hours", {
+			userid: userID,
+		});
+
+		if (error) {
+			console.error("Error fetching unworked allocated hours: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error fetching unworked allocated hours: ", error);
+	}
+};
