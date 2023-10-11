@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
@@ -11,66 +11,63 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Im
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import EditIcon from "@mui/icons-material/Edit";
+import dayjs, { Dayjs } from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { getAllTimesheetRowsFinancial } from "@pages/api/timesheetRows";
 
 // Define your column headers
 const columns = [
 	"Month",
+	"Job",
 	"Task",
-	"Sub Task",
 	"Staff",
 	{
 		text: "Hours",
 		style: {
-			backgroundColor: "#78c369",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#C3DDBC",
+			borderLeft: "1px solid",
 		},
 	},
 	{
 		text: "Rate",
 		style: {
-			backgroundColor: "#78c369",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#C3DDBC",
 		},
 	},
 	{
 		text: "Value",
 		style: {
-			backgroundColor: "#78c369",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#C3DDBC",
 		},
 	},
 	{
 		text: "Hours",
 		style: {
-			backgroundColor: "#939ed0",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#BEB3D4",
+			borderLeft: "1px solid",
 		},
 	},
 	{
 		text: "Rate",
 		style: {
-			backgroundColor: "#939ed0",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#BEB3D4",
 		},
 	},
 	{
 		text: "Value",
 		style: {
-			backgroundColor: "#939ed0",
-			color: "white",
-			padding: "2px",
+			backgroundColor: "#BEB3D4",
+			borderRight: "1px solid",
 		},
 	},
-	"Fee B forward",
-	"Cur Month Fee",
-	"Avail Fee",
+	"Fee b/f",
+	"Current invoice",
+	"Available fee",
+	"Balance",
 	"Invoice Adj",
-	"Fee C Frwd",
+	"Fee c/f",
 	"Bal",
 ];
 
@@ -92,602 +89,9 @@ const januaryData = [
 		"3248",
 		"1200",
 		"1200",
+		"1200",
 		"",
 	],
-];
-
-const februaryData = [
-	[
-		"February",
-		"",
-		"",
-		"",
-		"20",
-		"155",
-		"3100",
-		"18.5",
-		"160",
-		"2960",
-		"4200",
-		"3800",
-		"2900",
-		"900",
-		"900",
-		"",
-	],
-];
-
-// Fake data for the expanded sub-table
-const januarySubTableData = [
-	[
-		"",
-		"Management", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"1148",
-		"",
-		"",
-		"548",
-		"",
-		"",
-		"",
-		"",
-		"",
-		// eslint-disable-next-line react/jsx-key
-		<CheckBoxOutlineBlankIcon fontSize="small" />,
-	],
-	[
-		"", // Empty cell for Additional Data 1
-		"",
-		"- Opt", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"775",
-		"",
-		"",
-		"325",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		"Jack",
-		"1",
-		"150",
-		"150",
-		"0.5",
-		"150",
-		"75",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		"George",
-		"5",
-		"125",
-		"625",
-		"2",
-		"125",
-		"250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"", // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Reporting", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"150",
-		"",
-		"",
-		"0",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jack",
-		"1",
-		"150",
-		"150",
-		"0",
-		"150",
-		"0",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"CRO", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		// eslint-disable-next-line react/jsx-key
-		<CheckBoxOutlineBlankIcon fontSize="small" />,
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Audit", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jordan",
-		"10",
-		"150",
-		"1500",
-		"10",
-		"150",
-		"1500",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Landing P", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jordan",
-		"4",
-		"150",
-		"600",
-		"5",
-		"150",
-		"750",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	// ... other data rows
-];
-
-const februarySubTableData = [
-	[
-		"",
-		"Management", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"1148",
-		"",
-		"",
-		"548",
-		"",
-		"",
-		"",
-		"",
-		"",
-		// eslint-disable-next-line react/jsx-key
-		<CheckBoxOutlineBlankIcon fontSize="small" />,
-	],
-	[
-		"", // Empty cell for Additional Data 1
-		"",
-		"- Opt", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"775",
-		"",
-		"",
-		"325",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		"Jack",
-		"1",
-		"150",
-		"150",
-		"0.5",
-		"150",
-		"75",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />, // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		"George",
-		"5",
-		"125",
-		"625",
-		"2",
-		"125",
-		"250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"", // Empty cell for Additional Data 1
-		"",
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Reporting", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"150",
-		"",
-		"",
-		"0",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jack",
-		"1",
-		"150",
-		"150",
-		"0",
-		"150",
-		"0",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"CRO", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		// eslint-disable-next-line react/jsx-key
-		<CheckBoxOutlineBlankIcon fontSize="small" />,
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Audit", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jordan",
-		"10",
-		"150",
-		"1500",
-		"10",
-		"150",
-		"1500",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"- Landing P", // Empty cell for Sub Task 1
-		"",
-		"",
-		"",
-		"2100",
-		"",
-		"",
-		"2250",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		// eslint-disable-next-line react/jsx-key
-		<EditIcon fontSize="small" />,
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		"Jordan",
-		"4",
-		"150",
-		"600",
-		"5",
-		"150",
-		"750",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	[
-		"",
-		"", // Empty cell for Task 1
-		"", // Empty cell for Sub Task 1
-		// eslint-disable-next-line react/jsx-key
-		<PersonAddIcon fontSize="small" />,
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-	],
-	// ... other data rows
 ];
 
 const TableCellNoPadding = styled(TableCell)({
@@ -700,11 +104,180 @@ const TableCellNoPadding = styled(TableCell)({
 const greyRowStyle = {
 	backgroundColor: "#D9D9D9",
 	color: "black",
+	border: "none",
 };
 
 function JobsFinancialTable() {
+	const [value, setValue] = React.useState<Dayjs | null>(
+		dayjs("2023-10-31") as Dayjs | null
+	);
+
+	const initialJanuarySubTableData = [[]]; // Define an initial empty array
+
+	const [januarySubTableData, setJanuarySubTableData] = useState(
+		initialJanuarySubTableData
+	);
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const response = await getAllTimesheetRowsFinancial(8);
+				const dataArray = response || [];
+
+				if (dataArray.length > 0) {
+					// Create an object to group data by job_id
+					const groupedData = {};
+
+					dataArray.forEach((dataItem) => {
+						const { job_id, job_name, task_id, task_name, user_name, hours, rate } =
+							dataItem;
+
+						// Create a unique identifier for the combination of job_id and job_name
+						const jobIdKey = `${job_id}_${job_name}`;
+
+						if (!groupedData[jobIdKey]) {
+							// Initialize the entry with job_name
+							groupedData[jobIdKey] = {
+								job_name: job_name,
+								tasks: [],
+							};
+						}
+
+						// Check if the task_id already exists
+						const taskExists = groupedData[jobIdKey].tasks.some(
+							(task) => task.task_id === task_id
+						);
+
+						if (!taskExists) {
+							// If the task_id doesn't exist, add it with task_name
+							groupedData[jobIdKey].tasks.push({
+								task_id: task_id,
+								task_name: task_name,
+								data: [],
+							});
+						}
+
+						const cellStyleWithBorder = {
+							border: "1px solid black",
+							marginLeft: "5px",
+							marginRight: "5px",
+							padding: 4,
+							// Adjust padding for better visibility
+						};
+
+						// Add the user_name, hours, rate, and calculations row for each user
+						groupedData[jobIdKey].tasks.forEach((task) => {
+							if (task.task_id === task_id) {
+								task.data.push([
+									<EditIcon fontSize="small" />,
+									"",
+									"",
+									user_name,
+									<div style={cellStyleWithBorder}>{hours}</div>, // Add a border to "hours"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate * hours}</div>, // Add a border to "rate * hours"
+									<div style={cellStyleWithBorder}>{hours}</div>, // Add a border to "hours"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate * hours}</div>, // Add a border to "rate * hours"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
+									<CheckBoxOutlineBlankIcon
+										fontSize="medium"
+										style={{ paddingTop: "5px" }}
+									/>,
+								]);
+							}
+						});
+					});
+
+					const januarySubTableData = [];
+
+					// Flatten the groupedData object into an array
+					for (const jobIdKey of Object.keys(groupedData)) {
+						const { job_name, tasks } = groupedData[jobIdKey];
+						januarySubTableData.push([
+							"",
+							job_name,
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+						]);
+						tasks.forEach((task) => {
+							januarySubTableData.push([
+								"",
+								"",
+								task.task_name,
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+								"",
+							]);
+							januarySubTableData.push(...task.data);
+						});
+					}
+
+					setJanuarySubTableData(januarySubTableData);
+				} else {
+					console.log("No timesheet data available.");
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		fetchData();
+	}, []);
+
 	return (
 		<div>
+			<div
+				style={{
+					display: "flex",
+					padding: 20,
+					backgroundColor: "#E5E5E8",
+					borderTopRightRadius: "10px",
+					borderTopLeftRadius: "10px",
+				}}
+			>
+				<LocalizationProvider dateAdapter={AdapterDayjs}>
+					<DatePicker label="Start Date" defaultValue={dayjs("2023-10-05")} />
+					<DatePicker
+						label="End Date"
+						value={value}
+						onChange={(newValue) => setValue(newValue)}
+					/>
+				</LocalizationProvider>
+				<h3 style={{ paddingLeft: "5%" }}>Total Revenue</h3>
+				<h3 style={{ paddingLeft: "15%" }}>3248</h3>
+				<h3 style={{ paddingLeft: "5%" }}>+ 5% YoY | + 0% MoM</h3>
+			</div>
+
 			<TableContainer component={Paper}>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
 					<TableHead>
@@ -718,10 +291,10 @@ function JobsFinancialTable() {
 								colSpan={3}
 								style={{
 									textAlign: "center",
-									backgroundColor: "#78c369",
-									color: "white",
-									paddingLeft: "2px",
+									backgroundColor: "#C3DDBC",
+									paddingLeft: 0, // Adjust the padding
 									borderBottom: "none",
+									borderLeft: "1px solid",
 								}}
 							>
 								Allocated
@@ -730,10 +303,11 @@ function JobsFinancialTable() {
 								colSpan={3}
 								style={{
 									textAlign: "center",
-									backgroundColor: "#939ed0",
-									color: "white",
-									padding: "2px",
+									backgroundColor: "#BEB3D4",
+									paddingLeft: 0, // Adjust the padding
 									borderBottom: "none",
+									borderLeft: "1px solid",
+									borderRight: "1px solid",
 								}}
 							>
 								Actuals
@@ -746,9 +320,9 @@ function JobsFinancialTable() {
 									key={columnIndex}
 									style={{
 										textAlign: "center",
-										cursor: "pointer",
+
 										width: "6%",
-										paddingRight: 10,
+										paddingLeft: 0, // Adjust the padding
 										...((typeof column === "object" && column.style) || {}),
 									}}
 								>
@@ -758,89 +332,65 @@ function JobsFinancialTable() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{[januaryData, februaryData].map((monthData, monthIndex) => (
-							<React.Fragment key={`month-${monthIndex}`}>
-								{monthData.map((row, rowIndex) => (
-									<TableRow key={`row-${monthIndex}-${rowIndex}`}>
-										{row.map((cell, cellIndex) => (
-											<TableCell
-												key={`cell-${monthIndex}-${rowIndex}-${cellIndex}`}
+						{januaryData.map((row, rowIndex) => (
+							<TableRow key={`row-0-${rowIndex}`}>
+								{row.map((cell, cellIndex) => (
+									<TableCell
+										key={`cell-0-${rowIndex}-${cellIndex}`}
+										style={{
+											textAlign: "center",
+											width: "6%",
+											paddingLeft: 0, // Adjust the padding
+											paddingRight: 0,
+											backgroundColor: "#3a2462",
+											color: "white",
+										}}
+									>
+										{cellIndex === 0 ? (
+											<span
 												style={{
-													textAlign: "center",
-													width: "6%",
-													paddingLeft: 0,
-													backgroundColor: "#3a2462",
-													color: "white",
+													display: "flex",
+													alignItems: "center",
 												}}
 											>
-												{cellIndex === 0 ? (
-													<span
-														style={{
-															display: "flex",
-															alignItems: "center",
-															cursor: "pointer",
-														}}
-													>
-														<KeyboardArrowDownIcon
-															fontSize="small"
-															style={{ marginRight: "5px" }}
-														/>
-														{cell}
-													</span>
-												) : (
-													cell
-												)}
-											</TableCell>
-										))}
-									</TableRow>
+												<KeyboardArrowDownIcon
+													fontSize="small"
+													style={{ marginRight: "5px" }}
+												/>
+												{cell}
+											</span>
+										) : (
+											cell
+										)}
+									</TableCell>
 								))}
-								<TableRow>
-									<TableCellNoPadding colSpan={16}>
-										<Table style={{ minWidth: "100%" }}>
-											<TableBody>
-												{monthIndex === 0
-													? januarySubTableData.map((subRow, subRowIndex) => (
-															<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
-																{" "}
-																{subRow.map((subCell, subCellIndex) => (
-																	<TableCellNoPadding
-																		key={`sub-cell-${monthIndex}-${subRowIndex}-${subCellIndex}`}
-																		style={{
-																			textAlign: "center",
-																			width: "6%",
-																			...(subRowIndex === 0 || subRowIndex === 8
-																				? greyRowStyle
-																				: {}),
-																		}}
-																	>
-																		{subCell}
-																	</TableCellNoPadding>
-																))}
-															</TableRow>
-													  ))
-													: februarySubTableData.map((subRow, subRowIndex) => (
-															<TableRow key={`sub-row-${monthIndex}-${subRowIndex}`}>
-																{subRow.map((subCell, subCellIndex) => (
-																	<TableCellNoPadding
-																		style={{
-																			textAlign: "center",
-																			width: "6%",
-																			...(subRowIndex === 0 || subRowIndex === 8
-																				? greyRowStyle
-																				: {}),
-																		}}
-																	>
-																		{subCell}
-																	</TableCellNoPadding>
-																))}
-															</TableRow>
-													  ))}
-											</TableBody>
-										</Table>
-									</TableCellNoPadding>
-								</TableRow>
-							</React.Fragment>
+							</TableRow>
 						))}
+						<TableRow>
+							<TableCellNoPadding colSpan={17}>
+								<Table style={{ minWidth: "100%" }}>
+									{januarySubTableData.map((subRow, subRowIndex) => (
+										<TableRow key={`sub-row-0-${subRowIndex}`}>
+											{subRow.map((subCell, subCellIndex) => (
+												<TableCellNoPadding
+													key={`sub-cell-0-${subRowIndex}-${subCellIndex}`}
+													style={{
+														textAlign: "center",
+														width: "6%",
+														paddingLeft: 0,
+														paddingRight: 0,
+														backgroundColor: subRow[1] ? "#D9D9D9" : "",
+														color: subRow[1] ? "black" : "",
+													}}
+												>
+													{subCell}
+												</TableCellNoPadding>
+											))}
+										</TableRow>
+									))}
+								</Table>
+							</TableCellNoPadding>
+						</TableRow>
 					</TableBody>
 				</Table>
 			</TableContainer>

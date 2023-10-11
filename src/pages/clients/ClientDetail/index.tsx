@@ -133,7 +133,11 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 					aria-labelledby={`tab-1`}
 				>
 					{/* Financials Tab Content */}
-					<Container component="main" maxWidth="lg">
+					<Container
+						style={{ height: 350, width: "100%" }}
+						component="main"
+						maxWidth="lg"
+					>
 						<CssBaseline />
 						<Paper elevation={3} sx={{ padding: "20px" }}>
 							<Typography component="h1" variant="h5">

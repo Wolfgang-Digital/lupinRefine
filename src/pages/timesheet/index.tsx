@@ -56,6 +56,7 @@ const TableHeaderCell = styled(TableCell)`
 
 const TableRowCell = styled(TableCell)`
 	border-right: 1px solid black;
+
 	text-align: center;
 	white-space: pre-line;
 	font-size: smaller;
@@ -518,7 +519,7 @@ const Timesheet = () => {
 										return (
 											<React.Fragment key={entry.job_id}>
 												<TableRow
-													sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
+													sx={{ backgroundColor: "#E5E5E8", fontWeight: "600 !important" }}
 													key={`${index}-1`}
 													onClick={() => {
 														setOpenedAccordions({
@@ -602,8 +603,7 @@ const Timesheet = () => {
 						/>
 					</Grid>
 
-					{/* Second column */}
-					<Grid item xs={4}>
+					<Grid item xs={3} style={{ paddingTop: "8.2%" }}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "30px" }}
