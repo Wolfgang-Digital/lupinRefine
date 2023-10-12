@@ -112,11 +112,9 @@ function JobsFinancialTable() {
 		dayjs("2023-10-31") as Dayjs | null
 	);
 
-	const initialJanuarySubTableData = [[]]; // Define an initial empty array
-
-	const [januarySubTableData, setJanuarySubTableData] = useState(
-		initialJanuarySubTableData
-	);
+	const [januarySubTableData, setJanuarySubTableData] = useState<
+		Array<Array<JSX.Element>>
+	>([]);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -126,14 +124,29 @@ function JobsFinancialTable() {
 
 				if (dataArray.length > 0) {
 					// Create an object to group data by job_id
-					const groupedData = {};
+					const groupedData: Record<
+						string,
+						{
+							job_name: string;
+							tasks: Array<{
+								task_id: number;
+								task_name: string;
+								users: Array<{
+									user_id: number;
+									user_name: string;
+									data: Array<JSX.Element[]>; // Assuming JSX elements
+								}>;
+							}>;
+						}
+					> = {};
 
 					dataArray.forEach((dataItem) => {
 						const { job_id, job_name, task_id, task_name, user_name, hours, rate } =
 							dataItem;
 
 						// Create a unique identifier for the combination of job_id and job_name
-						const jobIdKey = `${job_id}_${job_name}`;
+						const jobIdKey =
+							job_name !== null ? `${job_id}_${job_name}` : `${job_id}_NoJobName`;
 
 						if (!groupedData[jobIdKey]) {
 							// Initialize the entry with job_name
