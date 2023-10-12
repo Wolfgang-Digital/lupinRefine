@@ -21,7 +21,10 @@ import {
 	TablePagination,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import {
+	getAllTimesheetRows,
+	getAllTimesheetRowsV2,
+} from "@pages/api/timesheetRows";
 import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
@@ -111,11 +114,22 @@ type Task = {
 type Job = {
 	job_id: number;
 	job_name: string;
-	client_name: string;
+	// client_name: string;
+	// client_id: number;
+	project_id: number;
+	project_name: string;
 	tasks: Task[];
+};
+type Client = {
+	client_id: number;
+	client_name: string;
+	// project_id: number;
+	// project_name: string;
+	jobs: Job[];
 };
 
 type GroupedTimesheets = Job[];
+type GroupedTimesheets2 = Client[];
 
 // Create the Timesheet component
 const Timesheet = () => {
@@ -134,6 +148,8 @@ const Timesheet = () => {
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
+	const [filteredTimesheets2, setFilteredTimesheets2] =
+		useState<GroupedTimesheets2>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
@@ -169,10 +185,10 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRows(13);
+			const timesheetsResponse = await getAllTimesheetRowsV2();
 			// console.log({ timesheetsResponse });
 			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
-			console.log({ unworkedHoursResponse });
+			// console.log({ unworkedHoursResponse });
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
@@ -218,7 +234,10 @@ const Timesheet = () => {
 					acc.push({
 						job_id: curr.job_id || 0,
 						job_name: curr.job_name || "",
-						client_name: curr?.name || "",
+						// client_name: curr?.name || "",
+						// client_id: curr?.client_id || 0,
+						project_id: curr?.project_id || 0,
+						project_name: curr?.project_name || "",
 						tasks: [
 							{
 								task_id: curr.task_id || 0,
@@ -237,16 +256,88 @@ const Timesheet = () => {
 			// If a task with the same task_id already exists for a job, it will update the time for that task;
 			// otherwise, it will create a new task object. If a job with the same job_id already exists,
 			// it will add tasks to the existing job; otherwise, it will create a new job object.
-
 			setFilteredTimesheets(groupedTimesheets);
-			// console.log({ groupedTimesheets });
+			// console.log(filteredResponse);
+			const groupedTimesheets2 = filteredResponse.reduce((acc, curr) => {
+				const existingClientEntry = acc.find(
+					(entry) => entry.client_id === curr.client_id
+				);
+				if (existingClientEntry) {
+					const existingProjectEntry = existingClientEntry.jobs.find(
+						(project) =>
+							project.project_id === curr.project_id && project.job_id === curr.job_id
+					);
+					if (existingProjectEntry) {
+						const existingTaskEntry = existingProjectEntry.tasks.find(
+							(task) => task.task_id === curr.task_id
+						);
+						if (existingTaskEntry) {
+							existingTaskEntry.time += curr.time || 0;
+						} else {
+							existingProjectEntry.tasks.push({
+								task_id: curr?.task_id || 0,
+								task_name: curr?.task_name || "",
+								time: curr?.time || 0,
+								hours: curr?.hours || 0,
+							});
+						}
+					} else {
+						existingClientEntry.jobs.push({
+							job_id: curr?.job_id || 0,
+							job_name: curr?.job_name || "",
+							// client_id: curr?.client_id || 0,
+							// client_name: curr?.job_name || "",
+							project_id: curr?.project_id || 0,
+							project_name: curr?.project_name || "",
+							tasks: [
+								{
+									task_id: curr?.task_id || 0,
+									task_name: curr?.task_name || "",
+									time: curr?.time || 0,
+									hours: curr?.hours || 0,
+								},
+							],
+						});
+					}
+				} else {
+					acc.push({
+						client_name: curr?.name || "",
+						client_id: curr?.client_id || 0,
+						// project_id: curr?.project_id || 0,
+						// project_name: curr?.project_name || "",
+						jobs: [
+							{
+								job_id: curr?.job_id || 0,
+								job_name: curr?.job_name || "",
+								// client_id: curr?.client_id || 0,
+								// client_name: curr?.job_name || "",
+								project_id: curr?.project_id || 0,
+								project_name: curr?.project_name || "",
+								tasks: [
+									{
+										task_id: curr.task_id || 0,
+										task_name: curr.task_name || "",
+										time: curr.time || 0,
+										hours: curr.hours || 0,
+									},
+								],
+							},
+						],
+					});
+				}
+				return acc;
+			}, [] as GroupedTimesheets2);
+			setFilteredTimesheets2(groupedTimesheets2);
+
+			console.log({ groupedTimesheets2 });
 
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
 
 			groupedTimesheets.forEach((timesheet) => {
 				jobOptions.push({
-					label: `${timesheet.client_name} : ${timesheet.job_name}`,
+					// label: `${timesheet.client_name} : ${timesheet.job_name}`,
+					label: `${timesheet.job_name}`,
 					value: timesheet.job_id?.toString() || "0",
 					taskLabel: timesheet.tasks[0].task_name || "",
 				});
@@ -421,7 +512,7 @@ const Timesheet = () => {
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
-					<Grid item xs={8}>
+					<Grid item xs={12}>
 						<TimesheetContainer
 							style={{
 								display: "flex",
@@ -494,6 +585,8 @@ const Timesheet = () => {
 							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
+										<TableHeaderCell>Client</TableHeaderCell>
+										<TableHeaderCell>Project</TableHeaderCell>
 										<TableHeaderCell>Job</TableHeaderCell>
 										<TableHeaderCell>Task</TableHeaderCell>
 										<TableHeaderCell>Used V Allocated</TableHeaderCell>
@@ -516,7 +609,6 @@ const Timesheet = () => {
 										/* console.log(entry); */
 										const remainingHours = Math.max(0, totalHours - totalSpentHours);
 										const isOpened = openedAccordions[entry?.job_id];
-
 										return (
 											<React.Fragment key={entry.job_id}>
 												<TableRow
@@ -530,11 +622,12 @@ const Timesheet = () => {
 													}}
 												>
 													<TableRowCell sx={{ fontWeight: "600" }}>
-														{entry.client_name} :{entry.job_name?.replace(/:/g, ":\n")}
+														{/* {entry.client_name} */}
 													</TableRowCell>
-
+													<TableRowCell colSpan={4}></TableRowCell>
+													{/*<TableRowCell></TableRowCell>
 													<TableRowCell></TableRowCell>
-													<TableRowCell></TableRowCell>
+													<TableRowCell></TableRowCell> */}
 													<TableRowCell sx={{ fontWeight: "600" }}>
 														{remainingHours}
 													</TableRowCell>
@@ -542,49 +635,55 @@ const Timesheet = () => {
 													<TableRowCell></TableRowCell>
 													<TableRowCell></TableRowCell>
 												</TableRow>
-												{isOpened && (
-													<TableRow key={`${index}-2`}>
-														<TableRowCell></TableRowCell>
 
-														<TableRowCell>
-															{entry.tasks.map((task) => (
-																<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
-																	{task.task_name}
-																</div>
-															))}
-														</TableRowCell>
-														<TableRowCell>
-															{entry.tasks.map((task) => (
-																<div
-																	style={{
-																		whiteSpace: "nowrap",
-																		color: (task.hours || 0) < task.time ? "red" : "green",
-																	}}
-																	key={task.task_id}
-																>
-																	{task.time} hrs of {task.hours}
-																</div>
-															))}
-														</TableRowCell>
-														<TableRowCell></TableRowCell>
-														<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
-														<TableRowCell>
-															{entry.tasks.map((task) => (
-																<div key={task.task_id}>
-																	{/* <Checkbox size="small" /> */}
-																	<input type="checkbox" />
-																</div>
-															))}
-														</TableRowCell>
-														<TableRowCell>
-															{entry.tasks.map((task) => (
-																<div key={task.task_id}>
-																	<MoreTimeIcon fontSize="small" onClick={handleAddTimeClick} />
-																</div>
-															))}
-														</TableRowCell>
-													</TableRow>
-												)}
+												<TableRow key={`${index}-2`}>
+													{isOpened && (
+														<>
+															<TableRowCell></TableRowCell>
+															<TableRowCell>{/* {entry.project_name} */}</TableRowCell>
+															<TableRowCell>
+																{entry.job_name?.replace(/:/g, ":\n")}
+															</TableRowCell>
+															<TableRowCell>
+																{entry.tasks.map((task) => (
+																	<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																		{task.task_name}
+																	</div>
+																))}
+															</TableRowCell>
+															<TableRowCell>
+																{entry.tasks.map((task) => (
+																	<div
+																		style={{
+																			whiteSpace: "nowrap",
+																			color: (task.hours || 0) < task.time ? "red" : "green",
+																		}}
+																		key={task.task_id}
+																	>
+																		{task.time} hrs of {task.hours}
+																	</div>
+																))}
+															</TableRowCell>
+															<TableRowCell></TableRowCell>
+															<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+															<TableRowCell>
+																{entry.tasks.map((task) => (
+																	<div key={task.task_id}>
+																		{/* <Checkbox size="small" /> */}
+																		<input type="checkbox" />
+																	</div>
+																))}
+															</TableRowCell>
+															<TableRowCell>
+																{entry.tasks.map((task) => (
+																	<div key={task.task_id}>
+																		<MoreTimeIcon fontSize="small" onClick={handleAddTimeClick} />
+																	</div>
+																))}
+															</TableRowCell>
+														</>
+													)}
+												</TableRow>
 											</React.Fragment>
 										);
 									})}
@@ -608,7 +707,7 @@ const Timesheet = () => {
 					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
-							style={{ textAlign: "center", padding: "30px" }}
+							style={{ textAlign: "center", padding: "30px", display: "none" }}
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>

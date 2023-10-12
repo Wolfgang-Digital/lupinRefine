@@ -1,5 +1,9 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { JobsDropdownViewDemo, TimesheetRowsView } from "types";
+import {
+	JobsDropdownViewDemo,
+	TimesheetRowsView,
+	TimesheetRowsViewV6,
+} from "types";
 
 export type TimesheetData = JobsDropdownViewDemo;
 export type TimesheetDataDemo = JobsDropdownViewDemo;
@@ -28,14 +32,15 @@ export const getAllTimesheetRows = async (
 	}
 };
 export const getAllTimesheetRowsV2 = async (): Promise<
-	TimesheetData[] | undefined
+	TimesheetRowsViewV6[] | undefined
 > => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v5")
+			.from("timesheet_rows_view_v6")
 			.select("*")
+			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })) as unknown as {
-			data: TimesheetData[];
+			data: TimesheetRowsViewV6[];
 			error: PostgrestError;
 		};
 

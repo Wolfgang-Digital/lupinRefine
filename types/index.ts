@@ -21,3 +21,4 @@ export type AllTasksDemo = Views["all_tasks_demo"]["Row"];
 export type WolfgangTasksDemo = Views["wolfgang_jobs_demo"]["Row"];
 export type AllocateHoursView = Views["allocate_hours_view"]["Row"];
 export type JobTasksView = Views["job_tasks_view"]["Row"];
+export type TimesheetRowsViewV6 = Views["timesheet_rows_view_v6"]["Row"];
