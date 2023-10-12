@@ -114,18 +114,23 @@ type Task = {
 type Job = {
 	job_id: number;
 	job_name: string;
-	// client_name: string;
-	// client_id: number;
+	client_name: string;
+	client_id: number;
 	project_id: number;
 	project_name: string;
+	tasks: Task[];
+};
+type Job2 = {
+	job_id: number;
+	job_name: string;
 	tasks: Task[];
 };
 type Client = {
 	client_id: number;
 	client_name: string;
-	// project_id: number;
-	// project_name: string;
-	jobs: Job[];
+	project_id: number;
+	project_name: string;
+	jobs: Job2[];
 };
 
 type GroupedTimesheets = Job[];
@@ -186,9 +191,9 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
-			// console.log({ timesheetsResponse });
+
 			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
-			// console.log({ unworkedHoursResponse });
+
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
@@ -234,8 +239,8 @@ const Timesheet = () => {
 					acc.push({
 						job_id: curr.job_id || 0,
 						job_name: curr.job_name || "",
-						// client_name: curr?.name || "",
-						// client_id: curr?.client_id || 0,
+						client_name: curr?.name || "",
+						client_id: curr?.client_id || 0,
 						project_id: curr?.project_id || 0,
 						project_name: curr?.project_name || "",
 						tasks: [
@@ -257,38 +262,55 @@ const Timesheet = () => {
 			// otherwise, it will create a new task object. If a job with the same job_id already exists,
 			// it will add tasks to the existing job; otherwise, it will create a new job object.
 			setFilteredTimesheets(groupedTimesheets);
-			// console.log(filteredResponse);
+			console.log(filteredTimesheets);
 			const groupedTimesheets2 = filteredResponse.reduce((acc, curr) => {
 				const existingClientEntry = acc.find(
 					(entry) => entry.client_id === curr.client_id
 				);
 				if (existingClientEntry) {
-					const existingProjectEntry = existingClientEntry.jobs.find(
-						(project) =>
-							project.project_id === curr.project_id && project.job_id === curr.job_id
+					const existingProjectEntry = acc.find(
+						(project) => project.project_id === curr.project_id
 					);
 					if (existingProjectEntry) {
-						const existingTaskEntry = existingProjectEntry.tasks.find(
-							(task) => task.task_id === curr.task_id
+						const existingJobEntry = existingProjectEntry.jobs.find(
+							(job) => job.job_id === curr.job_id
 						);
-						if (existingTaskEntry) {
-							existingTaskEntry.time += curr.time || 0;
+						if (existingJobEntry) {
+							const existingTaskEntry = existingJobEntry.tasks.find(
+								(task) => task.task_id === curr.task_id
+							);
+							if (existingTaskEntry) {
+								existingTaskEntry.time += curr.time || 0;
+							} else {
+								existingJobEntry.tasks.push({
+									task_id: curr?.task_id || 0,
+									task_name: curr?.task_name || "",
+									time: curr?.time || 0,
+									hours: curr?.hours || 0,
+								});
+							}
 						} else {
-							existingProjectEntry.tasks.push({
-								task_id: curr?.task_id || 0,
-								task_name: curr?.task_name || "",
-								time: curr?.time || 0,
-								hours: curr?.hours || 0,
+							existingProjectEntry.jobs.push({
+								job_id: curr?.job_id || 0,
+								job_name: curr?.job_name || "",
+								// project_id: curr?.project_id || 0,
+								// project_name: curr?.project_name || "",
+								tasks: [
+									{
+										task_id: curr?.task_id || 0,
+										task_name: curr?.task_name || "",
+										time: curr?.time || 0,
+										hours: curr?.hours || 0,
+									},
+								],
 							});
 						}
 					} else {
 						existingClientEntry.jobs.push({
 							job_id: curr?.job_id || 0,
 							job_name: curr?.job_name || "",
-							// client_id: curr?.client_id || 0,
-							// client_name: curr?.job_name || "",
-							project_id: curr?.project_id || 0,
-							project_name: curr?.project_name || "",
+							// project_id: curr?.project_id || 0,
+							// project_name: curr?.project_name || "",
 							tasks: [
 								{
 									task_id: curr?.task_id || 0,
@@ -303,16 +325,14 @@ const Timesheet = () => {
 					acc.push({
 						client_name: curr?.name || "",
 						client_id: curr?.client_id || 0,
-						// project_id: curr?.project_id || 0,
-						// project_name: curr?.project_name || "",
+						project_id: curr?.project_id || 0,
+						project_name: curr?.project_name || "",
 						jobs: [
 							{
 								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
-								// client_id: curr?.client_id || 0,
-								// client_name: curr?.job_name || "",
-								project_id: curr?.project_id || 0,
-								project_name: curr?.project_name || "",
+								// project_id: curr?.project_id || 0,
+								// project_name: curr?.project_name || "",
 								tasks: [
 									{
 										task_id: curr.task_id || 0,
@@ -403,6 +423,10 @@ const Timesheet = () => {
 
 	// Update the TimeEntries based on the current page and rows per page
 	const displayedTimeEntries = filteredTimesheets.slice(
+		page * rowsPerPage,
+		page * rowsPerPage + rowsPerPage
+	);
+	const displayedTimeEntries2 = filteredTimesheets2.slice(
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
@@ -597,96 +621,131 @@ const Timesheet = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{displayedTimeEntries.map((entry, index) => {
-										const totalHours = entry.tasks.reduce(
-											(acc, curr) => acc + (curr.hours || 0),
-											0
-										);
-										const totalSpentHours = entry.tasks.reduce(
-											(acc, curr) => acc + curr.time,
-											0
-										);
-										/* console.log(entry); */
-										const remainingHours = Math.max(0, totalHours - totalSpentHours);
-										const isOpened = openedAccordions[entry?.job_id];
-										return (
-											<React.Fragment key={entry.job_id}>
-												<TableRow
-													sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
-													key={`${index}-1`}
-													onClick={() => {
-														setOpenedAccordions({
-															...openedAccordions,
-															[entry.job_id]: !isOpened,
-														});
-													}}
-												>
-													<TableRowCell sx={{ fontWeight: "600" }}>
-														{/* {entry.client_name} */}
-													</TableRowCell>
-													<TableRowCell colSpan={4}></TableRowCell>
-													{/*<TableRowCell></TableRowCell>
-													<TableRowCell></TableRowCell>
-													<TableRowCell></TableRowCell> */}
-													<TableRowCell sx={{ fontWeight: "600" }}>
-														{remainingHours}
-													</TableRowCell>
-													<TableRowCell></TableRowCell>
-													<TableRowCell></TableRowCell>
-													<TableRowCell></TableRowCell>
-												</TableRow>
+									{
+										displayedTimeEntries2.map((entry, index) => {
+											let remainingHours: number = 0;
+											let isOpened: boolean = false;
+											entry.jobs.map((job) => {
+												const totalHours = job.tasks.reduce(
+													(acc, curr) => acc + (curr.hours || 0),
+													0
+												);
+												const totalSpentHours = job.tasks.reduce(
+													(acc, curr) => acc + curr.time,
+													0
+												);
 
-												<TableRow key={`${index}-2`}>
-													{isOpened && (
-														<>
-															<TableRowCell></TableRowCell>
-															<TableRowCell>{/* {entry.project_name} */}</TableRowCell>
-															<TableRowCell>
-																{entry.job_name?.replace(/:/g, ":\n")}
-															</TableRowCell>
-															<TableRowCell>
-																{entry.tasks.map((task) => (
-																	<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
-																		{task.task_name}
-																	</div>
-																))}
-															</TableRowCell>
-															<TableRowCell>
-																{entry.tasks.map((task) => (
-																	<div
-																		style={{
-																			whiteSpace: "nowrap",
-																			color: (task.hours || 0) < task.time ? "red" : "green",
-																		}}
-																		key={task.task_id}
-																	>
-																		{task.time} hrs of {task.hours}
-																	</div>
-																))}
-															</TableRowCell>
-															<TableRowCell></TableRowCell>
-															<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
-															<TableRowCell>
-																{entry.tasks.map((task) => (
-																	<div key={task.task_id}>
-																		{/* <Checkbox size="small" /> */}
-																		<input type="checkbox" />
-																	</div>
-																))}
-															</TableRowCell>
-															<TableRowCell>
-																{entry.tasks.map((task) => (
-																	<div key={task.task_id}>
-																		<MoreTimeIcon fontSize="small" onClick={handleAddTimeClick} />
-																	</div>
-																))}
-															</TableRowCell>
-														</>
-													)}
-												</TableRow>
-											</React.Fragment>
-										);
-									})}
+												// const totalHours = entry.tasks.reduce(
+												// 	(acc, curr) => acc + (curr.hours || 0),
+												// 	0
+												// );
+												// const totalSpentHours = entry.tasks.reduce(
+												// 	(acc, curr) => acc + curr.time,
+												// 	0
+												// );
+
+												remainingHours = Math.max(0, totalHours - totalSpentHours);
+												isOpened = openedAccordions[entry?.client_id];
+											});
+											return (
+												<React.Fragment key={entry.client_id}>
+													<TableRow
+														sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
+														key={`${index}-1`}
+														onClick={() => {
+															setOpenedAccordions({
+																...openedAccordions,
+																[entry.client_id]: !isOpened,
+															});
+														}}
+													>
+														<TableRowCell sx={{ fontWeight: "600" }}>
+															{entry.client_name}
+														</TableRowCell>
+														{/* <TableRowCell colSpan={4}></TableRowCell> */}
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell sx={{ fontWeight: "600" }}>
+															{remainingHours}
+														</TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+													</TableRow>
+													<>
+														{entry.jobs.map((job) => (
+															<>
+																{isOpened && (
+																	<TableRow key={`${index}-2`}>
+																		<>
+																			<TableRowCell></TableRowCell>
+																			<TableRowCell>{entry.project_name}</TableRowCell>
+																			<TableRowCell>
+																				<TableRow key={`${index - 3}`}>
+																					<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
+																						{job.job_name}
+																					</div>
+																				</TableRow>
+																			</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																						{task.task_name}
+																					</div>
+																				))}
+																			</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div
+																						style={{
+																							whiteSpace: "nowrap",
+																							color: (task.hours || 0) < task.time ? "red" : "green",
+																						}}
+																						key={task.task_id}
+																					>
+																						{task.time} hrs of {task.hours}
+																					</div>
+																				))}
+																			</TableRowCell>
+																			<TableRowCell></TableRowCell>
+																			<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+																			<TableRowCell>
+																				{entry.jobs.map((job) =>
+																					job.tasks.map((task) => (
+																						<div key={task.task_id}>
+																							{/* <Checkbox size="small" /> */}
+																							<input type="checkbox" />
+																						</div>
+																					))
+																				)}
+																			</TableRowCell>
+																			<TableRowCell>
+																				{entry.jobs.map((job) =>
+																					job.tasks.map((task) => (
+																						<div key={task.task_id}>
+																							<MoreTimeIcon
+																								fontSize="small"
+																								onClick={handleAddTimeClick}
+																							/>
+																						</div>
+																					))
+																				)}
+																			</TableRowCell>
+																		</>
+																	</TableRow>
+																)}
+																{/* isOpen */}
+															</>
+														))}
+													</>
+												</React.Fragment>
+											);
+											// return
+										})
+										// displayedTimeEntries.map
+									}
 								</TableBody>
 							</Table>
 						</TableContainer>
@@ -695,7 +754,7 @@ const Timesheet = () => {
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
 							component="div"
-							count={filteredTimesheets.length}
+							count={filteredTimesheets2.length}
 							rowsPerPage={rowsPerPage}
 							page={page}
 							onPageChange={handleChangePage}
