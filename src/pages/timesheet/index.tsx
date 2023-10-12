@@ -17,15 +17,15 @@ import {
 	FormControl,
 	InputLabel,
 	Select,
-	Checkbox,
+	// Checkbox,
 	TablePagination,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import {
-	getAllTimesheetRows,
+	// getAllTimesheetRows,
 	getAllTimesheetRowsV2,
 } from "@pages/api/timesheetRows";
-import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
+// import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
@@ -73,6 +73,17 @@ type TimeEntry = {
 	notes: string;
 };
 
+type ClientOption = {
+	label: string;
+	value: string;
+	projectLabel: string;
+};
+type ProjectOption = {
+	label: string;
+	value: string;
+	jobLabel: string;
+};
+
 type JobOption = {
 	label: string;
 	value: string;
@@ -84,26 +95,6 @@ type TaskOption = {
 	value: string;
 };
 
-type TimesheetEntries = {
-	name: string | null;
-	hours: number | null;
-	job_id: number | null;
-	subTasks: [
-		{
-			task_id: number | null;
-			task_name: string | null;
-			time: number | null;
-			hours: number | null;
-		}
-	];
-};
-
-// const timesheetEntries: {
-// 	name: string | null;
-// 	hours: number | null;
-// 	job_id: number | null;
-// 	tasks: { task_id: number | null; task_name: string | null };
-// } = [];
 type Task = {
 	task_id: number;
 	task_name: string;
@@ -114,15 +105,6 @@ type Task = {
 type Job = {
 	job_id: number;
 	job_name: string;
-	client_name: string;
-	client_id: number;
-	project_id: number;
-	project_name: string;
-	tasks: Task[];
-};
-type Job2 = {
-	job_id: number;
-	job_name: string;
 	tasks: Task[];
 };
 type Client = {
@@ -130,11 +112,10 @@ type Client = {
 	client_name: string;
 	project_id: number;
 	project_name: string;
-	jobs: Job2[];
+	jobs: Job[];
 };
 
-type GroupedTimesheets = Job[];
-type GroupedTimesheets2 = Client[];
+type GroupedTimesheets = Client[];
 
 // Create the Timesheet component
 const Timesheet = () => {
@@ -153,8 +134,8 @@ const Timesheet = () => {
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
-	const [filteredTimesheets2, setFilteredTimesheets2] =
-		useState<GroupedTimesheets2>([]);
+	const [clients, setClients] = useState<ClientOption[]>([]);
+	const [projects, setProjects] = useState<ProjectOption[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
@@ -192,7 +173,7 @@ const Timesheet = () => {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
 
-			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
+			// const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
 
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
@@ -218,52 +199,6 @@ const Timesheet = () => {
 			});
 
 			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
-				const existingJobEntry = acc.find((entry) => entry.job_id === curr.job_id);
-
-				if (existingJobEntry) {
-					const existingTaskEntry = existingJobEntry.tasks.find(
-						(task) => task.task_id === curr.task_id
-					);
-
-					if (existingTaskEntry) {
-						existingTaskEntry.time += curr.time || 0;
-					} else {
-						existingJobEntry.tasks.push({
-							task_id: curr.task_id || 0,
-							task_name: curr.task_name || "",
-							time: curr.time || 0,
-							hours: curr.hours || 0,
-						});
-					}
-				} else {
-					acc.push({
-						job_id: curr.job_id || 0,
-						job_name: curr.job_name || "",
-						client_name: curr?.name || "",
-						client_id: curr?.client_id || 0,
-						project_id: curr?.project_id || 0,
-						project_name: curr?.project_name || "",
-						tasks: [
-							{
-								task_id: curr.task_id || 0,
-								task_name: curr.task_name || "",
-								time: curr.time || 0,
-								hours: curr.hours || 0,
-							},
-						],
-					});
-				}
-
-				return acc;
-			}, [] as GroupedTimesheets);
-			// This code will create an array of objects where each object represents a job,
-			// and within each job object, there is an array of tasks.
-			// If a task with the same task_id already exists for a job, it will update the time for that task;
-			// otherwise, it will create a new task object. If a job with the same job_id already exists,
-			// it will add tasks to the existing job; otherwise, it will create a new job object.
-			setFilteredTimesheets(groupedTimesheets);
-			console.log(filteredTimesheets);
-			const groupedTimesheets2 = filteredResponse.reduce((acc, curr) => {
 				const existingClientEntry = acc.find(
 					(entry) => entry.client_id === curr.client_id
 				);
@@ -293,8 +228,6 @@ const Timesheet = () => {
 							existingProjectEntry.jobs.push({
 								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
-								// project_id: curr?.project_id || 0,
-								// project_name: curr?.project_name || "",
 								tasks: [
 									{
 										task_id: curr?.task_id || 0,
@@ -309,8 +242,6 @@ const Timesheet = () => {
 						existingClientEntry.jobs.push({
 							job_id: curr?.job_id || 0,
 							job_name: curr?.job_name || "",
-							// project_id: curr?.project_id || 0,
-							// project_name: curr?.project_name || "",
 							tasks: [
 								{
 									task_id: curr?.task_id || 0,
@@ -331,8 +262,6 @@ const Timesheet = () => {
 							{
 								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
-								// project_id: curr?.project_id || 0,
-								// project_name: curr?.project_name || "",
 								tasks: [
 									{
 										task_id: curr.task_id || 0,
@@ -346,27 +275,45 @@ const Timesheet = () => {
 					});
 				}
 				return acc;
-			}, [] as GroupedTimesheets2);
-			setFilteredTimesheets2(groupedTimesheets2);
+			}, [] as GroupedTimesheets);
+			setFilteredTimesheets(groupedTimesheets);
+			// This code will create an array of objects where each object represents a job,
+			// and within each job object, there is an array of tasks.
+			// If a task with the same task_id already exists for a job, it will update the time for that task;
+			// otherwise, it will create a new task object. If a job with the same job_id already exists,
+			// it will add tasks to the existing job; otherwise, it will create a new job object.
 
-			console.log({ groupedTimesheets2 });
-
+			const clientOptions: ClientOption[] = [];
+			const projectOptions: ProjectOption[] = [];
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
 
 			groupedTimesheets.forEach((timesheet) => {
-				jobOptions.push({
-					// label: `${timesheet.client_name} : ${timesheet.job_name}`,
-					label: `${timesheet.job_name}`,
-					value: timesheet.job_id?.toString() || "0",
-					taskLabel: timesheet.tasks[0].task_name || "",
+				clientOptions.push({
+					label: timesheet.client_name,
+					value: timesheet.client_id?.toString() || "0",
+					projectLabel: timesheet.project_name || "",
 				});
-				taskOptions.push({
-					label: timesheet.tasks[0].task_name || "",
-					value: timesheet.job_id?.toString() || "0",
+				projectOptions.push({
+					label: timesheet.project_name,
+					value: timesheet.project_id?.toString() || "0",
+					jobLabel: timesheet.jobs[0].job_name || "",
+				});
+				timesheet.jobs.forEach((job) => {
+					jobOptions.push({
+						label: `${job.job_name}`,
+						value: job.job_id?.toString() || "0",
+						taskLabel: job.tasks[0].task_name || "",
+					});
+					taskOptions.push({
+						label: job.tasks[0].task_name || "",
+						value: job.job_id?.toString() || "0",
+					});
 				});
 			});
 
+			setClients(clientOptions);
+			setProjects(projectOptions);
 			setJobs(jobOptions);
 			setTasks(taskOptions);
 		} catch (error) {
@@ -423,10 +370,6 @@ const Timesheet = () => {
 
 	// Update the TimeEntries based on the current page and rows per page
 	const displayedTimeEntries = filteredTimesheets.slice(
-		page * rowsPerPage,
-		page * rowsPerPage + rowsPerPage
-	);
-	const displayedTimeEntries2 = filteredTimesheets2.slice(
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
@@ -622,7 +565,7 @@ const Timesheet = () => {
 								</TableHead>
 								<TableBody>
 									{
-										displayedTimeEntries2.map((entry, index) => {
+										displayedTimeEntries.map((entry, index) => {
 											let remainingHours: number = 0;
 											let isOpened: boolean = false;
 											entry.jobs.map((job) => {
@@ -634,16 +577,6 @@ const Timesheet = () => {
 													(acc, curr) => acc + curr.time,
 													0
 												);
-
-												// const totalHours = entry.tasks.reduce(
-												// 	(acc, curr) => acc + (curr.hours || 0),
-												// 	0
-												// );
-												// const totalSpentHours = entry.tasks.reduce(
-												// 	(acc, curr) => acc + curr.time,
-												// 	0
-												// );
-
 												remainingHours = Math.max(0, totalHours - totalSpentHours);
 												isOpened = openedAccordions[entry?.client_id];
 											});
@@ -754,7 +687,7 @@ const Timesheet = () => {
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
 							component="div"
-							count={filteredTimesheets2.length}
+							count={filteredTimesheets.length}
 							rowsPerPage={rowsPerPage}
 							page={page}
 							onPageChange={handleChangePage}
@@ -766,7 +699,7 @@ const Timesheet = () => {
 					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
-							style={{ textAlign: "center", padding: "30px", display: "none" }}
+							style={{ textAlign: "center", padding: "30px" }}
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>
@@ -786,7 +719,7 @@ const Timesheet = () => {
 
 									<TextField
 										select
-										label="Select Job"
+										label="Select Client"
 										value={selectedJob}
 										onChange={handleJobSelect}
 										style={{
@@ -796,9 +729,9 @@ const Timesheet = () => {
 										}}
 										required
 									>
-										{jobs.map((job) => (
-											<MenuItem key={job.value} value={job.value}>
-												{job.label}
+										{clients.map((client) => (
+											<MenuItem key={client.value} value={client.value}>
+												{client.label}
 											</MenuItem>
 										))}
 									</TextField>
