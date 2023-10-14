@@ -282,7 +282,7 @@ const Timesheet = () => {
 			// If a task with the same task_id already exists for a job, it will update the time for that task;
 			// otherwise, it will create a new task object. If a job with the same job_id already exists,
 			// it will add tasks to the existing job; otherwise, it will create a new job object.
-
+			// console.log(groupedTimesheets);
 			const clientOptions: ClientOption[] = [];
 			const projectOptions: ProjectOption[] = [];
 			const jobOptions: JobOption[] = [];
@@ -566,20 +566,30 @@ const Timesheet = () => {
 								<TableBody>
 									{
 										displayedTimeEntries.map((entry, index) => {
-											let remainingHours: number = 0;
-											let isOpened: boolean = false;
-											entry.jobs.map((job) => {
-												const totalHours = job.tasks.reduce(
-													(acc, curr) => acc + (curr.hours || 0),
-													0
-												);
-												const totalSpentHours = job.tasks.reduce(
-													(acc, curr) => acc + curr.time,
-													0
-												);
-												remainingHours = Math.max(0, totalHours - totalSpentHours);
-												isOpened = openedAccordions[entry?.client_id];
-											});
+											let totalHours: number = 0;
+											let totalSpentHours: number = 0;
+											const multipleJobEntries = entry.jobs.length > 1;
+											if (multipleJobEntries) {
+												entry.jobs.map((job) => {
+													job.tasks.map((task) => {
+														totalHours += task.hours || 0;
+														totalSpentHours += task.time || 0;
+													});
+												});
+											} else {
+												entry.jobs.map((job) => {
+													totalHours = job.tasks.reduce(
+														(acc, curr) => (acc += curr.hours || 0),
+														0
+													);
+													totalSpentHours = job.tasks.reduce(
+														(acc, curr) => acc + curr.time,
+														0
+													);
+												});
+											}
+											const remainingHours = Math.max(0, totalHours - totalSpentHours);
+											const isOpened = openedAccordions[entry?.client_id];
 											return (
 												<React.Fragment key={entry.client_id}>
 													<TableRow
@@ -645,26 +655,22 @@ const Timesheet = () => {
 																			<TableRowCell></TableRowCell>
 																			<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
 																			<TableRowCell>
-																				{entry.jobs.map((job) =>
-																					job.tasks.map((task) => (
-																						<div key={task.task_id}>
-																							{/* <Checkbox size="small" /> */}
-																							<input type="checkbox" />
-																						</div>
-																					))
-																				)}
+																				{job.tasks.map((task) => (
+																					<div key={task.task_id}>
+																						{/* <Checkbox size="small" /> */}
+																						<input type="checkbox" />
+																					</div>
+																				))}
 																			</TableRowCell>
 																			<TableRowCell>
-																				{entry.jobs.map((job) =>
-																					job.tasks.map((task) => (
-																						<div key={task.task_id}>
-																							<MoreTimeIcon
-																								fontSize="small"
-																								onClick={handleAddTimeClick}
-																							/>
-																						</div>
-																					))
-																				)}
+																				{job.tasks.map((task) => (
+																					<div key={task.task_id}>
+																						<MoreTimeIcon
+																							fontSize="small"
+																							onClick={handleAddTimeClick}
+																						/>
+																					</div>
+																				))}
 																			</TableRowCell>
 																		</>
 																	</TableRow>
