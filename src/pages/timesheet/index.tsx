@@ -744,7 +744,7 @@ const Timesheet = () => {
 									{selectedJob && (
 										<TextField
 											select
-											label="Select Task"
+											label="Select Project"
 											value={selectedTask}
 											onChange={(event) => setSelectedTask(event.target.value as string)}
 											style={{
@@ -754,9 +754,9 @@ const Timesheet = () => {
 											}}
 											required
 										>
-											{tasks.map((task) => (
-												<MenuItem key={task.value} value={task.value}>
-													{task.label}
+											{projects.map((project) => (
+												<MenuItem key={project.value} value={project.value}>
+													{project.label}
 												</MenuItem>
 											))}
 										</TextField>
