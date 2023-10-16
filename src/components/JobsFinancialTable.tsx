@@ -27,7 +27,6 @@ const columns = [
 		text: "Hours",
 		style: {
 			backgroundColor: "#C3DDBC",
-			borderLeft: "1px solid",
 		},
 	},
 	{
@@ -46,7 +45,6 @@ const columns = [
 		text: "Hours",
 		style: {
 			backgroundColor: "#BEB3D4",
-			borderLeft: "1px solid",
 		},
 	},
 	{
@@ -59,7 +57,6 @@ const columns = [
 		text: "Value",
 		style: {
 			backgroundColor: "#BEB3D4",
-			borderRight: "1px solid",
 		},
 	},
 	"Fee b/f",
@@ -94,7 +91,7 @@ const januaryData = [
 	],
 ];
 
-const TableCellNoPadding = styled(TableCell)({
+const NoPadding = styled(TableCell)({
 	paddingLeft: 0,
 	paddingRight: 0,
 	paddingTop: 5,
@@ -103,6 +100,7 @@ const TableCellNoPadding = styled(TableCell)({
 
 const greyRowStyle = {
 	backgroundColor: "#D9D9D9",
+
 	color: "black",
 	border: "none",
 };
@@ -112,9 +110,9 @@ function JobsFinancialTable() {
 		dayjs("2023-10-31") as Dayjs | null
 	);
 
-	const [januarySubTableData, setJanuarySubTableData] = useState<
-		Array<Array<JSX.Element>>
-	>([]);
+	const [SubTableData, setSubTableData] = useState<Array<Array<JSX.Element>>>(
+		[]
+	);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -129,8 +127,10 @@ function JobsFinancialTable() {
 						{
 							job_name: string;
 							tasks: Array<{
+								data: any;
 								task_id: number;
 								task_name: string;
+								rate: number;
 								users: Array<{
 									user_id: number;
 									user_name: string;
@@ -170,12 +170,23 @@ function JobsFinancialTable() {
 							});
 						}
 
-						const cellStyleWithBorder = {
-							border: "1px solid black",
-							marginLeft: "5px",
-							marginRight: "5px",
-							padding: 4,
-							// Adjust padding for better visibility
+						const allocatedCell = {
+							paddingTop: 6,
+							paddingBottom: 6,
+							alignItems: "center",
+							border: "5px solid #C3DDBC",
+						};
+
+						const actualsCell = {
+							paddingTop: 6,
+							paddingBottom: 6,
+							alignItems: "center",
+							border: "5px solid #BEB3D4",
+						};
+
+						const userCell = {
+							width: "px",
+							paddingLeft: "10px",
 						};
 
 						// Add the user_name, hours, rate, and calculations row for each user
@@ -185,57 +196,66 @@ function JobsFinancialTable() {
 									<EditIcon fontSize="small" />,
 									"",
 									"",
-									user_name,
-									<div style={cellStyleWithBorder}>{hours}</div>, // Add a border to "hours"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate * hours}</div>, // Add a border to "rate * hours"
-									<div style={cellStyleWithBorder}>{hours}</div>, // Add a border to "hours"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate * hours}</div>, // Add a border to "rate * hours"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<div style={cellStyleWithBorder}>{rate}</div>, // Add a border to "rate"
-									<CheckBoxOutlineBlankIcon
-										fontSize="medium"
-										style={{ paddingTop: "5px" }}
-									/>,
+									<div style={userCell}>{user_name}</div>,
+									<div style={allocatedCell}>{hours}</div>, // Add a border to "hours"
+									<div style={allocatedCell}>{rate}</div>, // Add a border to "rate"
+									<div style={allocatedCell}>{rate * hours}</div>, // Add a border to "rate * hours"
+									<div>{hours}</div>, // Add a border to "hours"
+									<div style={actualsCell}>{rate}</div>, // Add a border to "rate"
+									<div style={actualsCell}>{rate * hours}</div>, // Add a border to "rate * hours"
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
 								]);
 							}
 						});
 					});
 
-					const januarySubTableData = [];
+					const SubTableData = [];
 
 					// Flatten the groupedData object into an array
 					for (const jobIdKey of Object.keys(groupedData)) {
 						const { job_name, tasks } = groupedData[jobIdKey];
-						januarySubTableData.push([
+
+						const editableValues = {
+							paddingTop: 6,
+							paddingBottom: 6,
+							alignItems: "center",
+							border: "5px solid #FDFC82",
+						};
+						SubTableData.push([
 							"",
-							job_name,
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
+							<div style={{ width: "35px", whiteSpace: "nowrap" }}>{job_name}</div>,
 							"",
 							"",
 							"",
 							"",
 							"",
 							"",
+							"",
+							<div style={editableValues}>3248</div>,
+							"",
+							<div style={editableValues}>1200</div>,
+							"",
+							"",
+							<div style={editableValues}>1200</div>,
+							"",
+							<CheckBoxOutlineBlankIcon
+								fontSize="medium"
+								style={{ paddingTop: "5px" }}
+							/>,
 						]);
 						tasks.forEach((task) => {
-							januarySubTableData.push([
+							SubTableData.push([
 								"",
 								"",
-								task.task_name,
+								<div style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+									{task.task_name}
+								</div>,
 								"",
 								"",
 								"",
@@ -251,11 +271,11 @@ function JobsFinancialTable() {
 								"",
 								"",
 							]);
-							januarySubTableData.push(...task.data);
+							SubTableData.push(...task.data);
 						});
 					}
 
-					setJanuarySubTableData(januarySubTableData);
+					setSubTableData(SubTableData);
 				} else {
 					console.log("No timesheet data available.");
 				}
@@ -296,51 +316,46 @@ function JobsFinancialTable() {
 					<TableHead>
 						{/* Allocated Heading Row */}
 						<TableRow>
-							<TableCellNoPadding
-								colSpan={4}
-								style={{ borderBottom: "none" }}
-							></TableCellNoPadding>
-							<TableCellNoPadding
+							<NoPadding colSpan={4} style={{ borderBottom: "none" }}></NoPadding>
+							<NoPadding
 								colSpan={3}
 								style={{
 									textAlign: "center",
 									backgroundColor: "#C3DDBC",
 									paddingLeft: 0, // Adjust the padding
 									borderBottom: "none",
-									borderLeft: "1px solid",
 								}}
 							>
 								Allocated
-							</TableCellNoPadding>
-							<TableCellNoPadding
+							</NoPadding>
+							<NoPadding
 								colSpan={3}
 								style={{
 									textAlign: "center",
 									backgroundColor: "#BEB3D4",
 									paddingLeft: 0, // Adjust the padding
 									borderBottom: "none",
-									borderLeft: "1px solid",
-									borderRight: "1px solid",
 								}}
 							>
 								Actuals
-							</TableCellNoPadding>
+							</NoPadding>
 						</TableRow>
 						{/* Column Headers */}
 						<TableRow>
 							{columns.map((column, columnIndex) => (
-								<TableCellNoPadding
+								<NoPadding
 									key={columnIndex}
 									style={{
 										textAlign: "center",
-
 										width: "6%",
 										paddingLeft: 0, // Adjust the padding
+										paddingTop: 0,
+										paddingBottom: 0,
 										...((typeof column === "object" && column.style) || {}),
 									}}
 								>
 									{typeof column === "object" ? column.text : column}
-								</TableCellNoPadding>
+								</NoPadding>
 							))}
 						</TableRow>
 					</TableHead>
@@ -357,6 +372,7 @@ function JobsFinancialTable() {
 											paddingRight: 0,
 											backgroundColor: "#3a2462",
 											color: "white",
+											borderRight: cellIndex >= 3 ? "1px solid black" : "none", // Add border after the first 4 cells
 										}}
 									>
 										{cellIndex === 0 ? (
@@ -380,29 +396,29 @@ function JobsFinancialTable() {
 							</TableRow>
 						))}
 						<TableRow>
-							<TableCellNoPadding colSpan={17}>
-								<Table style={{ minWidth: "100%" }}>
-									{januarySubTableData.map((subRow, subRowIndex) => (
+							<NoPadding colSpan={17}>
+								<Table style={{ minWidth: "100%", padding: 0 }}>
+									{SubTableData.map((subRow, subRowIndex) => (
 										<TableRow key={`sub-row-0-${subRowIndex}`}>
 											{subRow.map((subCell, subCellIndex) => (
-												<TableCellNoPadding
+												<NoPadding
 													key={`sub-cell-0-${subRowIndex}-${subCellIndex}`}
 													style={{
 														textAlign: "center",
 														width: "6%",
-														paddingLeft: 0,
-														paddingRight: 0,
 														backgroundColor: subRow[1] ? "#D9D9D9" : "",
 														color: subRow[1] ? "black" : "",
+														border: subRow[1] ? "none" : "0.5px solid",
+														// Add border only when the row is not grey
 													}}
 												>
 													{subCell}
-												</TableCellNoPadding>
+												</NoPadding>
 											))}
 										</TableRow>
 									))}
 								</Table>
-							</TableCellNoPadding>
+							</NoPadding>
 						</TableRow>
 					</TableBody>
 				</Table>
