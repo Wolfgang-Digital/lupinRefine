@@ -185,8 +185,9 @@ function JobsFinancialTable() {
 						};
 
 						const userCell = {
-							width: "px",
-							paddingLeft: "10px",
+							whiteSpace: "nowrap", // Prevent text from wrapping
+							overflow: "hidden",
+							textOverflow: "ellipsis", // Show an ellipsis (...) for overflowed text
 						};
 
 						// Add the user_name, hours, rate, and calculations row for each user
@@ -196,7 +197,10 @@ function JobsFinancialTable() {
 									<EditIcon fontSize="small" />,
 									"",
 									"",
-									<div style={userCell}>{user_name}</div>,
+									<div style={userCell}>
+										{user_name.length > 8 ? user_name.slice(0, 8) + ".." : user_name}
+									</div>,
+
 									<div style={allocatedCell}>{hours}</div>, // Add a border to "hours"
 									<div style={allocatedCell}>{rate}</div>, // Add a border to "rate"
 									<div style={allocatedCell}>{rate * hours}</div>, // Add a border to "rate * hours"
