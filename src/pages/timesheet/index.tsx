@@ -40,6 +40,8 @@ import {
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import styled from "styled-components";
+import { getProjectbyClientId } from "@pages/api/projects";
+import { getJobByProjectId } from "@pages/api/jobs";
 
 const useStyles = makeStyles({
 	table: {
@@ -81,7 +83,7 @@ type ClientOption = {
 type ProjectOption = {
 	label: string;
 	value: string;
-	jobLabel: string;
+	// jobLabel: string;
 };
 
 type JobOption = {
@@ -105,6 +107,7 @@ type Task = {
 type Job = {
 	job_id: number;
 	job_name: string;
+	job_name_id: number;
 	tasks: Task[];
 };
 type Client = {
@@ -128,8 +131,10 @@ const Timesheet = () => {
 		[key: number]: boolean;
 	}>({});
 	const [showForm, setShowForm] = useState(false);
-	const [selectedTask, setSelectedTask] = useState("");
+	const [selectedClient, setSelectedClient] = useState("");
+	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
+	const [selectedTask, setSelectedTask] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 
 	const [filteredTimesheets, setFilteredTimesheets] =
@@ -228,6 +233,7 @@ const Timesheet = () => {
 							existingProjectEntry.jobs.push({
 								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
+								job_name_id: curr?.job_name_id || 0,
 								tasks: [
 									{
 										task_id: curr?.task_id || 0,
@@ -242,6 +248,7 @@ const Timesheet = () => {
 						existingClientEntry.jobs.push({
 							job_id: curr?.job_id || 0,
 							job_name: curr?.job_name || "",
+							job_name_id: curr?.job_name_id || 0,
 							tasks: [
 								{
 									task_id: curr?.task_id || 0,
@@ -262,6 +269,7 @@ const Timesheet = () => {
 							{
 								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
+								job_name_id: curr?.job_name_id || 0,
 								tasks: [
 									{
 										task_id: curr.task_id || 0,
@@ -297,7 +305,7 @@ const Timesheet = () => {
 				projectOptions.push({
 					label: timesheet.project_name,
 					value: timesheet.project_id?.toString() || "0",
-					jobLabel: timesheet.jobs[0].job_name || "",
+					// jobLabel: timesheet.jobs[0].job_name || "",
 				});
 				timesheet.jobs.forEach((job) => {
 					jobOptions.push({
@@ -392,6 +400,22 @@ const Timesheet = () => {
 		setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
 	};
 
+	// Function to handle client selection
+	const handleClientSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+		const selectedClientId = event.target.value as string;
+		setSelectedClient(selectedClientId);
+
+		// Filter projects based on the selected client;
+		setSelectedProject("");
+	};
+
+	const handleProjectSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+		const selectedProjectId = event.target.value as string;
+		setSelectedProject(selectedProjectId);
+		// console.log(selectedProjectId);
+		setSelectedJob("");
+	};
+
 	// Function to handle job selection
 	const handleJobSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
 		const selectedJobId = event.target.value as string;
@@ -402,16 +426,66 @@ const Timesheet = () => {
 	};
 
 	useEffect(() => {
-		async function fetchTasks() {
-			if (selectedJob) {
-				const response = await getTaskByJobId(selectedJob);
+		async function fetchProjects() {
+			if (selectedClient) {
+				const response = await getProjectbyClientId(selectedClient);
 				if (response) {
-					console.log(
-						response?.map((task) => ({
-							value: task.task_id.toString(),
-							label: task.task_name || "",
+					// console.log(
+					// 	response?.map((project) => ({
+					// 		value: project.project_id.toString(),
+					// 		label: project.project_name || "",
+					// 	}))
+					// );
+					setProjects(
+						response?.map((project) => ({
+							value: project.project_id.toString(),
+							label: project.project_name || "",
 						}))
 					);
+				}
+			}
+		}
+		fetchProjects();
+	}, [selectedClient]);
+
+	useEffect(() => {
+		async function fetchJobs() {
+			if (selectedProject) {
+				// console.log(selectedProject);
+				const response = await getJobByProjectId(selectedClient, selectedProject);
+
+				if (response) {
+					// console.log(
+					// 	response?.map((job) => ({
+					// 		value: job.job_name_id.toString(),
+					// 		label: job.job_name_name || "",
+					// 	}))
+					// );
+					setJobs(
+						response?.map((job) => ({
+							value: job.job_id?.toString() || "",
+							label: job.job_name || "",
+							taskLabel: job.job_id.toString(),
+						}))
+					);
+				}
+			}
+		}
+		fetchJobs();
+	}, [selectedProject]);
+
+	useEffect(() => {
+		async function fetchTasks() {
+			if (selectedJob) {
+				console.log(`selectedJob: ${selectedJob}`);
+				const response = await getTaskByJobId(selectedJob);
+				if (response) {
+					// console.log(
+					// 	response?.map((task) => ({
+					// 		value: task.task_id.toString(),
+					// 		label: task.task_name || "",
+					// 	}))
+					// );
 					setTasks(
 						response?.map((task) => ({
 							value: task.task_id.toString(),
@@ -726,8 +800,8 @@ const Timesheet = () => {
 									<TextField
 										select
 										label="Select Client"
-										value={selectedJob}
-										onChange={handleJobSelect}
+										value={selectedClient}
+										onChange={handleClientSelect}
 										style={{
 											width: "100%",
 											marginBottom: "20px",
@@ -741,12 +815,12 @@ const Timesheet = () => {
 											</MenuItem>
 										))}
 									</TextField>
-									{selectedJob && (
+									{selectedClient && (
 										<TextField
 											select
 											label="Select Project"
-											value={selectedTask}
-											onChange={(event) => setSelectedTask(event.target.value as string)}
+											value={selectedProject}
+											onChange={handleProjectSelect}
 											style={{
 												width: "100%",
 												marginBottom: "20px",
@@ -757,6 +831,42 @@ const Timesheet = () => {
 											{projects.map((project) => (
 												<MenuItem key={project.value} value={project.value}>
 													{project.label}
+												</MenuItem>
+											))}
+										</TextField>
+									)}
+									{selectedProject && (
+										<TextField
+											select
+											label="Select Job"
+											value={selectedJob}
+											onChange={handleJobSelect}
+											style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
+											required
+										>
+											{jobs.map((job) => (
+												<MenuItem key={job.value} value={job.value}>
+													{job.label}
+												</MenuItem>
+											))}
+										</TextField>
+									)}
+									{selectedJob && (
+										<TextField
+											select
+											label="Select Task"
+											value={selectedTask}
+											onChange={(event) => setSelectedTask(event.target.value as string)}
+											style={{
+												width: "100%",
+												marginBottom: "20px",
+												textAlign: "left",
+											}}
+											required
+										>
+											{tasks.map((task) => (
+												<MenuItem key={task.value} value={task.value}>
+													{task.label}
 												</MenuItem>
 											))}
 										</TextField>

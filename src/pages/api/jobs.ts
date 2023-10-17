@@ -41,4 +41,38 @@ export const getJob = async ({ id }: { id: string }) => {
 	}
 };
 
+export const getJobByProjectId = async (
+	clientId: string,
+	projectId: string
+) => {
+	try {
+		const { data, error } = await supabase
+			.from("jobs")
+			.select("job_id")
+			.eq("job_client_id", clientId)
+			.eq("project_id", projectId);
+		let jobIds: number[] = [];
+		if (error) {
+			console.error("Error fetching project jobs: ", error);
+			return;
+		}
+		if (data) {
+			jobIds = data?.map((projectJob) => projectJob.job_id || 0);
+			// console.log(jobIds);
+		}
+		const { data: jobData, error: jobError } = await supabase
+			.from("jobs")
+			.select("job_id, job_name, job_name_id")
+			.in("job_id", jobIds);
+
+		if (jobError) {
+			console.error("Error fetching jobs 1: ", error);
+			return;
+		}
+		return jobData;
+	} catch (error) {
+		console.error("Error fetching jobs: ", error);
+	}
+};
+
 export const CreateJob = async () => {};
