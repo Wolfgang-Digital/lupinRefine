@@ -25,6 +25,7 @@ const columns = [
 		text: "Hours",
 		style: {
 			backgroundColor: "#C3DDBC",
+			fontWeight: "bold",
 		},
 	},
 	{
@@ -72,17 +73,17 @@ const januaryData = [
 		"",
 		"",
 		"",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
+		"Total",
+		"Total",
+		"Total",
+		"Total",
+		"Total",
+		"Total",
+		"/",
+		"Total",
+		"/",
+		"/",
+		"Total",
 		"SUM",
 		"",
 	],
@@ -105,6 +106,7 @@ function JobsFinancialTable() {
 		async function fetchData() {
 			try {
 				const response = await getAllTimesheetRowsFinancial(8); // Only returning client_id 8
+				console.log({ response });
 				const dataArray = response || [];
 
 				if (dataArray.length > 0) {
@@ -267,7 +269,9 @@ function JobsFinancialTable() {
 									style={{
 										paddingTop: "10px",
 										paddingBottom: "10px",
+
 										width: "35px",
+										paddingLeft: "30px",
 										whiteSpace: "nowrap",
 										fontSize: "12px",
 									}}
@@ -402,12 +406,11 @@ function JobsFinancialTable() {
 												style={{
 													display: "flex",
 													alignItems: "center",
-													fontSize: "12px",
 												}}
 											>
 												<KeyboardArrowDownIcon
 													fontSize="small"
-													style={{ marginRight: "5px" }}
+													style={{ marginRight: "5px", marginLeft: "10px" }}
 												/>
 												{cell}
 											</span>

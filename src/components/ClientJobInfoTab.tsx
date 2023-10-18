@@ -31,8 +31,8 @@ type RowData = FinancialTable & {
 };
 
 const columns = [
-	{ field: "job_id", headerName: "Job ID", width: 100 },
-	{ field: "job_name", headerName: "Job", width: 100 },
+	{ field: "project_id", headerName: "Project ID", width: 100 },
+	{ field: "project_name", headerName: "Project", width: 100 },
 	{ field: "allocated", headerName: "Allocated: ", width: 100 },
 	{ field: "time", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
@@ -57,6 +57,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
 		FinancialTable[]
 	>([]);
+
 	const [selectedMonth, setSelectedMonth] = useState(9);
 	const [selectedJob, setSelectedJob] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
@@ -149,7 +150,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	];
 
 	const monthName = monthNames[selectedMonth];
-
+	console.log(filteredFinancialData);
 	return (
 		<div
 			style={{
@@ -183,6 +184,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 					Next month
 				</WeekButton>
 			</div>
+
 			<div style={{ paddingTop: "20px" }}>
 				<DataGrid
 					rows={filteredFinancialData}
@@ -197,7 +199,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 					autoHeight
 					getRowId={(row) => row.id || 0}
 					onCellClick={(params) => {
-						if (params.field === "job_name") {
+						if (params.field === "project_name") {
 							handleJobClick(params.row as RowData);
 						}
 					}}
