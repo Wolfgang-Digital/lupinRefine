@@ -25,7 +25,7 @@
 		"@mobiscroll/react": "https://npm.mobiscroll.com/@mobiscroll/react-trial/-/react-trial-5.26.1.tgz",
 		"@mui/icons-material": "^5.8.3",
 		"@mui/lab": "^5.0.0-alpha.85",
-		"@mui/material": "^5.14.3",
+		"@mui/material": "^5.14.14",
 		"@mui/styled-engine-sc": "^5.12.0",
 		"@mui/styles": "^5.14.12",
 		"@mui/x-charts": "^6.0.0-alpha.7",

@@ -988,12 +988,14 @@ export interface Database {
           job_id: number
           job_location_id: number | null
           job_name: string
+          job_name_id: number | null
           job_notes: string | null
           job_po_number: number | null
           job_start_date: string | null
           job_status_notes: string | null
           job_tier_id: number | null
           job_type: number | null
+          project_id: number | null
         }
         Insert: {
           allow_all_to_bill?: boolean | null
@@ -1015,12 +1017,14 @@ export interface Database {
           job_id: number
           job_location_id?: number | null
           job_name: string
+          job_name_id?: number | null
           job_notes?: string | null
           job_po_number?: number | null
           job_start_date?: string | null
           job_status_notes?: string | null
           job_tier_id?: number | null
           job_type?: number | null
+          project_id?: number | null
         }
         Update: {
           allow_all_to_bill?: boolean | null
@@ -1042,12 +1046,14 @@ export interface Database {
           job_id?: number
           job_location_id?: number | null
           job_name?: string
+          job_name_id?: number | null
           job_notes?: string | null
           job_po_number?: number | null
           job_start_date?: string | null
           job_status_notes?: string | null
           job_tier_id?: number | null
           job_type?: number | null
+          project_id?: number | null
         }
         Relationships: [
           {
@@ -1139,6 +1145,24 @@ export interface Database {
             columns: ["job_department_id"]
             referencedRelation: "department"
             referencedColumns: ["department_id"]
+          },
+          {
+            foreignKeyName: "jobs_job_name_id_fkey"
+            columns: ["job_name_id"]
+            referencedRelation: "job_names"
+            referencedColumns: ["job_name_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "timesheet_rows_view_v6"
+            referencedColumns: ["project_id"]
           }
         ]
       }
@@ -2044,6 +2068,7 @@ export interface Database {
           id: number | null
           job_id: number | null
           job_name: string | null
+          job_name_id: number | null
           month: number | null
           name: string | null
           task_id: number | null
@@ -2052,7 +2077,14 @@ export interface Database {
           user_name: string | null
           year: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_job_name_id_fkey"
+            columns: ["job_name_id"]
+            referencedRelation: "job_names"
+            referencedColumns: ["job_name_id"]
+          }
+        ]
       }
       client_detail: {
         Row: {
@@ -2619,6 +2651,7 @@ export interface Database {
           id: number | null
           job_id: number | null
           job_name: string | null
+          job_name_id: number | null
           month: number | null
           name: string | null
           notes: string | null
@@ -2632,7 +2665,14 @@ export interface Database {
           user_name: string | null
           year: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_job_name_id_fkey"
+            columns: ["job_name_id"]
+            referencedRelation: "job_names"
+            referencedColumns: ["job_name_id"]
+          }
+        ]
       }
       user_dept_join: {
         Row: {
@@ -2685,6 +2725,7 @@ export interface Database {
           id: number | null
           job_id: number | null
           job_name: string | null
+          job_name_id: number | null
           month: number | null
           name: string | null
           task_id: number | null

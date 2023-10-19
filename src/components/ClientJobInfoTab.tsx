@@ -8,7 +8,7 @@ import {
 	getFinancialTable,
 	groupFinancialTableData,
 } from "@api/financialTable";
-import { FinancialTable } from "types";
+import { TimesheetRowsView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 import {
 	Dialog,
@@ -24,23 +24,24 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import JobsFinancialTable from "@components/JobsFinancialTable";
-
-type RowData = FinancialTable & {
-	month: string;
+type RowData = TimesheetRowsView & {
+	month: number;
 	job: string;
+	actualValue: number;
+	allocatedValue: number;
 };
 
 const columns = [
-	{ field: "job_id", headerName: "Job ID", width: 100 },
-	{ field: "job_name", headerName: "Job", width: 100 },
+	{ field: "project_id", headerName: "Project ID", width: 100 },
+	{ field: "project_name", headerName: "Project", width: 100 },
 	{ field: "allocated", headerName: "Allocated: ", width: 100 },
-	{ field: "time", headerName: "Hours", width: 75 },
+	{ field: "hours", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
-	{ field: "value", headerName: "Value", width: 100 },
+	{ field: "allocatedValue", headerName: "Value", width: 100 },
 	{ field: "actuals", headerName: "Actuals: ", width: 100 },
 	{ field: "time", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
-	{ field: "value", headerName: "Value", width: 100 },
+	{ field: "actualValue", headerName: "Value", width: 100 },
 ];
 
 function CustomToolbar() {
@@ -51,29 +52,69 @@ function CustomToolbar() {
 	);
 }
 
+const groupByJobId = (data: TimesheetRowsView[]) => {
+	const projectData = new Map();
+
+	data.forEach((entry: TimesheetRowsView) => {
+		const projectId = entry.project_id;
+		if (projectData.has(projectId)) {
+			// If the project_id is already in the map, update the time and rate
+			const existingProject = projectData.get(projectId);
+			existingProject.hours += entry.hours;
+			existingProject.time += entry.time;
+			existingProject.rate += entry.rate;
+			existingProject.allocatedValue += (entry.rate || 0) * (entry?.hours || 0);
+			existingProject.actualValue += (entry.rate || 0) * (entry?.time || 0);
+			existingProject.count++;
+		} else {
+			// If the project_id is not in the map, add a new entry
+			projectData.set(projectId, {
+				...entry,
+				project_id: projectId,
+				time: entry.time,
+				rate: entry.rate,
+				allocatedValue: (entry.rate || 0) * (entry?.hours || 0),
+				actualValue: (entry.rate || 0) * (entry?.time || 0),
+				count: 1,
+			});
+		}
+	});
+
+	// Calculate the average rate for each project
+	projectData.forEach((project) => {
+		project.rate /= project.count;
+	});
+
+	// Convert the Map back to an array
+	const result = Array.from(projectData.values());
+	console.log({ result });
+	return result;
+};
 function JobsInfoGrid({ clientId }: { clientId?: number }) {
-	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	const [financialData, setFinancialData] = useState<FinancialTable[]>([]);
+	const [financialData, setFinancialData] = useState<TimesheetRowsView[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
-		FinancialTable[]
+		TimesheetRowsView[]
 	>([]);
 	const [selectedMonth, setSelectedMonth] = useState(9);
-	const [selectedJob, setSelectedJob] = useState<RowData | null>(null);
+	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
 	function fetchGroupedData(
-		financialTable: FinancialTable[],
+		financialTable: TimesheetRowsView[],
 		selectedMonth: number
 	) {
-		const myArr: FinancialTable[] = [];
+		const myArr: TimesheetRowsView[] = [];
 		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
 		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
+		console.log({ groupedData, copyFinancialData });
 		Object.values(groupedData).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
 				myArr.push(myItem);
 			});
 		});
-		setFilteredFinancialData(myArr);
+		const groupedArr = groupByJobId(myArr);
+		setFilteredFinancialData(groupedArr);
+		console.log({ myArr });
 	}
 
 	useEffect(() => {
@@ -87,50 +128,21 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 				setFinancialData(financialTable);
 				fetchGroupedData(financialTable, selectedMonth);
 			}
-			if (financialTable) {
-				const mappedData: RowData[] = financialTable.map(
-					(item: FinancialTable) => ({
-						...item,
-						id: item.id,
-						job_id: item.job_id,
-						month: formatDate(item.date?.toString() || new Date().toString()),
-						job: item.job_name,
-						task: item.task_name,
-						staff: item.user_name,
-						hours: item.time,
-					})
-				);
-				setFetchedRows(mappedData);
-			}
 		}
 
 		fetchData();
 	}, []);
 
-	function formatDate(dateString: string) {
-		const date = new Date(dateString);
-		return `${date.toLocaleString("default", {
-			month: "long",
-		})} ${date.getFullYear()}`;
-	}
-
 	const groupedRows: { [key: string]: RowData[] } = {};
 
-	fetchedRows.forEach((row) => {
-		if (!groupedRows[row.month]) {
-			groupedRows[row.month] = [];
-		}
-		groupedRows[row.month].push(row);
-	});
-
-	const handleJobClick = (rowData: RowData) => {
-		setSelectedJob(rowData);
+	const handleProjectClick = (rowData: RowData) => {
+		setSelectedProject(rowData);
 		setOpenDialog(true);
 	};
 
 	const handleCloseDialog = () => {
 		setOpenDialog(false);
-		setSelectedJob(null);
+		setSelectedProject(null);
 	};
 
 	const monthNames: string[] = [
@@ -197,8 +209,8 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 					autoHeight
 					getRowId={(row) => row.id || 0}
 					onCellClick={(params) => {
-						if (params.field === "job_name") {
-							handleJobClick(params.row as RowData);
+						if (params.field === "project_name") {
+							handleProjectClick(params.row as RowData);
 						}
 					}}
 				/>
@@ -221,17 +233,20 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 							<CloseIcon />
 						</IconButton>
 						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-							{selectedJob?.job_name} - Financials
+							{selectedProject?.project_name} - Financials
 						</Typography>
 						<Button autoFocus color="inherit">
 							Save
 						</Button>
 					</Toolbar>
 				</AppBar>
-				{selectedJob && (
+				{selectedProject && (
 					<>
 						<DialogContent>
-							<JobsFinancialTable />
+							<JobsFinancialTable
+								projectId={selectedProject.project_id || 0}
+								clientId={clientId || 0}
+							/>
 						</DialogContent>
 						<DialogActions></DialogActions>
 					</>

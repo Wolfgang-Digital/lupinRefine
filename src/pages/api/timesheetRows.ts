@@ -6,7 +6,7 @@ export const getAllTimesheetRows = async (
 ): Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v5")
+			.from("timesheet_rows_view_v6")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })
@@ -25,16 +25,21 @@ export const getAllTimesheetRows = async (
 	}
 };
 
-export const getAllTimesheetRowsFinancial = async (
-	jobID: number
-): Promise<TimesheetRowsView[] | undefined> => {
+export const getAllTimesheetRowsFinancial = async ({
+	projectId,
+	clientId,
+}: {
+	projectId: number;
+	clientId: number;
+}): Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v5")
+			.from("timesheet_rows_view_v6")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })
-			.eq("client_id", jobID)) as unknown as {
+			.eq("client_id", clientId)
+			.eq("project_id", projectId)) as unknown as {
 			data: TimesheetRowsView[];
 			error: PostgrestError;
 		};
