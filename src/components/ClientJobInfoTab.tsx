@@ -95,6 +95,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
 		TimesheetRowsView[]
 	>([]);
+
 	const [selectedMonth, setSelectedMonth] = useState(9);
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
@@ -161,7 +162,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	];
 
 	const monthName = monthNames[selectedMonth];
-
+	console.log(filteredFinancialData);
 	return (
 		<div
 			style={{
@@ -195,6 +196,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 					Next month
 				</WeekButton>
 			</div>
+
 			<div style={{ paddingTop: "20px" }}>
 				<DataGrid
 					rows={filteredFinancialData}
