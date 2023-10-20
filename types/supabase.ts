@@ -86,6 +86,12 @@ export interface Database {
           {
             foreignKeyName: "allocate_hours_user_id_fkey"
             columns: ["user_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "allocate_hours_user_id_fkey"
+            columns: ["user_id"]
             referencedRelation: "allocate_hours_view"
             referencedColumns: ["user_id"]
           },
@@ -280,6 +286,12 @@ export interface Database {
             foreignKeyName: "client_client_lead_fkey"
             columns: ["client_lead"]
             referencedRelation: "users"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "client_client_lead_fkey"
+            columns: ["client_lead"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["user_id"]
           },
           {
@@ -682,6 +694,12 @@ export interface Database {
           {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_job_id_fkey"
+            columns: ["job_id"]
             referencedRelation: "allocate_hours_view_compare"
             referencedColumns: ["job_id"]
           },
@@ -761,6 +779,12 @@ export interface Database {
             foreignKeyName: "job_tasks_task_id_fkey"
             columns: ["task_id"]
             referencedRelation: "tasks"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_task_id_fkey"
+            columns: ["task_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["task_id"]
           },
           {
@@ -858,6 +882,12 @@ export interface Database {
             foreignKeyName: "job_team_job_id_fkey"
             columns: ["job_id"]
             referencedRelation: "all_tasks_demo"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "job_team_job_id_fkey"
+            columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["job_id"]
           },
           {
@@ -1071,6 +1101,12 @@ export interface Database {
           {
             foreignKeyName: "jobs_job_client_id_fkey"
             columns: ["job_client_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "jobs_job_client_id_fkey"
+            columns: ["job_client_id"]
             referencedRelation: "allocate_hours_view_compare"
             referencedColumns: ["id"]
           },
@@ -1161,6 +1197,12 @@ export interface Database {
           {
             foreignKeyName: "jobs_project_id_fkey"
             columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
             referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
@@ -1223,6 +1265,12 @@ export interface Database {
             foreignKeyName: "project_jobs_project_id_fkey"
             columns: ["project_id"]
             referencedRelation: "project"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["project_id"]
           },
           {
@@ -1481,6 +1529,12 @@ export interface Database {
           {
             foreignKeyName: "new_foreign_key_name"
             columns: ["staff_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "new_foreign_key_name"
+            columns: ["staff_id"]
             referencedRelation: "allocate_hours_view"
             referencedColumns: ["user_id"]
           },
@@ -1560,6 +1614,12 @@ export interface Database {
             foreignKeyName: "timesheet_rows_job_id_fkey"
             columns: ["job_id"]
             referencedRelation: "all_tasks_demo"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_job_id_fkey"
+            columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["job_id"]
           },
           {
@@ -1649,6 +1709,12 @@ export interface Database {
           {
             foreignKeyName: "timesheet_rows_project_id_fkey"
             columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_project_id_fkey"
+            columns: ["project_id"]
             referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
@@ -1717,6 +1783,12 @@ export interface Database {
             foreignKeyName: "user_task_assign_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_task_assign_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["user_id"]
           },
           {
@@ -1895,6 +1967,37 @@ export interface Database {
         }
         Relationships: []
       }
+      all_timesheet_rows_view: {
+        Row: {
+          client_id: number | null
+          date: string | null
+          hours: number | null
+          id: number | null
+          job_id: number | null
+          job_name: string | null
+          job_name_id: number | null
+          month: number | null
+          name: string | null
+          notes: string | null
+          project_id: number | null
+          project_name: string | null
+          rate: number | null
+          task_id: number | null
+          task_name: string | null
+          time: number | null
+          user_id: number | null
+          user_name: string | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_job_name_id_fkey"
+            columns: ["job_name_id"]
+            referencedRelation: "job_names"
+            referencedColumns: ["job_name_id"]
+          }
+        ]
+      }
       allocate_hours_view: {
         Row: {
           hours: number | null
@@ -1920,6 +2023,12 @@ export interface Database {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
             referencedRelation: "all_tasks_demo"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_job_id_fkey"
+            columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["job_id"]
           },
           {
@@ -2009,6 +2118,12 @@ export interface Database {
           {
             foreignKeyName: "job_tasks_task_id_fkey"
             columns: ["task_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_task_id_fkey"
+            columns: ["task_id"]
             referencedRelation: "allocate_hours_view_compare"
             referencedColumns: ["task_id"]
           },
@@ -2069,8 +2184,11 @@ export interface Database {
           job_id: number | null
           job_name: string | null
           job_name_id: number | null
+          job_name_name: string | null
           month: number | null
           name: string | null
+          project_id: number | null
+          project_name: string | null
           task_id: number | null
           task_name: string | null
           user_id: number | null
@@ -2083,6 +2201,24 @@ export interface Database {
             columns: ["job_name_id"]
             referencedRelation: "job_names"
             referencedColumns: ["job_name_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "timesheet_rows_view_v6"
+            referencedColumns: ["project_id"]
           }
         ]
       }
@@ -2122,6 +2258,12 @@ export interface Database {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
             referencedRelation: "all_tasks_demo"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_job_id_fkey"
+            columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["job_id"]
           },
           {
@@ -2277,6 +2419,12 @@ export interface Database {
           {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_job_id_fkey"
+            columns: ["job_id"]
             referencedRelation: "allocate_hours_view_compare"
             referencedColumns: ["job_id"]
           },
@@ -2390,6 +2538,12 @@ export interface Database {
           {
             foreignKeyName: "project_jobs_project_id_fkey"
             columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_jobs_project_id_fkey"
+            columns: ["project_id"]
             referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
@@ -2425,6 +2579,12 @@ export interface Database {
             foreignKeyName: "timesheet_rows_job_id_fkey"
             columns: ["job_id"]
             referencedRelation: "all_tasks_demo"
+            referencedColumns: ["job_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_job_id_fkey"
+            columns: ["job_id"]
+            referencedRelation: "all_timesheet_rows_view"
             referencedColumns: ["job_id"]
           },
           {
@@ -2549,15 +2709,44 @@ export interface Database {
           id: number | null
           job_id: number | null
           job_name: string | null
+          job_name_id: number | null
+          job_name_name: string | null
           month: number | null
           name: string | null
+          project_id: number | null
+          project_name: string | null
           task_id: number | null
           task_name: string | null
           user_id: number | null
           user_name: string | null
           year: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_job_name_id_fkey"
+            columns: ["job_name_id"]
+            referencedRelation: "job_names"
+            referencedColumns: ["job_name_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "timesheet_rows_view_v6"
+            referencedColumns: ["project_id"]
+          }
+        ]
       }
       timesheet_rows_view_v2: {
         Row: {
@@ -2726,8 +2915,11 @@ export interface Database {
           job_id: number | null
           job_name: string | null
           job_name_id: number | null
+          job_name_name: string | null
           month: number | null
           name: string | null
+          project_id: number | null
+          project_name: string | null
           task_id: number | null
           task_name: string | null
           user_id: number | null

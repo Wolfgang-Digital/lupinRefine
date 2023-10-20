@@ -40,7 +40,7 @@ const columns = [
 	{ field: "allocatedValue", headerName: "Value", width: 100 },
 	{ field: "actuals", headerName: "Actuals: ", width: 100 },
 	{ field: "time", headerName: "Hours", width: 75 },
-	{ field: "rate", headerName: "Rate", width: 75 },
+	{ field: "actualRate", headerName: "Rate", width: 75 },
 	{ field: "actualValue", headerName: "Value", width: 100 },
 ];
 
@@ -73,6 +73,7 @@ const groupByJobId = (data: TimesheetRowsView[]) => {
 				project_id: projectId,
 				time: entry.time,
 				rate: entry.rate,
+				actualRate: entry.rate,
 				allocatedValue: (entry.rate || 0) * (entry?.hours || 0),
 				actualValue: (entry.rate || 0) * (entry?.time || 0),
 				count: 1,
@@ -87,7 +88,6 @@ const groupByJobId = (data: TimesheetRowsView[]) => {
 
 	// Convert the Map back to an array
 	const result = Array.from(projectData.values());
-	console.log({ result });
 	return result;
 };
 function JobsInfoGrid({ clientId }: { clientId?: number }) {
@@ -107,7 +107,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 		const myArr: TimesheetRowsView[] = [];
 		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
 		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
-		console.log({ groupedData, copyFinancialData });
 		Object.values(groupedData).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
 				myArr.push(myItem);
@@ -115,7 +114,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 		});
 		const groupedArr = groupByJobId(myArr);
 		setFilteredFinancialData(groupedArr);
-		console.log({ myArr });
 	}
 
 	useEffect(() => {
@@ -162,7 +160,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	];
 
 	const monthName = monthNames[selectedMonth];
-	console.log(filteredFinancialData);
 	return (
 		<div
 			style={{

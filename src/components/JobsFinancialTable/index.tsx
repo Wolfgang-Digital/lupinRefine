@@ -15,7 +15,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRowsFinancial } from "@pages/api/timesheetRows";
-import { TimesheetRowsView } from "@types";
+import { AllTimesheetRowsView, TimesheetRowsView } from "@types";
+
 const columns = [
 	"Month",
 	"Job",
@@ -88,6 +89,21 @@ const januaryData = [
 	],
 ];
 
+const monthNames = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
+
 const NoPadding = styled(TableCell)({
 	paddingLeft: 0,
 	paddingRight: 0,
@@ -99,6 +115,7 @@ const NoPadding = styled(TableCell)({
 const TaskEntryCell = styled(TableCell)({
 	textAlign: "center",
 	width: "6%",
+	maxWidth: "6%",
 	padding: 0,
 	borderTop: "0.8px solid", // Add top border for all cells
 	borderBottom: "0.8px solid", // Add bottom border for all cells
@@ -107,7 +124,7 @@ const TaskEntryCell = styled(TableCell)({
 
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
-		<TaskEntryCell key={i}></TaskEntryCell>
+		<TaskEntryCell key={i + "empty"}></TaskEntryCell>
 	));
 };
 const CreateRowOfTableCells = (
@@ -121,46 +138,26 @@ const CreateRowOfTableCells = (
 		<TaskEntryCell key={i}>{index === i && content}</TaskEntryCell>
 	));
 };
+
 type Total = {
 	time: number;
 	rate: number;
 	count: number;
 };
-
-type User =
-	| {
-			time: number;
-			rate: number;
-			count: number;
-			user_name: string;
-			hours: number;
-	  }
-	| string
-	| Total;
-
-type TaskEntry = {
-	[userKey: string]: User;
-	total: {
-		time: number;
-		rate: number;
-		count: number;
-	};
-	task_name: string;
+type UserEntry = {
+	time: number;
+	rate: number;
+	count: number;
+	user_name: string;
+	hours: number;
 };
-type Task = TaskEntry | Total | string;
-
-type Job = {
-	job_name: string;
-	total: {
-		time: number;
-		rate: number;
-		count: number;
-	};
-	[taskKey: string]: Task;
-};
+type User = Record<string, UserEntry | string>;
+type TaskEntry = Record<string, User | Total | string>;
+type Task = Record<string, TaskEntry | Total | string>;
+type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
-function groupData(dataArray: TimesheetRowsView[]): Accumulator {
+function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -189,47 +186,70 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 			};
 		}
 
-		const task = accumulator[jobKey];
-		const user = task[taskKey];
+		const job = accumulator[jobKey];
+		const task = job[taskKey];
+		let userEntry = (task as Task)[userKey] as UserEntry;
 		if (
 			!accumulator[jobKey as keyof typeof accumulator][
-				taskKey as keyof typeof task
-			][userKey as keyof typeof user]
+				taskKey as keyof typeof job
+			][userKey as keyof typeof task]
 		) {
-			accumulator[jobKey][taskKey][userKey] = {
-				time: 0,
-				rate: 0,
+			((accumulator[jobKey] as Task)[taskKey] as User)[userKey] = {
+				time: current.time || 0,
+				rate: current.rate || 0,
 				count: 0,
-				user_name: current.user_name,
-				hours: current.hours,
-			};
+				user_name: current.user_name || "",
+				hours: current.hours || 0,
+			} as unknown as UserEntry;
 		}
 
-		accumulator[jobKey][taskKey][userKey].time += current.time;
-		accumulator[jobKey][taskKey][userKey].rate += current?.rate;
-		accumulator[jobKey][taskKey][userKey].count += 1;
-
-		accumulator[jobKey][taskKey].total.time += current.time;
-		accumulator[jobKey][taskKey].total.rate += current?.rate;
-		accumulator[jobKey][taskKey].total.count += 1;
-
+		if (userEntry) {
+			(userEntry as UserEntry).time += current?.time || 0;
+			(userEntry as unknown as UserEntry).rate += current.rate || 0;
+			(userEntry as unknown as UserEntry).count += 1;
+		}
 		return accumulator;
-	}, {} as any);
+	}, {} as Accumulator);
 
 	// Calculate the average rate for each user under each job
 	for (const jobKey in result) {
-		for (const taskKey in result[jobKey]) {
-			const rate = result?.[jobKey]?.[taskKey]?.total?.rate || 0;
-			if (result?.[jobKey]?.[taskKey]?.total) {
-				result[jobKey][taskKey].total.rate =
-					rate / result?.[jobKey]?.[taskKey]?.total?.count || 1;
+		if (typeof result[jobKey] !== "object") continue;
+		for (const taskKey in result[jobKey] as Task) {
+			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;
+			for (const userKey in (result[jobKey] as Task)[taskKey] as User) {
+				if (
+					typeof ((result[jobKey] as Task)[taskKey] as User)[userKey] !== "object"
+				)
+					continue;
+				let userEntry = ((result[jobKey] as Task)[taskKey] as User)[
+					userKey
+				] as UserEntry;
+				if (userEntry.count !== 0) {
+					userEntry.rate = userEntry.rate / userEntry.count;
+				}
 			}
 		}
 	}
 
-	console.log({ result });
 	return result;
 }
+function createData(
+	name: string,
+	calories: number,
+	fat: number,
+	carbs: number,
+	protein: number
+) {
+	return { name, calories, fat, carbs, protein };
+}
+
+const myRows = [
+	createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+	createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+	createData("Eclair", 262, 16.0, 24, 6.0),
+	createData("Cupcake", 305, 3.7, 67, 4.3),
+	createData("Gingerbread", 356, 16.0, 49, 3.9),
+];
 
 function JobsFinancialTable({
 	projectId,
@@ -241,16 +261,39 @@ function JobsFinancialTable({
 	const [value, setValue] = React.useState(dayjs("2023-10-31") as Dayjs | null);
 	const [rows, setRows] = useState<Accumulator>({});
 
+	const [monthData, setMonthData] = useState<any>([]);
+	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
+		new Date().getMonth()
+	);
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				console.log({ projectId });
-				let response = await getAllTimesheetRowsFinancial({ projectId, clientId });
-				response = response?.filter((row) => row.project_id === projectId);
-				if (response) {
-					const groupedData = groupData(response);
-					setRows(groupedData);
-				}
+				// do something for 12 times
+				const response = await getAllTimesheetRowsFinancial({
+					projectId,
+					clientId,
+				});
+				// create empty array with 12 elements, each element is an empty array
+				const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
+					() => []
+				);
+				// loop through each timesheet row
+				response?.forEach((row) => {
+					// get the month of the timesheet row
+					if (row.year === new Date().getFullYear()) {
+						ungroupedMonthData[(row.month || 0) - 1] = [
+							...ungroupedMonthData[(row.month || 0) - 1],
+							row,
+						];
+					}
+				});
+				const groupedData: Accumulator[] = [];
+				ungroupedMonthData.forEach((month, index) => {
+					console.log({ month });
+					groupedData[index] = groupData(month);
+				});
+				console.log({ groupedData });
+				setMonthData(groupedData);
 			} catch (error) {
 				console.error(error);
 			}
@@ -258,6 +301,7 @@ function JobsFinancialTable({
 
 		fetchData();
 	}, []);
+
 	const jobs = Object.values(rows);
 	return (
 		<div>
@@ -310,115 +354,89 @@ function JobsFinancialTable({
 								Actuals
 							</NoPadding>
 						</TableRow>
-
 						{/* Column Headers */}
 						<TableRow>
 							{columns.map((column, columnIndex) => (
-								<NoPadding
+								<TableCell
 									key={columnIndex}
 									style={{
+										width: "6%",
+										textAlign: "center",
 										...((typeof column === "object" && column.style) || {}),
 									}}
 								>
 									{typeof column === "object" ? column.text : column}
-								</NoPadding>
+								</TableCell>
 							))}
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{/* Month Row */}
-						{januaryData.map((row, rowIndex) => (
-							<TableRow key={`row-0-${rowIndex}`}>
-								{row.map((cell, cellIndex) => (
-									<TableCell
-										key={`cell-0-${rowIndex}-${cellIndex}`}
-										style={{
-											textAlign: "center",
-											width: "6%",
-											paddingLeft: 0,
-											paddingRight: 0,
-											backgroundColor: "#3a2462",
-											color: "white",
-											borderRight: cellIndex >= 3 ? "1px solid black" : "none",
-											fontSize: "12px",
-										}}
+						{monthData.map((data: Accumulator, monthIndex: number) => {
+							const jobs = Object.values(data);
+							console.log({ monthIndex, selectedMonthIndex, data });
+							if (monthIndex !== selectedMonthIndex)
+								return (
+									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}{" "}
+									</TableRow>
+								);
+							if (Object.keys(jobs).length === 0) return <>Empty</>;
+							return (
+								<>
+									<TableRow
+										style={{ background: "green" }}
+										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
-										{cellIndex === 0 ? (
-											<span
-												style={{
-													display: "flex",
-													alignItems: "center",
-													fontSize: "12px",
-												}}
-											>
-												<KeyboardArrowDownIcon
-													fontSize="small"
-													style={{ marginRight: "5px" }}
-												/>
-												{cell}
-											</span>
-										) : (
-											cell
-										)}
-									</TableCell>
-								))}
-							</TableRow>
-						))}
-
-						{/* SubTable Layout */}
-						<TableRow>
-							<NoPadding colSpan={17}>
-								<Table style={{ minWidth: "100%" }}>
-									{jobs.map((job, jobIndex) => (
-										<>
-											<div>
-												<TableRow>{CreateRowOfTableCells(job.job_name, 1, 17)}</TableRow>
-											</div>
-											{Object.entries(job).map(([key, task], index) => (
-												<div>
-													<TableRow
-														style={{
-															width: "6%",
-															padding: 0,
-															borderTop: "0.8px solid", // Add top border for all cells
-															borderBottom: "0.8px solid", // Add bottom border for all cells
-															fontSize: "12px",
-														}}
-													>
-														{CreateRowOfTableCells((task as TaskEntry)?.task_name, 2, 17)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}{" "}
+									</TableRow>
+									{monthIndex === selectedMonthIndex &&
+										jobs.map((job) => (
+											<>
+												<>
+													<TableRow>
+														{CreateRowOfTableCells(job.job_name as string, 1, 17)}
 													</TableRow>
-													{Number.isInteger(parseInt(key)) &&
-														Object.entries(task).map(
-															([taskKey, { time, hours, user_name, task_name, rate }]) => (
-																<TableRow>
-																	{CreateEmptyCells(3)}
-																	<TaskEntryCell>{user_name}</TaskEntryCell>
-																	<>
-																		{Number.isInteger(parseInt(taskKey)) && (
-																			<>
-																				<TaskEntryCell>{hours}</TaskEntryCell>
-																				<TaskEntryCell>{rate}</TaskEntryCell>
-																				<TaskEntryCell>{hours * rate}</TaskEntryCell>
-																				<TaskEntryCell>{time}</TaskEntryCell>
-																				<TaskEntryCell>{rate}</TaskEntryCell>
-																				<TaskEntryCell>{time * rate}</TaskEntryCell>
-																			</>
-																		)}{" "}
-																	</>
-																</TableRow>
-															)
-														)}
-												</div>
-											))}
-										</>
-									))}
-								</Table>
-							</NoPadding>
-						</TableRow>
+												</>
+												{Object.entries(job).map(([key, task], index) => (
+													<>
+														<TableRow>
+															{CreateRowOfTableCells(
+																(task as TaskEntry)?.task_name as string,
+																2,
+																17
+															)}
+														</TableRow>
+														{Number.isInteger(parseInt(key)) &&
+															Object.entries(task).map(
+																([taskKey, { time, hours, user_name, task_name, rate }]) => (
+																	<TableRow>
+																		{CreateEmptyCells(3)}
+																		<TaskEntryCell>{user_name}</TaskEntryCell>
+																		<>
+																			{Number.isInteger(parseInt(taskKey)) && (
+																				<>
+																					<TaskEntryCell>{hours}</TaskEntryCell>
+																					<TaskEntryCell>{rate}</TaskEntryCell>
+																					<TaskEntryCell>{hours * rate}</TaskEntryCell>
+																					<TaskEntryCell>{time}</TaskEntryCell>
+																					<TaskEntryCell>{rate}</TaskEntryCell>
+																					<TaskEntryCell>{time * rate}</TaskEntryCell>
+																				</>
+																			)}
+																		</>
+																	</TableRow>
+																)
+															)}
+													</>
+												))}
+											</>
+										))}
+								</>
+							);
+						})}
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<Table></Table>
 		</div>
 	);
 }

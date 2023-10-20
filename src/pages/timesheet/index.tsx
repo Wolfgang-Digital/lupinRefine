@@ -170,7 +170,6 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRows(13);
-			console.log({ timesheetsResponse });
 
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
@@ -238,7 +237,6 @@ const Timesheet = () => {
 			// it will add tasks to the existing job; otherwise, it will create a new job object.
 
 			setFilteredTimesheets(groupedTimesheets);
-			console.log({ groupedTimesheets });
 
 			const jobOptions: JobOption[] = [];
 			const taskOptions: TaskOption[] = [];
@@ -347,12 +345,6 @@ const Timesheet = () => {
 			if (selectedJob) {
 				const response = await getTaskByJobId(selectedJob);
 				if (response) {
-					console.log(
-						response?.map((task) => ({
-							value: task.task_id.toString(),
-							label: task.task_name || "",
-						}))
-					);
 					setTasks(
 						response?.map((task) => ({
 							value: task.task_id.toString(),
