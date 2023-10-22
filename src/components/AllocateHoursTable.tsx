@@ -12,8 +12,12 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import { getAllAllocatedHours } from "@pages/api/allocateHoursView";
+import {
+	getAllAllocatedHours,
+	getJobAllocatedHoursPerMonth,
+} from "@pages/api/allocateHoursView";
 import { AllocateHoursView } from "types";
+import { WeekButton } from "@styled-components/timesheet";
 
 type RowData = AllocateHoursView;
 
@@ -37,11 +41,12 @@ function CustomToolbar() {
 
 function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
+	const [selectedMonth, setSelectedMonth] = useState(9);
 
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const allocateHoursTable = await getAllAllocatedHours(jobId || 0);
+			const allocateHoursTable = await getJobAllocatedHoursPerMonth(jobId || 0, 9);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -59,6 +64,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 					})
 				);
 				setFetchedRows(mappedData);
+				console.log(fetchedRows);
 			}
 		}
 		fetchData();
@@ -73,8 +79,46 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 		groupedRows[row.month || 0].push(row);
 	});
 
+	const monthNames: string[] = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+
+	const monthName = monthNames[selectedMonth];
+
 	return (
 		<div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+			<div style={{ display: "flex", paddingTop: "20px" }}>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth - 1);
+					}}
+				>
+					Previous month
+				</WeekButton>
+				<div
+					style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
+				>
+					{monthName}
+				</div>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth + 1);
+					}}
+				>
+					Next month
+				</WeekButton>
+			</div>
 			{Object.keys(groupedRows).map((month) => (
 				<Accordion key={month}>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>

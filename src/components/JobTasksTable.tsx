@@ -27,7 +27,6 @@ function CustomToolbar() {
 		</GridToolbarContainer>
 	);
 }
-
 function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 
@@ -45,6 +44,7 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 					task_name: item.task_name,
 				}));
 				setFetchedRows(mappedData);
+				console.log(mappedData);
 			}
 		}
 		fetchData();

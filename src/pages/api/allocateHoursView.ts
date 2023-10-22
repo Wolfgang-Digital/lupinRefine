@@ -61,3 +61,24 @@ export const getUnworkedAllocatedHours = async (userID: number) => {
 		console.error("Error fetching unworked allocated hours: ", error);
 	}
 };
+
+export const getJobAllocatedHoursPerMonth = async (
+	jobID: number,
+	month: number
+) => {
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours_view")
+			.select("*")
+			.order("job_id", { ascending: true })
+			.eq("job_id", jobID)
+			.eq("month", month);
+		if (error) {
+			console.error("Error fetching job allocated hours: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error fetching job allocated hours: ", error);
+	}
+};

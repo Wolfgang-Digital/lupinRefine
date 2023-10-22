@@ -25,11 +25,11 @@ import {
 	// getAllTimesheetRows,
 	getAllTimesheetRowsV2,
 } from "@pages/api/timesheetRows";
-// import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
+import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
-// const usersAllocatedHours = getUserAllocatedHoursPerMonth(57, 9);
+// const usersAllocatedHours = getUserAllocatedHoursPerMonth(13, 10);
 // console.log(usersAllocatedHours);
 
 import {
@@ -139,6 +139,7 @@ const Timesheet = () => {
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
+	const [unworkedHours, setUnworkedHours] = useState<GroupedTimesheets>([]);
 	const [clients, setClients] = useState<ClientOption[]>([]);
 	const [projects, setProjects] = useState<ProjectOption[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
@@ -178,9 +179,51 @@ const Timesheet = () => {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
 
-			// const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
-
+			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
+			// console.log(unworkedHoursResponse);
 			let filteredResponse: typeof timesheetsResponse = [];
+			const filteredUnworkedHours = unworkedHoursResponse?.filter(
+				({ month, year }) => {
+					return (
+						month === selectedWeekStart.getMonth() + 1 &&
+						year === selectedWeekStart.getFullYear()
+					);
+				}
+			);
+			console.log(filteredUnworkedHours);
+			setUnworkedHours("");
+			filteredUnworkedHours?.forEach(
+				({
+					id,
+					name,
+					job_id,
+					job_name,
+					task_id,
+					task_name,
+					hours,
+					project_id,
+					project_name,
+					user_id,
+					user_name,
+				}) => {
+					setUnworkedHours((prev) => ({
+						...prev,
+						[id || 0]: {
+							...prev[id || 0],
+							[job_id || 0]: {
+								...prev[job_id || 0],
+								[user_id || 0]: hours || 0,
+								[task_id || 0]: hours || 0,
+							},
+						},
+					}));
+				}
+			);
+			// [id || 0]: name || "",
+			// [job_id || 0]: job_name || "",
+			// [project_id || 0]: project_name || "",
+			// [task_id || 0]: task_name || "",
+			// [project_id || 0]: project_name || "",
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -335,6 +378,10 @@ const Timesheet = () => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
 
+	useEffect(() => {
+		console.log("Unworked Hours Return:", unworkedHours);
+	}, [unworkedHours]);
+
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
 	};
@@ -477,7 +524,7 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchTasks() {
 			if (selectedJob) {
-				console.log(`selectedJob: ${selectedJob}`);
+				// console.log(`selectedJob: ${selectedJob}`);
 				const response = await getTaskByJobId(selectedJob);
 				if (response) {
 					// console.log(
