@@ -29,7 +29,6 @@ import {
 	// getAllTimesheetRows,
 	getAllTimesheetRowsV2,
 } from "@pages/api/timesheetRows";
-import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";

@@ -93,14 +93,6 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		fetchData();
 	}, []);
 
-	// Function to format the date
-	function formatDate(dateString: string) {
-		const date = new Date(dateString);
-		return `${date.toLocaleString("default", {
-			month: "long",
-		})} ${date.getFullYear()}`;
-	}
-
 	const groupedRows: { [key: string]: RowData[] } = {};
 
 	// Group the fetched rows by month

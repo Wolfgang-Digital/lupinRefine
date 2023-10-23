@@ -9,13 +9,10 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import EditIcon from "@mui/icons-material/Edit";
 import { Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
-import { AllTimesheetRowsView, TimesheetRowsView } from "@types";
+import { AllTimesheetRowsView, TimesheetRowsView } from "types";
 
 const columns = [
 	"Month",
@@ -65,28 +62,6 @@ const columns = [
 	"Invoice Adj",
 	"Fee c/f",
 	"Bal",
-];
-
-const januaryData = [
-	[
-		"January",
-		"",
-		"",
-		"",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"SUM",
-		"",
-	],
 ];
 
 const monthNames = [
@@ -188,7 +163,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 
 		const job = accumulator[jobKey];
 		const task = job[taskKey];
-		let userEntry = (task as Task)[userKey] as UserEntry;
+		const userEntry = (task as Task)[userKey] as UserEntry;
 		if (
 			!accumulator[jobKey as keyof typeof accumulator][
 				taskKey as keyof typeof job
@@ -221,7 +196,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 					typeof ((result[jobKey] as Task)[taskKey] as User)[userKey] !== "object"
 				)
 					continue;
-				let userEntry = ((result[jobKey] as Task)[taskKey] as User)[
+				const userEntry = ((result[jobKey] as Task)[taskKey] as User)[
 					userKey
 				] as UserEntry;
 				if (userEntry.count !== 0) {
@@ -233,23 +208,6 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 
 	return result;
 }
-function createData(
-	name: string,
-	calories: number,
-	fat: number,
-	carbs: number,
-	protein: number
-) {
-	return { name, calories, fat, carbs, protein };
-}
-
-const myRows = [
-	createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-	createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-	createData("Eclair", 262, 16.0, 24, 6.0),
-	createData("Cupcake", 305, 3.7, 67, 4.3),
-	createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
 
 function JobsFinancialTable({
 	projectId,
@@ -259,9 +217,8 @@ function JobsFinancialTable({
 	clientId: number;
 }) {
 	const [value, setValue] = React.useState(dayjs("2023-10-31") as Dayjs | null);
-	const [rows, setRows] = useState<Accumulator>({});
 
-	const [monthData, setMonthData] = useState<any>([]);
+	const [monthData, setMonthData] = useState<Accumulator[]>([]);
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
@@ -269,10 +226,12 @@ function JobsFinancialTable({
 		async function fetchData() {
 			try {
 				// do something for 12 times
-				const response = await getAllTimesheetRowsFinancial({
-					projectId,
-					clientId,
-				});
+				let response = await getAllTimesheetRows();
+				if (response) {
+					response = response.filter(({ client_id, project_id }) => {
+						return client_id === clientId && project_id === projectId;
+					});
+				}
 				// create empty array with 12 elements, each element is an empty array
 				const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
 					() => []
@@ -302,7 +261,6 @@ function JobsFinancialTable({
 		fetchData();
 	}, []);
 
-	const jobs = Object.values(rows);
 	return (
 		<div>
 			<div
@@ -397,7 +355,7 @@ function JobsFinancialTable({
 														{CreateRowOfTableCells(job.job_name as string, 1, 17)}
 													</TableRow>
 												</>
-												{Object.entries(job).map(([key, task], index) => (
+												{Object.entries(job).map(([key, task]) => (
 													<>
 														<TableRow>
 															{CreateRowOfTableCells(
@@ -408,7 +366,7 @@ function JobsFinancialTable({
 														</TableRow>
 														{Number.isInteger(parseInt(key)) &&
 															Object.entries(task).map(
-																([taskKey, { time, hours, user_name, task_name, rate }]) => (
+																([taskKey, { time, hours, user_name, rate }]) => (
 																	<TableRow>
 																		{CreateEmptyCells(3)}
 																		<TaskEntryCell>{user_name}</TaskEntryCell>

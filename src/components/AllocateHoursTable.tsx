@@ -16,10 +16,7 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import {
-	getAllAllocatedHours,
-	getJobAllocatedHoursPerMonth,
-} from "@pages/api/allocateHoursView";
+import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 import { AllocateHoursView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 

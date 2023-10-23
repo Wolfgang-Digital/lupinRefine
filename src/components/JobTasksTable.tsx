@@ -23,7 +23,7 @@ import {
 	getAllTasks,
 	PostJobTaskEntry,
 } from "@pages/api/jobTasksView";
-import { JobTask, JobTasksView } from "types";
+import { JobTasksView } from "types";
 
 type RowData = JobTasksView;
 
@@ -52,7 +52,6 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const taskOptions: TaskOption[] = [];
 	const [jobTaskEntries, setJobTaskEntries] = useState<JobTaskEntry[]>([]);
-	const [selectedTask, setSelectedTask] = useState("");
 
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state

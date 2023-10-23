@@ -132,8 +132,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 		fetchData();
 	}, []);
 
-	const groupedRows: { [key: string]: RowData[] } = {};
-
 	const handleProjectClick = (rowData: RowData) => {
 		setSelectedProject(rowData);
 		setOpenDialog(true);

@@ -27,8 +27,8 @@
 			"@public/*": ["public/*"],
 			"@public": ["public"],
 			"@styled-components/*": ["src/styled-components/*"],
-			"@types/*": ["types/*"],
-			"@types": ["types/index.ts"]
+			"types/*": ["types/*"],
+			"types": ["types/index.ts"]
 		},
 		"incremental": true,
 		"plugins": [

@@ -141,7 +141,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 						<CssBaseline />
 						<Paper elevation={3} sx={{ padding: "20px" }}>
 							<Typography component="h1" variant="h5">
-								Projects Overview: <strong>{client.name}</strong>
+								Projects Overview: <strong>{client?.name}</strong>
 							</Typography>
 
 							<JobsInfoGrid clientId={client?.id || 0} />
