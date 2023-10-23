@@ -41,7 +41,6 @@
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		"src/pages/logtime/index.jsx",
 		"next.config.js",
 		"src/pages/api/auth/[...nextauth].js",
 		".next/types/**/*.ts"

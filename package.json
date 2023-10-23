@@ -22,7 +22,6 @@
 		"@fullcalendar/react": "^6.1.8",
 		"@fullcalendar/timegrid": "^6.1.8",
 		"@google-cloud/local-auth": "^2.1.0",
-		"@mobiscroll/react": "https://npm.mobiscroll.com/@mobiscroll/react-trial/-/react-trial-5.26.1.tgz",
 		"@mui/icons-material": "^5.8.3",
 		"@mui/lab": "^5.0.0-alpha.85",
 		"@mui/material": "^5.14.14",
