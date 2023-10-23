@@ -1,6 +1,6 @@
 /// THIS IS A DEMO PAGE NOT BEING USED AT THIS MOMENT.
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from "react";
 import {
 	Eventcalendar,
 	Draggable,
@@ -14,70 +14,70 @@ import {
 	localeEnGB,
 	MbscEventCreatedEvent,
 	MbscCalendarEvent,
-} from '@mobiscroll/react';
+} from "@mobiscroll/react";
 
-import '@mobiscroll/react/dist/css/mobiscroll.min.css';
+import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 
 setOptions({
 	locale: localeEnGB,
-	theme: 'ios',
-	themeVariant: 'light',
+	theme: "ios",
+	themeVariant: "light",
 });
 
 const tasks = [
 	{
-		title: 'Aura Leisure:Google Ads',
-		color: '#02786D',
-		start: '08:00',
-		end: '10:00',
-		length: '2 h',
+		title: "Aura Leisure:Google Ads",
+		color: "#02786D",
+		start: "08:00",
+		end: "10:00",
+		length: "2 h",
 	},
 	{
-		title: 'Bodyslims:Google Ads',
-		color: '#02786D',
-		start: '08:00',
-		end: '09:30',
-		length: '1.5 h',
+		title: "Bodyslims:Google Ads",
+		color: "#02786D",
+		start: "08:00",
+		end: "09:30",
+		length: "1.5 h",
 	},
 	{
-		title: 'Breast Cancer Ireland:Analytics',
-		color: '#02786D',
-		start: '08:00',
-		end: '10:00',
-		length: '2 h',
+		title: "Breast Cancer Ireland:Analytics",
+		color: "#02786D",
+		start: "08:00",
+		end: "10:00",
+		length: "2 h",
 	},
 	{
-		title: 'Bygge Bo Ltd:Project management',
-		color: '#02786D',
-		start: '08:00',
-		end: '10:00',
-		length: '2 h',
+		title: "Bygge Bo Ltd:Project management",
+		color: "#02786D",
+		start: "08:00",
+		end: "10:00",
+		length: "2 h",
 	},
 	{
-		title: 'Camile Thai:Social - Implementation',
-		color: '#02786D',
-		start: '08:00',
-		end: '10:30',
-		length: '2.5 h',
+		title: "Camile Thai:Social - Implementation",
+		color: "#02786D",
+		start: "08:00",
+		end: "10:30",
+		length: "2.5 h",
 	},
 	{
-		title: 'Caseys Furniture:Google Ads',
-		color: '#02786D',
-		start: '08:00',
-		end: '12:30',
-		length: '4.5 h',
+		title: "Caseys Furniture:Google Ads",
+		color: "#02786D",
+		start: "08:00",
+		end: "12:30",
+		length: "4.5 h",
 	},
 ];
 
 type DataType = { value: string; text: string };
 const myData: DataType[] = [
-	{ value: '1', text: 'Client Meetings' },
-	{ value: '2', text: 'Analytics' },
-	{ value: '3', text: 'OPT' },
-	{ value: '4', text: 'CRO' },
-	{ value: '5', text: 'Auditing' },
-	{ value: '6', text: 'Comms' },
-	{ value: '7', text: 'Insights' },
+	{ value: "1", text: "Client Meetings" },
+	{ value: "2", text: "Analytics" },
+	{ value: "3", text: "OPT" },
+	{ value: "4", text: "CRO" },
+	{ value: "5", text: "Auditing" },
+	{ value: "6", text: "Comms" },
+	{ value: "7", text: "Insights" },
 ];
 
 interface TaskProps {
@@ -99,7 +99,7 @@ function Task(props: TaskProps) {
 		<div
 			ref={setDragElm}
 			style={{ background: props.data.color }}
-			className='external-event-task'
+			className="external-event-task"
 		>
 			<div>{props.data.title}</div>
 			<div>{props.data.length}</div>
@@ -110,10 +110,10 @@ function Task(props: TaskProps) {
 
 const MyCalendarComponent: React.FC = () => {
 	const [isOpen, setOpen] = useState<boolean>(false);
-	const [title, setTitle] = useState<string>('');
-	const [details /*setDetails*/] = useState<string>('');
-	const [technician, setTechnician] = useState<string>('');
-	const [selectedText, setSelectedText] = useState<string>(''); // Added state for selected text
+	const [title, setTitle] = useState<string>("");
+	const [details /*setDetails*/] = useState<string>("");
+	const [technician, setTechnician] = useState<string>("");
+	const [selectedText, setSelectedText] = useState<string>(""); // Added state for selected text
 	const [anchor, setAnchor] = useState<HTMLElement | undefined>(undefined); // Updated type
 	const [isToastOpen, setToastOpen] = useState<boolean>(false);
 	const [toastText, setToastText] = useState<string | undefined>();
@@ -121,10 +121,10 @@ const MyCalendarComponent: React.FC = () => {
 	const view = useMemo<MbscEventcalendarView>(() => {
 		return {
 			schedule: {
-				type: 'week',
+				type: "week",
 				allDay: false,
-				startTime: '06:00',
-				endTime: '20:00',
+				startTime: "06:00",
+				endTime: "20:00",
 			},
 		};
 	}, []);
@@ -133,17 +133,17 @@ const MyCalendarComponent: React.FC = () => {
 		return [
 			{
 				recurring: {
-					repeat: 'weekly',
-					weekDays: 'SA,SU',
+					repeat: "weekly",
+					weekDays: "SA,SU",
 				},
 			},
 			{
-				start: '13:00',
-				end: '14:00',
-				title: 'Lunch Break',
+				start: "13:00",
+				end: "14:00",
+				title: "Lunch Break",
 				recurring: {
-					repeat: 'weekly',
-					weekDays: 'MO,TU,WE,TH,FR',
+					repeat: "weekly",
+					weekDays: "MO,TU,WE,TH,FR",
 				},
 			},
 		];
@@ -152,7 +152,6 @@ const MyCalendarComponent: React.FC = () => {
 	const fillDialog = useCallback((args: MbscCalendarEvent) => {
 		setTitle(args.event.title);
 		setSelectedText(args.event.title);
-		console.log(selectedText);
 		// Update anchor state based on the target value
 		if (args.target) {
 			setAnchor(args.target);
@@ -180,7 +179,7 @@ const MyCalendarComponent: React.FC = () => {
 
 	const onClose = useCallback(() => {
 		setOpen(false);
-		setToastText('New task added');
+		setToastText("New task added");
 		setToastOpen(true);
 	}, []);
 
@@ -193,15 +192,15 @@ const MyCalendarComponent: React.FC = () => {
 	}, []);
 
 	return (
-		<div className='mbsc-grid mbsc-no-padding'>
-			<div className='mbsc-row'>
-				<div className='mbsc-col-sm-3'>
-					<div className='mbsc-form-group-title'>Allocated Tasks</div>
+		<div className="mbsc-grid mbsc-no-padding">
+			<div className="mbsc-row">
+				<div className="mbsc-col-sm-3">
+					<div className="mbsc-form-group-title">Allocated Tasks</div>
 					{tasks.map((task, i) => (
 						<Task key={i} data={task} />
 					))}
 				</div>
-				<div className='mbsc-col-sm-9 external-event-calendar'>
+				<div className="mbsc-col-sm-9 external-event-calendar">
 					<Eventcalendar
 						view={view}
 						invalid={invalid}
@@ -213,26 +212,22 @@ const MyCalendarComponent: React.FC = () => {
 					/>
 				</div>
 				<Popup
-					display='anchored'
+					display="anchored"
 					width={500}
 					contentPadding={false}
 					touchUi={false}
-					headerText='Log Time'
-					buttons={['ok']}
+					headerText="Log Time"
+					buttons={["ok"]}
 					anchor={anchor}
 					isOpen={isOpen}
 					onClose={onClose}
 				>
-					<div className='mbsc-form-group'>
-						<Input
-							label='Job'
-							defaultValue={title}
-							readOnly
-						></Input>
+					<div className="mbsc-form-group">
+						<Input label="Job" defaultValue={title} readOnly></Input>
 						<Textarea
-							label='Details'
+							label="Details"
 							defaultValue={details}
-							placeholder='Add description...'
+							placeholder="Add description..."
 						></Textarea>
 						<Select
 							data={myData}
@@ -241,17 +236,17 @@ const MyCalendarComponent: React.FC = () => {
 								setTechnician(event.value);
 								setSelectedText(event.text); // Set selected text
 							}}
-							display='anchored'
+							display="anchored"
 							touchUi={false}
-							label='Task'
-							inputProps={{ placeholder: 'Please select...' }}
+							label="Task"
+							inputProps={{ placeholder: "Please select..." }}
 						/>
 					</div>
 				</Popup>
 			</div>
 			<Toast
-				theme='ios'
-				themeVariant='light'
+				theme="ios"
+				themeVariant="light"
 				message={toastText}
 				isOpen={isToastOpen}
 				onClose={closeToast}

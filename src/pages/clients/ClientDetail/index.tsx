@@ -13,10 +13,8 @@ import {
 	CssBaseline,
 	Paper,
 	// styled,
-	Slide,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { TransitionProps } from "@mui/material/transitions";
 import { ClientData } from "@api/client";
 
 import { ClientOverview } from "types";
@@ -25,16 +23,7 @@ import {
 	TabContentContainer,
 	TabPanelContainer,
 } from "@styled-components/clients";
-import ClientFinancials from "@components/ClientFinancialsTable";
-
-const Transition = React.forwardRef(function Transition(
-	props: TransitionProps & {
-		children: React.ReactElement;
-	},
-	ref: React.Ref<unknown>
-) {
-	return <Slide direction="up" ref={ref} {...props} />;
-});
+import JobsInfoGrid from "@components/ClientJobInfoTab";
 
 interface ClientDetailProps {
 	client: ClientData; // Use the Client interface
@@ -63,7 +52,6 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 			fullScreen
 			open={true}
 			onClose={onClose}
-			TransitionComponent={Transition}
 			PaperProps={{ style: { marginLeft: "10%", width: "90%" } }} // Adjust padding here
 		>
 			<AppBar sx={{ position: "relative" }}>
@@ -93,7 +81,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 					aria-label="Client Tabs"
 				>
 					<Tab label="Client Info" />
-					<Tab label="Financials" />
+					<Tab label="Job Details" />
 					{/* ... Other tabs */}
 				</Tabs>
 			</TabContainer>
@@ -145,14 +133,18 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 					aria-labelledby={`tab-1`}
 				>
 					{/* Financials Tab Content */}
-					<Container component="main" maxWidth="lg">
+					<Container
+						style={{ height: 350, width: "100%" }}
+						component="main"
+						maxWidth="lg"
+					>
 						<CssBaseline />
 						<Paper elevation={3} sx={{ padding: "20px" }}>
 							<Typography component="h1" variant="h5">
-								Financial Details
+								Projects Overview: <strong>{client.name}</strong>
 							</Typography>
 
-							<ClientFinancials clientId={client?.id || 0} />
+							<JobsInfoGrid clientId={client?.id || 0} />
 						</Paper>
 					</Container>
 				</TabPanelContainer>

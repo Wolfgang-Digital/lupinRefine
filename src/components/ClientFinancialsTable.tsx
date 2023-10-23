@@ -9,11 +9,11 @@ import {
 	getFinancialTable,
 	groupFinancialTableData,
 } from "@api/financialTable";
-import { FinancialTable } from "types";
+import { TimesheetRowsView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 
-type RowData = FinancialTable & {
-	month: string;
+type RowData = TimesheetRowsView & {
+	month: number;
 };
 
 const columns = [
@@ -36,18 +36,18 @@ function CustomToolbar() {
 
 function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	const [financialData, setFinancialData] = useState<FinancialTable[]>([]);
+	const [financialData, setFinancialData] = useState<TimesheetRowsView[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
-		FinancialTable[]
+		TimesheetRowsView[]
 	>([]);
 
 	const [selectedMonth, setSelectedMonth] = useState(9);
 
 	function fetchGroupedData(
-		financialTable: FinancialTable[],
+		financialTable: TimesheetRowsView[],
 		selectedMonth: number
 	) {
-		const myArr: FinancialTable[] = [];
+		const myArr: TimesheetRowsView[] = [];
 		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
 		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
 		Object.values(groupedData).forEach((item) => {
@@ -73,11 +73,13 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 			if (financialTable) {
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = financialTable.map(
-					(item: FinancialTable) => ({
+					(item: TimesheetRowsView) => ({
 						...item,
 						id: item.id,
 						job_id: item.job_id,
-						month: formatDate(item.date?.toString() || new Date().toString()), // Format the month name
+						month: new Date(
+							item.date?.toString() || new Date().toString()
+						).getMonth(), // Format the month name
 						job: item.job_name,
 						task: item.task_name,
 						staff: item.user_name,
