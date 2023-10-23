@@ -3,7 +3,7 @@ import {
 	JobsDropdownViewDemo,
 	TimesheetRowsView,
 	TimesheetRowsViewV6,
-} from "types";
+} from "@types";
 
 export type TimesheetData = JobsDropdownViewDemo;
 export type TimesheetDataDemo = JobsDropdownViewDemo;

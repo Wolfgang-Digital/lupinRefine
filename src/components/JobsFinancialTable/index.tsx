@@ -14,7 +14,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import EditIcon from "@mui/icons-material/Edit";
 import { Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRowsFinancial } from "@pages/api/timesheetRows";
+import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsView, TimesheetRowsView } from "@types";
 
 const columns = [
