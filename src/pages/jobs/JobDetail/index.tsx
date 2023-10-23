@@ -24,6 +24,10 @@ import {
 	TabPanelContainer,
 } from "@styled-components/jobs";
 
+import CollapsibleGrid from "@components/ClientFinancialsTable";
+import CollapsibleHoursGrid from "@components/AllocateHoursTable";
+import CollapsibleTasksGrid from "@components/JobTasksTable";
+
 const Transition = React.forwardRef(function Transition(
 	props: TransitionProps & {
 		children: React.ReactElement;
@@ -90,6 +94,8 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 					>
 						<Tab label="Job Info" />
 						<Tab label="Financials" />
+						<Tab label="Tasks" />
+						<Tab label="Allocations" />
 					</Tabs>
 				</TabContainer>
 
@@ -145,6 +151,42 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Financial Details
 								</Typography>
+								{/* <ClientFinancials clientId={client?.id || 0} /> */}
+								<CollapsibleGrid />
+							</Paper>
+						</Container>
+					</TabPanelContainer>
+
+					<TabPanelContainer
+						role="tabpanel"
+						hidden={tabValue !== 2}
+						id={`tabpanel-1`}
+						aria-labelledby={`tab-1`}
+					>
+						<Container component="main" maxWidth="lg">
+							<CssBaseline />
+							<Paper elevation={3} sx={{ padding: "20px" }}>
+								<Typography component="h1" variant="h5">
+									Tasks
+								</Typography>
+								<CollapsibleTasksGrid jobId={job?.job_id || 0} />
+							</Paper>
+						</Container>
+					</TabPanelContainer>
+
+					<TabPanelContainer
+						role="tabpanel"
+						hidden={tabValue !== 3}
+						id={`tabpanel-1`}
+						aria-labelledby={`tab-1`}
+					>
+						<Container component="main" maxWidth="lg">
+							<CssBaseline />
+							<Paper elevation={3} sx={{ padding: "20px" }}>
+								<Typography component="h1" variant="h5">
+									Allocations: {job.client_name} : {job.job_name}
+								</Typography>
+								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
 							</Paper>
 						</Container>
 					</TabPanelContainer>

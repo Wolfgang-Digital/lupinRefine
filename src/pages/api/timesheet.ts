@@ -16,6 +16,7 @@ export const getJobsDropdown = async () => {
 };
 
 export const PostTimeEntry = async ({
+	staffId: staff_id,
 	timeSpent,
 	notes,
 	jobId: job_id,
@@ -23,6 +24,7 @@ export const PostTimeEntry = async ({
 	selectedDate,
 	rate,
 }: {
+	staffId: number;
 	timeSpent: number;
 	notes: string;
 	jobId: number;
@@ -33,6 +35,7 @@ export const PostTimeEntry = async ({
 	try {
 		const { data, error } = await supabase.from("timesheet_rows").insert([
 			{
+				staff_id,
 				time: timeSpent,
 				notes,
 				job_id,

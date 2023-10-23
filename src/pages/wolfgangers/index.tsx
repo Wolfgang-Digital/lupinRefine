@@ -184,10 +184,10 @@ const Wolfgangers: React.FC = () => {
 						<form>
 							{userInfoFields.map((field) => (
 								<TextField
-									key={field.field}
+									key={field?.field}
 									margin="normal"
 									fullWidth
-									label={field.label}
+									label={field?.label}
 									// Add your field value and onChange handling here
 								/>
 							))}

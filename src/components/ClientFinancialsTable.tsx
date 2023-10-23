@@ -1,71 +1,29 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import {
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
-	Paper,
-	Typography,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
 	DataGrid,
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import { getFinancialTable } from "@api/financialTable";
+import {
+	getFinancialTable,
+	groupFinancialTableData,
+} from "@api/financialTable";
 import { FinancialTable } from "types";
+import { WeekButton } from "@styled-components/timesheet";
 
 type RowData = FinancialTable & {
 	month: string;
-	// value: number;
-	// budgetToInvoice: number;
-	// invoiced: number;
-	// balRemaining: number;
-	// balanced: boolean;
 };
 
-// function createData(
-// 	id: number,
-// 	month: string,
-// 	job: string,
-// 	task: string,
-// 	staff: string,
-// 	hours: number,
-// 	rate: number,
-// 	value: number,
-// 	budgetToInvoice: number,
-// 	invoiced: number,
-// 	balRemaining: number,
-// 	balanced: boolean
-// ): RowData {
-// 	return {
-// 		id,
-// 		month,
-// 		job,
-// 		task,
-// 		staff,
-// 		hours,
-// 		rate,
-// 		value,
-// 		budgetToInvoice,
-// 		invoiced,
-// 		balRemaining,
-// 		balanced,
-// 	};
-// }
-
 const columns = [
-	{ field: "job", headerName: "Job", width: 150 },
-	{ field: "task", headerName: "Task", width: 150 },
-	{ field: "staff", headerName: "Staff", width: 150 },
-	{ field: "hours", headerName: "Hours", width: 100 },
-	{ field: "rate", headerName: "Rate", width: 100 },
+	{ field: "job_id", headerName: "Job ID", width: 100 },
+	{ field: "job_name", headerName: "Job", width: 200 },
+	{ field: "task_name", headerName: "Task", width: 250 },
+	{ field: "user_name", headerName: "Staff", width: 150 },
+	{ field: "time", headerName: "Hours", width: 75 },
+	{ field: "rate", headerName: "Rate", width: 75 },
 	{ field: "value", headerName: "Value", width: 100 },
-	{ field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
-	{ field: "invoiced", headerName: "Invoiced", width: 120 },
-	{ field: "balRemaining", headerName: "Bal Remaining", width: 150 },
-	{ field: "balanced", headerName: "Balanced", width: 120, type: "boolean" },
 ];
 
 function CustomToolbar() {
@@ -76,31 +34,54 @@ function CustomToolbar() {
 	);
 }
 
-function CollapsibleGrid() {
+function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
+	const [financialData, setFinancialData] = useState<FinancialTable[]>([]);
+	const [filteredFinancialData, setFilteredFinancialData] = useState<
+		FinancialTable[]
+	>([]);
+
+	const [selectedMonth, setSelectedMonth] = useState(9);
+
+	function fetchGroupedData(
+		financialTable: FinancialTable[],
+		selectedMonth: number
+	) {
+		const myArr: FinancialTable[] = [];
+		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
+		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
+		Object.values(groupedData).forEach((item) => {
+			Object.values(item).forEach((myItem) => {
+				myArr.push(myItem);
+			});
+		});
+		setFilteredFinancialData(myArr);
+	}
+
+	useEffect(() => {
+		fetchGroupedData(financialData, selectedMonth);
+	}, [selectedMonth]);
 
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const financialTable = await getFinancialTable();
-
+			const financialTable = await getFinancialTable(clientId || 0);
+			if (financialTable) {
+				setFinancialData(financialTable);
+				fetchGroupedData(financialTable, selectedMonth);
+			}
 			if (financialTable) {
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = financialTable.map(
 					(item: FinancialTable) => ({
 						...item,
-						// id: item.id,
+						id: item.id,
+						job_id: item.job_id,
 						month: formatDate(item.date?.toString() || new Date().toString()), // Format the month name
-						// job: item.job_name,
-						// task: item.task_name,
-						// staff: item.user_name,
-						// hours: item.time,
-						// rate: item.rate,
-						// value: 0, // Add to table
-						// budgetToInvoice: 0, // Add to table
-						// invoiced: 0, // Add to table
-						// balRemaining: 0, // Add to table
-						// balanced: false, // Add to table
+						job: item.job_name,
+						task: item.task_name,
+						staff: item.user_name,
+						hours: item.time,
 					})
 				);
 				setFetchedRows(mappedData);
@@ -127,32 +108,67 @@ function CollapsibleGrid() {
 		}
 		groupedRows[row.month].push(row);
 	});
+	const monthNames: string[] = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
 
+	const monthName = monthNames[selectedMonth];
+	// console.log(selectedMonth);
 	return (
-		<div style={{ height: 400, width: "100%" }}>
-			{Object.keys(groupedRows).map((month) => (
-				<Accordion key={month}>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography>{month}</Typography>
-					</AccordionSummary>
-					<AccordionDetails>
-						<Paper>
-							<DataGrid
-								rows={groupedRows[month]}
-								columns={columns.map((col) => ({
-									...col,
-									editable: true, // Set all columns as editable
-								}))}
-								components={{
-									Toolbar: CustomToolbar,
-								}}
-								hideFooter
-								autoHeight
-							/>
-						</Paper>
-					</AccordionDetails>
-				</Accordion>
-			))}
+		<div
+			style={{
+				height: "100%",
+				width: "100%",
+				overflow: "auto",
+			}}
+		>
+			<div style={{ display: "flex", paddingTop: "20px" }}>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth - 1);
+					}}
+				>
+					Previous month
+				</WeekButton>
+				<div
+					style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
+				>
+					{monthName}
+				</div>
+				<WeekButton
+					onClick={() => {
+						setSelectedMonth(selectedMonth + 1);
+					}}
+				>
+					Next month
+				</WeekButton>
+			</div>
+			<div style={{ paddingTop: "20px" }}>
+				<DataGrid
+					rows={filteredFinancialData}
+					columns={columns.map((col) => ({
+						...col,
+						editable: true, // Set all columns as editable
+					}))}
+					components={{
+						Toolbar: CustomToolbar,
+					}}
+					hideFooter
+					autoHeight
+					getRowId={(row) => row.id || 0}
+				/>
+			</div>
 		</div>
 	);
 }

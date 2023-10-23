@@ -64,7 +64,7 @@ const ClientOverview: React.FC = () => {
 	});
 
 	const columns = [
-		{ field: "id", headerName: "id", width: 100 },
+		// { field: "id", headerName: "id", width: 100 },
 		{
 			field: "name",
 			headerName: "Name",

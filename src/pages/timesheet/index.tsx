@@ -17,12 +17,21 @@ import {
 	FormControl,
 	InputLabel,
 	Select,
-	Checkbox,
+	// Checkbox,
 	TablePagination,
 } from "@mui/material";
-
-import { getAllTimesheetRowsDemo } from "../api/timesheetRowsDemo";
+import { makeStyles } from "@mui/styles";
+import {
+	// getAllTimesheetRows,
+	getAllTimesheetRowsV2,
+} from "@pages/api/timesheetRows";
+import { getUnworkedAllocatedHours } from "@pages/api/allocateHoursView";
 import { getTaskByJobId } from "@pages/api/tasks";
+// get allocated hours for user per month
+// import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+// const usersAllocatedHours = getUserAllocatedHoursPerMonth(13, 10);
+// console.log(usersAllocatedHours);
+
 import {
 	// WeekSelectorContainer,
 	WeekButton,
@@ -30,6 +39,33 @@ import {
 } from "@styled-components/timesheet";
 // import { getRatesByJobId } from "@pages/api/jobs";
 import { PostTimeEntry } from "@pages/api/timesheet";
+import styled from "styled-components";
+import { getProjectbyClientId } from "@pages/api/projects";
+import { getJobByProjectId } from "@pages/api/jobs";
+
+const useStyles = makeStyles({
+	table: {
+		minWidth: 650,
+		"& .MuiTableCell-root": {
+			border: "2px solid black",
+		},
+	},
+});
+
+const TableHeaderCell = styled(TableCell)`
+	background-color: #02786d;
+	color: white;
+	border-right: 1px solid black;
+	text-align: center;
+	font-size: smaller;
+`;
+
+const TableRowCell = styled(TableCell)`
+	border-right: 1px solid #ccc;
+	text-align: center;
+	white-space: pre-line;
+	font-size: smaller;
+`;
 
 type TimeEntry = {
 	task: string;
@@ -39,15 +75,50 @@ type TimeEntry = {
 	notes: string;
 };
 
+type ClientOption = {
+	label: string;
+	value: string;
+	projectLabel: string;
+};
+type ProjectOption = {
+	label: string;
+	value: string;
+	// jobLabel: string;
+};
+
 type JobOption = {
 	label: string;
 	value: string;
+	taskLabel: string;
 };
 
 type TaskOption = {
 	label: string;
 	value: string;
 };
+
+type Task = {
+	task_id: number;
+	task_name: string;
+	time: number;
+	hours?: number;
+};
+
+type Job = {
+	job_id: number;
+	job_name: string;
+	job_name_id: number;
+	tasks: Task[];
+};
+type Client = {
+	client_id: number;
+	client_name: string;
+	project_id: number;
+	project_name: string;
+	jobs: Job[];
+};
+
+type GroupedTimesheets = Client[];
 
 // Create the Timesheet component
 const Timesheet = () => {
@@ -56,12 +127,22 @@ const Timesheet = () => {
 		startOfWeek(new Date(), { weekStartsOn: 1 })
 	);
 
+	const [openedAccordions, setOpenedAccordions] = useState<{
+		[key: number]: boolean;
+	}>({});
 	const [showForm, setShowForm] = useState(false);
-	const [selectedTask, setSelectedTask] = useState("");
+	const [selectedClient, setSelectedClient] = useState("");
+	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
+	const [selectedTask, setSelectedTask] = useState("");
 	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+
+	const [filteredTimesheets, setFilteredTimesheets] =
+		useState<GroupedTimesheets>([]);
+	const [unworkedHours, setUnworkedHours] = useState<GroupedTimesheets>([]);
+	const [clients, setClients] = useState<ClientOption[]>([]);
+	const [projects, setProjects] = useState<ProjectOption[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
-	// const [rate, setRate] = useState(0);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
 
@@ -94,81 +175,213 @@ const Timesheet = () => {
 	const { page, rowsPerPage } = pagination;
 
 	// Fetch tasks and jobs data
-	useEffect(() => {
-		async function fetchTasksAndJobs() {
-			try {
-				const jobsResponse = await getAllTimesheetRowsDemo();
+	async function fetchTasksAndJobsWithFilter() {
+		try {
+			const timesheetsResponse = await getAllTimesheetRowsV2();
 
-				if (!jobsResponse) {
-					throw new Error("Error fetching data");
+			const unworkedHoursResponse = await getUnworkedAllocatedHours(13);
+			// console.log(unworkedHoursResponse);
+			let filteredResponse: typeof timesheetsResponse = [];
+			const filteredUnworkedHours = unworkedHoursResponse?.filter(
+				({ month, year }) => {
+					return (
+						month === selectedWeekStart.getMonth() + 1 &&
+						year === selectedWeekStart.getFullYear()
+					);
 				}
-
-				const jobOptions = jobsResponse.map((job) => ({
-					label: `${job.name} : ${job.job_name}`,
-					value: job.job_id?.toString() || "0",
-					taskLabel: job.task_name,
-				}));
-
-				setJobs(jobOptions);
-
-				// Fetch tasks from the API and populate allTasks
-				const tasksResponse = await getAllTimesheetRowsDemo(); // Replace with your actual API function
-				if (!tasksResponse) {
-					throw new Error("Error fetching tasks");
+			);
+			console.log(filteredUnworkedHours);
+			setUnworkedHours("");
+			filteredUnworkedHours?.forEach(
+				({
+					id,
+					name,
+					job_id,
+					job_name,
+					task_id,
+					task_name,
+					hours,
+					project_id,
+					project_name,
+					user_id,
+					user_name,
+				}) => {
+					setUnworkedHours((prev) => ({
+						...prev,
+						[id || 0]: {
+							...prev[id || 0],
+							[job_id || 0]: {
+								...prev[job_id || 0],
+								[user_id || 0]: hours || 0,
+								[task_id || 0]: hours || 0,
+							},
+						},
+					}));
 				}
-
-				const taskOptions = tasksResponse.map((task) => ({
-					label: task.task_name || "",
-					value: task.job_id?.toString() || "0",
-				}));
-
-				setTasks(taskOptions);
-			} catch (error) {
-				console.error("Error fetching jobs and tasks:", error);
+			);
+			// [id || 0]: name || "",
+			// [job_id || 0]: job_name || "",
+			// [project_id || 0]: project_name || "",
+			// [task_id || 0]: task_name || "",
+			// [project_id || 0]: project_name || "",
+			if (!timesheetsResponse) {
+				throw new Error("Error fetching data");
 			}
-		}
+			if (filterOption === "Wolfgang Tasks") {
+				filteredResponse = timesheetsResponse.filter(
+					(entry) => entry.name === "Wolfgang Digital"
+				);
+			} else if (filterOption === "Allocated Tasks") {
+				filteredResponse = timesheetsResponse
+					.filter((entry) => entry.name != "Wolfgang Digital")
+					.filter((timesheet) => !!timesheet.time);
+			} else if (filterOption === "All Tasks") {
+				filteredResponse = timesheetsResponse;
+			}
+			filteredResponse = filteredResponse.filter(({ date }) => {
+				const dateObj = new Date(date || new Date());
+				return (
+					dateObj.getMonth() === selectedWeekStart.getMonth() &&
+					dateObj.getFullYear() === selectedWeekStart.getFullYear()
+				);
+			});
 
-		fetchTasksAndJobs();
-	}, []);
-
-	// Fetch data based on filter option
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				if (filterOption === "All Tasks") {
-					const FilterResponse = await getAllTimesheetRowsDemo();
-
-					if (!FilterResponse) {
-						throw new Error("Error fetching data");
+			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
+				const existingClientEntry = acc.find(
+					(entry) => entry.client_id === curr.client_id
+				);
+				if (existingClientEntry) {
+					const existingProjectEntry = acc.find(
+						(project) => project.project_id === curr.project_id
+					);
+					if (existingProjectEntry) {
+						const existingJobEntry = existingProjectEntry.jobs.find(
+							(job) => job.job_id === curr.job_id
+						);
+						if (existingJobEntry) {
+							const existingTaskEntry = existingJobEntry.tasks.find(
+								(task) => task.task_id === curr.task_id
+							);
+							if (existingTaskEntry) {
+								existingTaskEntry.time += curr.time || 0;
+							} else {
+								existingJobEntry.tasks.push({
+									task_id: curr?.task_id || 0,
+									task_name: curr?.task_name || "",
+									time: curr?.time || 0,
+									hours: curr?.hours || 0,
+								});
+							}
+						} else {
+							existingProjectEntry.jobs.push({
+								job_id: curr?.job_id || 0,
+								job_name: curr?.job_name || "",
+								job_name_id: curr?.job_name_id || 0,
+								tasks: [
+									{
+										task_id: curr?.task_id || 0,
+										task_name: curr?.task_name || "",
+										time: curr?.time || 0,
+										hours: curr?.hours || 0,
+									},
+								],
+							});
+						}
+					} else {
+						existingClientEntry.jobs.push({
+							job_id: curr?.job_id || 0,
+							job_name: curr?.job_name || "",
+							job_name_id: curr?.job_name_id || 0,
+							tasks: [
+								{
+									task_id: curr?.task_id || 0,
+									task_name: curr?.task_name || "",
+									time: curr?.time || 0,
+									hours: curr?.hours || 0,
+								},
+							],
+						});
 					}
-					const jobEntries = FilterResponse.map((entry) => ({
-						job: `${entry.name}: ${entry.job_name}`,
-						task: entry.task_name,
-						hours: "0",
-						date: "01/09/23",
-						nonBillable: false,
-						notes: "",
-					})) as TimeEntry[];
-
-					setTimeEntries(jobEntries);
 				} else {
-					// Handle other filter options here
-					// Clear rows or fetch data as needed for other filter options
-					setTimeEntries([]); // Clear rows for other options
+					acc.push({
+						client_name: curr?.name || "",
+						client_id: curr?.client_id || 0,
+						project_id: curr?.project_id || 0,
+						project_name: curr?.project_name || "",
+						jobs: [
+							{
+								job_id: curr?.job_id || 0,
+								job_name: curr?.job_name || "",
+								job_name_id: curr?.job_name_id || 0,
+								tasks: [
+									{
+										task_id: curr.task_id || 0,
+										task_name: curr.task_name || "",
+										time: curr.time || 0,
+										hours: curr.hours || 0,
+									},
+								],
+							},
+						],
+					});
 				}
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
+				return acc;
+			}, [] as GroupedTimesheets);
+			setFilteredTimesheets(groupedTimesheets);
+			// This code will create an array of objects where each object represents a job,
+			// and within each job object, there is an array of tasks.
+			// If a task with the same task_id already exists for a job, it will update the time for that task;
+			// otherwise, it will create a new task object. If a job with the same job_id already exists,
+			// it will add tasks to the existing job; otherwise, it will create a new job object.
+			// console.log(groupedTimesheets);
+			const clientOptions: ClientOption[] = [];
+			const projectOptions: ProjectOption[] = [];
+			const jobOptions: JobOption[] = [];
+			const taskOptions: TaskOption[] = [];
+
+			groupedTimesheets.forEach((timesheet) => {
+				clientOptions.push({
+					label: timesheet.client_name,
+					value: timesheet.client_id?.toString() || "0",
+					projectLabel: timesheet.project_name || "",
+				});
+				projectOptions.push({
+					label: timesheet.project_name,
+					value: timesheet.project_id?.toString() || "0",
+					// jobLabel: timesheet.jobs[0].job_name || "",
+				});
+				timesheet.jobs.forEach((job) => {
+					jobOptions.push({
+						label: `${job.job_name}`,
+						value: job.job_id?.toString() || "0",
+						taskLabel: job.tasks[0].task_name || "",
+					});
+					taskOptions.push({
+						label: job.tasks[0].task_name || "",
+						value: job.job_id?.toString() || "0",
+					});
+				});
+			});
+
+			setClients(clientOptions);
+			setProjects(projectOptions);
+			setJobs(jobOptions);
+			setTasks(taskOptions);
+		} catch (error) {
+			console.error("Error fetching jobs and tasks: ", error);
 		}
+	}
+	useEffect(() => {
+		fetchTasksAndJobsWithFilter();
+	}, []);
+	useEffect(() => {
+		fetchTasksAndJobsWithFilter();
+	}, [filterOption, selectedWeekStart]);
 
-		fetchData();
-		setPagination((previousPagination) => ({
-			...previousPagination,
-			page: 0,
-		}));
-	}, [filterOption]);
+	useEffect(() => {
+		console.log("Unworked Hours Return:", unworkedHours);
+	}, [unworkedHours]);
 
-	// Function to navigate between weeks
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
 	};
@@ -211,7 +424,7 @@ const Timesheet = () => {
 	};
 
 	// Update the TimeEntries based on the current page and rows per page
-	const displayedTimeEntries = timeEntries.slice(
+	const displayedTimeEntries = filteredTimesheets.slice(
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
@@ -234,6 +447,22 @@ const Timesheet = () => {
 		setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
 	};
 
+	// Function to handle client selection
+	const handleClientSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+		const selectedClientId = event.target.value as string;
+		setSelectedClient(selectedClientId);
+
+		// Filter projects based on the selected client;
+		setSelectedProject("");
+	};
+
+	const handleProjectSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+		const selectedProjectId = event.target.value as string;
+		setSelectedProject(selectedProjectId);
+		// console.log(selectedProjectId);
+		setSelectedJob("");
+	};
+
 	// Function to handle job selection
 	const handleJobSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
 		const selectedJobId = event.target.value as string;
@@ -244,22 +473,66 @@ const Timesheet = () => {
 	};
 
 	useEffect(() => {
-		// async function fetchRate() {
-		// 	const response = await getRatesByJobId(selectedJob);
-		// 	if (response) {
-		// 		setRate(response?.job_rate_value || 0);
-		// 	}
-		// }
-		async function fetchTasks() {
-			if (selectedJob) {
-				const response = await getTaskByJobId(selectedJob);
+		async function fetchProjects() {
+			if (selectedClient) {
+				const response = await getProjectbyClientId(selectedClient);
 				if (response) {
-					console.log(
-						response?.map((task) => ({
-							value: task.task_id.toString(),
-							label: task.task_name || "",
+					// console.log(
+					// 	response?.map((project) => ({
+					// 		value: project.project_id.toString(),
+					// 		label: project.project_name || "",
+					// 	}))
+					// );
+					setProjects(
+						response?.map((project) => ({
+							value: project.project_id.toString(),
+							label: project.project_name || "",
 						}))
 					);
+				}
+			}
+		}
+		fetchProjects();
+	}, [selectedClient]);
+
+	useEffect(() => {
+		async function fetchJobs() {
+			if (selectedProject) {
+				// console.log(selectedProject);
+				const response = await getJobByProjectId(selectedClient, selectedProject);
+
+				if (response) {
+					// console.log(
+					// 	response?.map((job) => ({
+					// 		value: job.job_name_id.toString(),
+					// 		label: job.job_name_name || "",
+					// 	}))
+					// );
+					setJobs(
+						response?.map((job) => ({
+							value: job.job_id?.toString() || "",
+							label: job.job_name || "",
+							taskLabel: job.job_id.toString(),
+						}))
+					);
+				}
+			}
+		}
+		fetchJobs();
+	}, [selectedProject]);
+
+	useEffect(() => {
+		async function fetchTasks() {
+			if (selectedJob) {
+				// console.log(`selectedJob: ${selectedJob}`);
+				const response = await getTaskByJobId(selectedJob);
+				if (response) {
+					// console.log(
+					// 	response?.map((task) => ({
+					// 		value: task.task_id.toString(),
+					// 		label: task.task_name || "",
+					// 	}))
+					// );
 					setTasks(
 						response?.map((task) => ({
 							value: task.task_id.toString(),
@@ -275,16 +548,36 @@ const Timesheet = () => {
 
 	function saveTimeEntry() {
 		const dataToPost = {
+			staffId: 13,
 			notes,
 			timeSpent: Number(timeSpent),
 			jobId: Number(selectedJob),
 			taskId: Number(selectedTask),
-			selectedDate,
+			selectedDate: "2023-10-03",
 			rate: 150,
 		};
 		const response = PostTimeEntry(dataToPost);
-		console.log({ response });
+		console.log(`PostTimeEntry ${response}`);
 	}
+
+	function daysUntilEndOfMonth() {
+		// Get the current date
+		const currentDate = new Date();
+
+		//Get the last day of the current month
+		const lastDayOfMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth() + 1,
+			0
+		);
+
+		// Calculate the difference in days
+		const timeDifference = lastDayOfMonth.getTime() - currentDate.getTime();
+		const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+		return daysDifference;
+	}
+	const classes = useStyles();
 	return (
 		<>
 			<TimesheetContainer>
@@ -307,11 +600,11 @@ const Timesheet = () => {
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
-					<Grid item xs={7}>
+					<Grid item xs={12}>
 						<TimesheetContainer
 							style={{
 								display: "flex",
-								margin: "20px 0px;",
+								margin: "20px 0px",
 							}}
 						>
 							<WeekButton
@@ -329,7 +622,7 @@ const Timesheet = () => {
 							>
 								{format(selectedWeekStart, "MMM d")} -{" "}
 								{format(
-									endOfWeek(addWeeks(selectedWeekStart, 1), {
+									endOfWeek(addWeeks(selectedWeekStart, 0), {
 										weekStartsOn: 1,
 									}),
 									"MMM d"
@@ -377,125 +670,142 @@ const Timesheet = () => {
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
-							<Table>
+							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Job
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Task
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Allocated Hours Used
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Days Left
-										</TableCell>
-										<TableCell
-											style={{
-												borderRight: "1px solid #ccc",
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Completed
-										</TableCell>
-										<TableCell
-											style={{
-												textAlign: "center",
-												fontSize: "smaller", // Reduce the font size
-											}}
-										>
-											Timer
-										</TableCell>
+										<TableHeaderCell>Client</TableHeaderCell>
+										<TableHeaderCell>Project</TableHeaderCell>
+										<TableHeaderCell>Job</TableHeaderCell>
+										<TableHeaderCell>Task</TableHeaderCell>
+										<TableHeaderCell>Used V Allocated</TableHeaderCell>
+										<TableHeaderCell>Overall Hrs Remaining</TableHeaderCell>
+										<TableHeaderCell>Days Left</TableHeaderCell>
+										<TableHeaderCell>Completed</TableHeaderCell>
+										<TableHeaderCell>Timer</TableHeaderCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{displayedTimeEntries.map((entry, index) => (
-										<TableRow key={index}>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													whiteSpace: "pre-line",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												{entry.job.replace(/:/g, ":\n")}
-											</TableCell>
-
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												{entry.task}
-											</TableCell>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												{entry.hours} hrs of AL hrs
-											</TableCell>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												29
-											</TableCell>
-											<TableCell
-												style={{
-													borderRight: "1px solid #ccc",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												<Checkbox />
-											</TableCell>
-											<TableCell
-												style={{
-													cursor: "pointer",
-													textAlign: "center",
-													fontSize: "smaller", // Reduce the font size
-												}}
-											>
-												<MoreTimeIcon onClick={handleAddTimeClick} />
-											</TableCell>
-										</TableRow>
-									))}
+									{
+										displayedTimeEntries.map((entry, index) => {
+											let totalHours: number = 0;
+											let totalSpentHours: number = 0;
+											const multipleJobEntries = entry.jobs.length > 1;
+											if (multipleJobEntries) {
+												entry.jobs.map((job) => {
+													job.tasks.map((task) => {
+														totalHours += task.hours || 0;
+														totalSpentHours += task.time || 0;
+													});
+												});
+											} else {
+												entry.jobs.map((job) => {
+													totalHours = job.tasks.reduce(
+														(acc, curr) => (acc += curr.hours || 0),
+														0
+													);
+													totalSpentHours = job.tasks.reduce(
+														(acc, curr) => acc + curr.time,
+														0
+													);
+												});
+											}
+											const remainingHours = Math.max(0, totalHours - totalSpentHours);
+											const isOpened = openedAccordions[entry?.client_id];
+											return (
+												<React.Fragment key={entry.client_id}>
+													<TableRow
+														sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
+														key={`${index}-1`}
+														onClick={() => {
+															setOpenedAccordions({
+																...openedAccordions,
+																[entry.client_id]: !isOpened,
+															});
+														}}
+													>
+														<TableRowCell sx={{ fontWeight: "600" }}>
+															{entry.client_name}
+														</TableRowCell>
+														{/* <TableRowCell colSpan={4}></TableRowCell> */}
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell sx={{ fontWeight: "600" }}>
+															{remainingHours}
+														</TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+														<TableRowCell></TableRowCell>
+													</TableRow>
+													<>
+														{entry.jobs.map((job) => (
+															<>
+																{isOpened && (
+																	<TableRow key={`${index}-2`}>
+																		<>
+																			<TableRowCell></TableRowCell>
+																			<TableRowCell>{entry.project_name}</TableRowCell>
+																			<TableRowCell>
+																				<TableRow key={`${index - 3}`}>
+																					<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
+																						{job.job_name}
+																					</div>
+																				</TableRow>
+																			</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																						{task.task_name}
+																					</div>
+																				))}
+																			</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div
+																						style={{
+																							whiteSpace: "nowrap",
+																							color: (task.hours || 0) < task.time ? "red" : "green",
+																						}}
+																						key={task.task_id}
+																					>
+																						{task.time} hrs of {task.hours}
+																					</div>
+																				))}
+																			</TableRowCell>
+																			<TableRowCell></TableRowCell>
+																			<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div key={task.task_id}>
+																						{/* <Checkbox size="small" /> */}
+																						<input type="checkbox" />
+																					</div>
+																				))}
+																			</TableRowCell>
+																			<TableRowCell>
+																				{job.tasks.map((task) => (
+																					<div key={task.task_id}>
+																						<MoreTimeIcon
+																							fontSize="small"
+																							onClick={handleAddTimeClick}
+																						/>
+																					</div>
+																				))}
+																			</TableRowCell>
+																		</>
+																	</TableRow>
+																)}
+																{/* isOpen */}
+															</>
+														))}
+													</>
+												</React.Fragment>
+											);
+											// return
+										})
+										// displayedTimeEntries.map
+									}
 								</TableBody>
 							</Table>
 						</TableContainer>
@@ -504,7 +814,7 @@ const Timesheet = () => {
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
 							component="div"
-							count={timeEntries.length}
+							count={filteredTimesheets.length}
 							rowsPerPage={rowsPerPage}
 							page={page}
 							onPageChange={handleChangePage}
@@ -513,10 +823,10 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<Paper
 							variant="outlined"
-							style={{ textAlign: "center", padding: "80px" }}
+							style={{ textAlign: "center", padding: "30px" }}
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>
@@ -536,9 +846,9 @@ const Timesheet = () => {
 
 									<TextField
 										select
-										label="Select Job"
-										value={selectedJob}
-										onChange={handleJobSelect}
+										label="Select Client"
+										value={selectedClient}
+										onChange={handleClientSelect}
 										style={{
 											width: "100%",
 											marginBottom: "20px",
@@ -546,12 +856,48 @@ const Timesheet = () => {
 										}}
 										required
 									>
-										{jobs.map((job) => (
-											<MenuItem key={job.value} value={job.value}>
-												{job.label}
+										{clients.map((client) => (
+											<MenuItem key={client.value} value={client.value}>
+												{client.label}
 											</MenuItem>
 										))}
 									</TextField>
+									{selectedClient && (
+										<TextField
+											select
+											label="Select Project"
+											value={selectedProject}
+											onChange={handleProjectSelect}
+											style={{
+												width: "100%",
+												marginBottom: "20px",
+												textAlign: "left",
+											}}
+											required
+										>
+											{projects.map((project) => (
+												<MenuItem key={project.value} value={project.value}>
+													{project.label}
+												</MenuItem>
+											))}
+										</TextField>
+									)}
+									{selectedProject && (
+										<TextField
+											select
+											label="Select Job"
+											value={selectedJob}
+											onChange={handleJobSelect}
+											style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
+											required
+										>
+											{jobs.map((job) => (
+												<MenuItem key={job.value} value={job.value}>
+													{job.label}
+												</MenuItem>
+											))}
+										</TextField>
+									)}
 									{selectedJob && (
 										<TextField
 											select

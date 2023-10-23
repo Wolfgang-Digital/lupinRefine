@@ -67,10 +67,10 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 					<form>
 						{userInfoFields.map((field) => (
 							<TextField
-								key={field.field}
+								key={field?.field}
 								margin="normal"
 								fullWidth
-								label={field.label}
+								label={field?.label}
 								value={user?.[field?.field] || ""}
 								// Add onChange or other logic
 							/>
@@ -138,7 +138,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 						<FormControlLabel control={<Checkbox />} label="Admin" />
 						<FormControlLabel control={<Checkbox />} label="Finance Admin" />
 						<FormControlLabel control={<Checkbox />} label="Team Lead" />
-						<FormControlLabel control={<Checkbox />} label="Basic User" />
+						<FormControlLabel control={<Checkbox />} label="User" />
 					</div>
 					{/* Add more checkboxes as needed */}
 
