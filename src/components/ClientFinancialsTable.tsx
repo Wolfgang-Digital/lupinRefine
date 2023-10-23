@@ -1,13 +1,5 @@
 import React from "react";
 import { useEffect, useState } from "react";
-// import {
-// 	Accordion,
-// 	AccordionDetails,
-// 	AccordionSummary,
-// 	Paper,
-// 	Typography,
-// } from "@mui/material";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
 	DataGrid,
 	GridToolbarContainer,
@@ -19,45 +11,10 @@ import {
 } from "@api/financialTable";
 import { TimesheetRowsView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
+
 type RowData = TimesheetRowsView & {
 	month: number;
-	// date: string;
-	// value: number;
-	// budgetToInvoice: number;
-	// invoiced: number;
-	// balRemaining: number;
-	// balanced: boolean;
 };
-
-// function createData(
-// 	id: number,
-// 	month: string,
-// 	job: string,
-// 	task: string,
-// 	staff: string,
-// 	hours: number,
-// 	rate: number,
-// 	value: number,
-// 	budgetToInvoice: number,
-// 	invoiced: number,
-// 	balRemaining: number,
-// 	balanced: boolean
-// ): RowData {
-// 	return {
-// 		id,
-// 		month,
-// 		job,
-// 		task,
-// 		staff,
-// 		hours,
-// 		rate,
-// 		value,
-// 		budgetToInvoice,
-// 		invoiced,
-// 		balRemaining,
-// 		balanced,
-// 	};
-// }
 
 const columns = [
 	{ field: "job_id", headerName: "Job ID", width: 100 },
@@ -67,10 +24,6 @@ const columns = [
 	{ field: "time", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
 	{ field: "value", headerName: "Value", width: 100 },
-	// { field: "budgetToInvoice", headerName: "Budget to Invoice", width: 150 },
-	// { field: "invoiced", headerName: "Invoiced", width: 120 },
-	// { field: "balRemaining", headerName: "Bal Remaining", width: 150 },
-	// { field: "balanced", headerName: "Balanced", width: 120, type: "boolean" },
 ];
 
 function CustomToolbar() {
@@ -88,7 +41,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		TimesheetRowsView[]
 	>([]);
 
-	const [selectedMonth, setSelectedMonth] = useState(7);
+	const [selectedMonth, setSelectedMonth] = useState(9);
 
 	function fetchGroupedData(
 		financialTable: TimesheetRowsView[],
@@ -131,12 +84,6 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 						task: item.task_name,
 						staff: item.user_name,
 						hours: item.time,
-						// rate: item.rate,
-						// value: 0, // Add to table
-						// budgetToInvoice: 0, // Add to table
-						// invoiced: 0, // Add to table
-						// balRemaining: 0, // Add to table
-						// balanced: false, // Add to table
 					})
 				);
 				setFetchedRows(mappedData);
@@ -163,7 +110,23 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 		}
 		groupedRows[row.month].push(row);
 	});
+	const monthNames: string[] = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
 
+	const monthName = monthNames[selectedMonth];
+	// console.log(selectedMonth);
 	return (
 		<div
 			style={{
@@ -183,7 +146,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 				<div
 					style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
 				>
-					selectedMonth: {selectedMonth}
+					{monthName}
 				</div>
 				<WeekButton
 					onClick={() => {

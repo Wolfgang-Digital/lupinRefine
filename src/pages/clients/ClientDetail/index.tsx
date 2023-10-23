@@ -40,10 +40,10 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 	};
 
 	const clientInfoFields: { label: string; field: keyof ClientOverview }[] = [
-		{ label: "name", field: "name" },
-		{ label: "legal_name", field: "legal_name" },
-		{ label: "tier", field: "tier_name" },
-		{ label: "Currency", field: "address" },
+		{ label: "Name", field: "name" },
+		{ label: "Legal Name", field: "legal_name" },
+		{ label: "Tier", field: "tier_name" },
+		{ label: "Address", field: "address" },
 		{ label: "Team Lead", field: "user_name" },
 	];
 

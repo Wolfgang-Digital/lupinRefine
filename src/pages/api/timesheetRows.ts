@@ -1,16 +1,19 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
 import {
-	AllTimesheetRowsView,
+	JobsDropdownViewDemo,
 	TimesheetRowsView,
-	TimesheetRowsTest,
+	TimesheetRowsViewV6,
 } from "types";
+
+export type TimesheetData = JobsDropdownViewDemo;
+export type TimesheetDataDemo = JobsDropdownViewDemo;
 
 export const getAllTimesheetRows = async (
 	userID: number
 ): Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v6")
+			.from("timesheet_rows_view_v5")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })
@@ -28,23 +31,16 @@ export const getAllTimesheetRows = async (
 		console.error("Error fetching timesheet rows: ", error);
 	}
 };
-
-export const getAllTimesheetRowsFinancial = async ({
-	projectId,
-	clientId,
-}: {
-	projectId: number;
-	clientId: number;
-}): Promise<AllTimesheetRowsView[] | undefined> => {
+export const getAllTimesheetRowsV2 = async (): Promise<
+	TimesheetRowsViewV6[] | undefined
+> => {
 	try {
 		const { data, error } = (await supabase
-			.from("all_timesheet_rows_view")
+			.from("timesheet_rows_view_v6")
 			.select("*")
 			.order("name", { ascending: true })
-			.order("job_id", { ascending: true })
-			.eq("client_id", clientId)
-			.eq("project_id", projectId)) as unknown as {
-			data: AllTimesheetRowsView[];
+			.order("job_id", { ascending: true })) as unknown as {
+			data: TimesheetRowsViewV6[];
 			error: PostgrestError;
 		};
 
@@ -58,15 +54,15 @@ export const getAllTimesheetRowsFinancial = async ({
 	}
 };
 
-export const getAllTimesheetRowsV2 = async (): Promise<
-	TimesheetRowsTest[] | undefined
+export const getAllTimesheetRowsDemo = async (): Promise<
+	TimesheetDataDemo[] | undefined
 > => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_test")
+			.from("timesheet_rows_demo")
 			.select("*")
 			.order("job_id", { ascending: true })) as unknown as {
-			data: TimesheetRowsView[];
+			data: TimesheetDataDemo[];
 			error: PostgrestError;
 		};
 
