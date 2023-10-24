@@ -21,9 +21,7 @@ const columns = [
 	"Staff",
 	{
 		text: "Hours",
-		style: {
-			borderLeft: "1px solid black",
-		},
+		style: {},
 	},
 	{
 		text: "Rate",
@@ -31,15 +29,11 @@ const columns = [
 	},
 	{
 		text: "Value",
-		style: {
-			borderRight: "1px solid black",
-		},
+		style: {},
 	},
 	{
 		text: "Hours",
-		style: {
-			borderLeft: "1px solid black",
-		},
+		style: {},
 	},
 	{
 		text: "Rate",
@@ -47,9 +41,7 @@ const columns = [
 	},
 	{
 		text: "Value",
-		style: {
-			borderRight: "1px solid black",
-		},
+		style: {},
 	},
 	"Fee b/f",
 	"Current invoice",
@@ -120,6 +112,7 @@ const ShortTableCell = styled(TableCell)`
 	text-overflow: ellipsis;
 	max-width: 30ch; /* Limit text to 15 characters */
 `;
+
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
 		<TaskEntryCell key={i + "empty"}></TaskEntryCell>
@@ -307,19 +300,34 @@ function JobsFinancialTable({
 				<h3 style={{ paddingLeft: "5%" }}>+ 5% YoY | + 0% MoM</h3>
 			</div>
 
-			<TableContainer component={Paper}>
+			<TableContainer
+				component={Paper}
+				style={{ maxHeight: "600px", overflowY: "scroll" }}
+			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
-					<TableHead>
+					<TableHead
+						style={{
+							position: "sticky",
+							top: 0,
+							background: "white",
+							zIndex: 2,
+						}}
+					>
 						{/* Allocated Heading Row */}
 						<TableRow>
-							<NoPadding colSpan={4} style={{ borderBottom: "none" }}></NoPadding>
+							<NoPadding
+								colSpan={4}
+								style={{ borderBottom: "none", backgroundColor: "white" }}
+							></NoPadding>
 							<NoPadding
 								colSpan={3}
 								style={{
-									paddingTop: "20px",
-									paddingBottom: "20px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
 									paddingLeft: 0,
-									borderBottom: "1px solid black",
+									borderBottom: 0,
+
+									backgroundColor: "white",
 								}}
 							>
 								Allocated
@@ -327,15 +335,35 @@ function JobsFinancialTable({
 							<NoPadding
 								colSpan={3}
 								style={{
-									paddingTop: "20px",
-									paddingBottom: "20px",
+									paddingTop: "10px",
+									paddingBottom: "10px",
 									paddingLeft: 0,
-									borderBottom: "1px solid black",
+									borderBottom: 0,
+									backgroundColor: "white",
 								}}
 							>
 								Actuals
 							</NoPadding>
+							<NoPadding
+								colSpan={3}
+								style={{
+									paddingTop: "10px",
+									paddingLeft: 0,
+									borderBottom: 0,
+									backgroundColor: "white",
+								}}
+							></NoPadding>
+							<NoPadding
+								colSpan={4}
+								style={{
+									paddingTop: "10px",
+									paddingLeft: 0,
+									borderBottom: 0,
+									backgroundColor: "white",
+								}}
+							></NoPadding>
 						</TableRow>
+
 						{/* Column Headers */}
 						<TableRow>
 							{columns.map((column, columnIndex) => (
@@ -343,6 +371,9 @@ function JobsFinancialTable({
 									key={columnIndex}
 									style={{
 										width: "6%",
+										paddingLeft: "8px",
+										paddingRight: "8px",
+										fontSize: "12px",
 										textAlign: "center",
 										...((typeof column === "object" && column.style) || {}),
 									}}
