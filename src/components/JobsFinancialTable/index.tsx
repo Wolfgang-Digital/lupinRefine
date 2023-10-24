@@ -22,37 +22,33 @@ const columns = [
 	{
 		text: "Hours",
 		style: {
-			backgroundColor: "#C3DDBC",
+			borderLeft: "1px solid black",
 		},
 	},
 	{
 		text: "Rate",
-		style: {
-			backgroundColor: "#C3DDBC",
-		},
+		style: {},
 	},
 	{
 		text: "Value",
 		style: {
-			backgroundColor: "#C3DDBC",
+			borderRight: "1px solid black",
 		},
 	},
 	{
 		text: "Hours",
 		style: {
-			backgroundColor: "#BEB3D4",
+			borderLeft: "1px solid black",
 		},
 	},
 	{
 		text: "Rate",
-		style: {
-			backgroundColor: "#BEB3D4",
-		},
+		style: {},
 	},
 	{
 		text: "Value",
 		style: {
-			backgroundColor: "#BEB3D4",
+			borderRight: "1px solid black",
 		},
 	},
 	"Fee b/f",
@@ -82,8 +78,8 @@ const monthNames = [
 const NoPadding = styled(TableCell)({
 	paddingLeft: 0,
 	paddingRight: 0,
-	paddingTop: 5,
-	paddingBottom: 5,
+	paddingTop: 0,
+	paddingBottom: 0,
 	textAlign: "center",
 });
 
@@ -91,12 +87,39 @@ const TaskEntryCell = styled(TableCell)({
 	textAlign: "center",
 	width: "6%",
 	maxWidth: "6%",
-	padding: 0,
+	padding: 10,
 	borderTop: "0.8px solid", // Add top border for all cells
 	borderBottom: "0.8px solid", // Add bottom border for all cells
 	fontSize: "12px",
 });
 
+const ShortTaskEntryCell = styled(TableCell)`
+	text-align: center;
+	width: 6%;
+	max-width: 6%;
+	padding: 10px;
+	border-top: 0.8px solid;
+	border-bottom: 0.8px solid;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 15ch; /* Limit text to 15 characters */
+`;
+
+const ShortTableCell = styled(TableCell)`
+	text-align: center;
+	width: 6%;
+	max-width: 6%;
+	padding: 10px;
+	border-top: 0.8px solid;
+	border-bottom: 0.8px solid;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 30ch; /* Limit text to 15 characters */
+`;
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
 		<TaskEntryCell key={i + "empty"}></TaskEntryCell>
@@ -107,10 +130,8 @@ const CreateRowOfTableCells = (
 	index: number,
 	total = 17
 ): React.ReactNode => {
-	// return total amount of TaskEntryCells
-	// create an array of TaskEntryCells
 	return [...Array(total)].map((_, i) => (
-		<TaskEntryCell key={i}>{index === i && content}</TaskEntryCell>
+		<ShortTableCell key={i}>{index === i && content}</ShortTableCell>
 	));
 };
 
@@ -222,6 +243,7 @@ function JobsFinancialTable({
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
+
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -294,9 +316,10 @@ function JobsFinancialTable({
 							<NoPadding
 								colSpan={3}
 								style={{
-									backgroundColor: "#C3DDBC",
+									paddingTop: "20px",
+									paddingBottom: "20px",
 									paddingLeft: 0,
-									borderBottom: "none",
+									borderBottom: "1px solid black",
 								}}
 							>
 								Allocated
@@ -304,9 +327,10 @@ function JobsFinancialTable({
 							<NoPadding
 								colSpan={3}
 								style={{
-									backgroundColor: "#BEB3D4",
+									paddingTop: "20px",
+									paddingBottom: "20px",
 									paddingLeft: 0,
-									borderBottom: "none",
+									borderBottom: "1px solid black",
 								}}
 							>
 								Actuals
@@ -342,16 +366,25 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "green" }}
-										onClick={() => setSelectedMonthIndex(monthIndex)}
+										style={{
+											background: selectedMonthIndex === monthIndex ? "#aa96ce" : "",
+											cursor: "pointer",
+											color: selectedMonthIndex === monthIndex ? "white" : "black",
+										}}
+										onClick={() =>
+											setSelectedMonthIndex((prevIndex) =>
+												prevIndex === monthIndex ? -1 : monthIndex
+											)
+										}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}{" "}
 									</TableRow>
+
 									{monthIndex === selectedMonthIndex &&
 										jobs.map((job) => (
 											<>
 												<>
-													<TableRow>
+													<TableRow style={{ backgroundColor: "#E5E5E8" }}>
 														{CreateRowOfTableCells(job.job_name as string, 1, 17)}
 													</TableRow>
 												</>
@@ -367,18 +400,35 @@ function JobsFinancialTable({
 														{Number.isInteger(parseInt(key)) &&
 															Object.entries(task).map(
 																([taskKey, { time, hours, user_name, rate }]) => (
-																	<TableRow>
+																	<TableRow style={{ borderBottom: "0.5px solid black" }}>
 																		{CreateEmptyCells(3)}
-																		<TaskEntryCell>{user_name}</TaskEntryCell>
+																		<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
+
 																		<>
 																			{Number.isInteger(parseInt(taskKey)) && (
 																				<>
-																					<TaskEntryCell>{hours}</TaskEntryCell>
-																					<TaskEntryCell>{rate}</TaskEntryCell>
-																					<TaskEntryCell>{hours * rate}</TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{hours}
+																					</TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{rate}
+																					</TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{hours * rate}
+																					</TaskEntryCell>
 																					<TaskEntryCell>{time}</TaskEntryCell>
-																					<TaskEntryCell>{rate}</TaskEntryCell>
-																					<TaskEntryCell>{time * rate}</TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{rate}
+																					</TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{hours * rate}
+																					</TaskEntryCell>
+																					<TaskEntryCell></TaskEntryCell>
+																					<TaskEntryCell style={{ border: "1px solid black" }}>
+																						{hours * rate}
+																					</TaskEntryCell>
+																					<TaskEntryCell></TaskEntryCell>
+																					<TaskEntryCell></TaskEntryCell>
 																				</>
 																			)}
 																		</>
@@ -393,7 +443,7 @@ function JobsFinancialTable({
 							);
 						})}
 					</TableBody>
-				</Table>
+				</Table>{" "}
 			</TableContainer>
 		</div>
 	);
