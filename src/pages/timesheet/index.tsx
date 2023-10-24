@@ -25,10 +25,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DataGrid } from "@mui/x-data-grid";
-import {
-	// getAllTimesheetRows,
-	getAllTimesheetRowsV2,
-} from "@pages/api/timesheetRows";
+import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
 // import { getUserAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";

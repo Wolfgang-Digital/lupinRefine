@@ -226,18 +226,23 @@ function JobsFinancialTable({
 		async function fetchData() {
 			try {
 				// do something for 12 times
-				let response = await getAllTimesheetRows();
-				if (response) {
-					response = response.filter(({ client_id, project_id }) => {
-						return client_id === clientId && project_id === projectId;
-					});
+				const unfilteredResponse: AllTimesheetRowsView[] =
+					(await getAllTimesheetRows()) as unknown as AllTimesheetRowsView[];
+				let filteredResponse: AllTimesheetRowsView[] = [];
+				if (unfilteredResponse) {
+					filteredResponse = unfilteredResponse.filter(
+						({ client_id, project_id }) => {
+							return client_id === clientId && project_id === projectId;
+						}
+					);
 				}
+
 				// create empty array with 12 elements, each element is an empty array
 				const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
 					() => []
 				);
 				// loop through each timesheet row
-				response?.forEach((row) => {
+				filteredResponse?.forEach((row) => {
 					// get the month of the timesheet row
 					if (row.year === new Date().getFullYear()) {
 						ungroupedMonthData[(row.month || 0) - 1] = [
@@ -251,7 +256,7 @@ function JobsFinancialTable({
 					console.log({ month });
 					groupedData[index] = groupData(month);
 				});
-				console.log({ groupedData });
+				console.log({ ungroupedMonthData, groupedData });
 				setMonthData(groupedData);
 			} catch (error) {
 				console.error(error);
@@ -331,7 +336,7 @@ function JobsFinancialTable({
 					<TableBody>
 						{monthData.map((data: Accumulator, monthIndex: number) => {
 							const jobs = Object.values(data);
-							console.log({ monthIndex, selectedMonthIndex, data });
+							console.log({ jobs });
 							if (monthIndex !== selectedMonthIndex)
 								return (
 									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
@@ -355,38 +360,46 @@ function JobsFinancialTable({
 														{CreateRowOfTableCells(job.job_name as string, 1, 17)}
 													</TableRow>
 												</>
-												{Object.entries(job).map(([key, task]) => (
-													<>
-														<TableRow>
-															{CreateRowOfTableCells(
-																(task as TaskEntry)?.task_name as string,
-																2,
-																17
+												{Object.entries(job).map(([key, task]) => {
+													return (
+														<>
+															{Number.isInteger(parseInt(key)) && (
+																<TableRow>
+																	{CreateRowOfTableCells(
+																		(task as TaskEntry)?.task_name as string,
+																		2,
+																		17
+																	)}
+																</TableRow>
 															)}
-														</TableRow>
-														{Number.isInteger(parseInt(key)) &&
-															Object.entries(task).map(
-																([taskKey, { time, hours, user_name, rate }]) => (
-																	<TableRow>
-																		{CreateEmptyCells(3)}
-																		<TaskEntryCell>{user_name}</TaskEntryCell>
-																		<>
-																			{Number.isInteger(parseInt(taskKey)) && (
-																				<>
-																					<TaskEntryCell>{hours}</TaskEntryCell>
-																					<TaskEntryCell>{rate}</TaskEntryCell>
-																					<TaskEntryCell>{hours * rate}</TaskEntryCell>
-																					<TaskEntryCell>{time}</TaskEntryCell>
-																					<TaskEntryCell>{rate}</TaskEntryCell>
-																					<TaskEntryCell>{time * rate}</TaskEntryCell>
-																				</>
-																			)}
-																		</>
-																	</TableRow>
-																)
-															)}
-													</>
-												))}
+															{Number.isInteger(parseInt(key)) &&
+																Object.entries(task).map(
+																	([taskKey, { time, hours, user_name, rate }]) => {
+																		return (
+																			Number.isInteger(parseInt(taskKey)) && (
+																				<TableRow>
+																					{CreateEmptyCells(3)}
+																					<TaskEntryCell>{user_name}</TaskEntryCell>
+																					<>
+																						{Number.isInteger(parseInt(taskKey)) && (
+																							<>
+																								<TaskEntryCell>{hours}</TaskEntryCell>
+																								<TaskEntryCell>{rate}</TaskEntryCell>
+																								<TaskEntryCell>{hours * rate}</TaskEntryCell>
+																								<TaskEntryCell>{time}</TaskEntryCell>
+																								<TaskEntryCell>{rate}</TaskEntryCell>
+																								<TaskEntryCell>{time * rate}</TaskEntryCell>
+																							</>
+																						)}
+																					</>
+																				</TableRow>
+																			)
+																		);
+																	}
+																)}
+														</>
+													);
+												})}
 											</>
 										))}
 								</>
