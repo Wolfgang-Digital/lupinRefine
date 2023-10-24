@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { ClientOption, TaskOption, JobOption, ProjectOption } from "./index";
-import { TimesheetRowsView } from "types";
 
 export const DayDialog = ({
 	showForm,

@@ -105,6 +105,7 @@ const Timesheet = () => {
 		[key: number]: boolean;
 	}>({});
 	const [showForm, setShowForm] = useState(false);
+	// TODO: Create one state for each selected entity e.g: selectedEntities: { client: "", project: "", job: "", task: ""}
 	const [selectedClient, setSelectedClient] = useState("");
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
@@ -113,6 +114,7 @@ const Timesheet = () => {
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
+	// TODO: Create one state for each entity list here, eg: entities: { clients: [], projects: [], jobs: [], tasks: []}
 	const [clients, setClients] = useState<ClientOption[]>([]);
 	const [projects, setProjects] = useState<ProjectOption[]>([]);
 	const [jobs, setJobs] = useState<JobOption[]>([]);
@@ -179,6 +181,7 @@ const Timesheet = () => {
 			const groupedTimesheets = groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
 
+			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
 			const projectOptions: ProjectOption[] = [];
 			const jobOptions: JobOption[] = [];
