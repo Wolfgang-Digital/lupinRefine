@@ -18,13 +18,8 @@ import {
 	InputLabel,
 	Select,
 	TablePagination,
-	DialogContent,
-	Dialog,
-	AppBar,
-	Toolbar,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { DataGrid } from "@mui/x-data-grid";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 // get allocated hours for user per month
@@ -42,6 +37,8 @@ import { PostTimeEntry } from "@pages/api/timesheet";
 import styled from "styled-components";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
+import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import { DayDialog } from "./DayDialog";
 
 const useStyles = makeStyles({
 	table: {
@@ -67,7 +64,7 @@ const TableRowCell = styled(TableCell)`
 	font-size: smaller;
 `;
 
-type TimeEntry = {
+export type TimeEntry = {
 	task: string;
 	job: string;
 	hours: string;
@@ -75,50 +72,27 @@ type TimeEntry = {
 	notes: string;
 };
 
-type ClientOption = {
+export type ClientOption = {
 	label: string;
 	value: string;
 	projectLabel: string;
 };
-type ProjectOption = {
+export type ProjectOption = {
 	label: string;
 	value: string;
 	// jobLabel: string;
 };
 
-type JobOption = {
+export type JobOption = {
 	label: string;
 	value: string;
 	taskLabel: string;
 };
 
-type TaskOption = {
+export type TaskOption = {
 	label: string;
 	value: string;
 };
-
-type Task = {
-	task_id: number;
-	task_name: string;
-	time: number;
-	hours?: number;
-};
-
-type Job = {
-	job_id: number;
-	job_name: string;
-	job_name_id: number;
-	tasks: Task[];
-};
-type Client = {
-	client_id: number;
-	client_name: string;
-	project_id: number;
-	project_name: string;
-	jobs: Job[];
-};
-
-type GroupedTimesheets = Client[];
 
 // Create the Timesheet component
 const Timesheet = () => {
@@ -180,11 +154,6 @@ const Timesheet = () => {
 
 			let filteredResponse: typeof timesheetsResponse = [];
 
-			// [id || 0]: name || "",
-			// [job_id || 0]: job_name || "",
-			// [project_id || 0]: project_name || "",
-			// [task_id || 0]: task_name || "",
-			// [project_id || 0]: project_name || "",
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -207,94 +176,9 @@ const Timesheet = () => {
 				);
 			});
 
-			const groupedTimesheets = filteredResponse.reduce((acc, curr) => {
-				const existingClientEntry = acc.find(
-					(entry) => entry.client_id === curr.client_id
-				);
-				if (existingClientEntry) {
-					const existingProjectEntry = acc.find(
-						(project) => project.project_id === curr.project_id
-					);
-					if (existingProjectEntry) {
-						const existingJobEntry = existingProjectEntry.jobs.find(
-							(job) => job.job_id === curr.job_id
-						);
-						if (existingJobEntry) {
-							const existingTaskEntry = existingJobEntry.tasks.find(
-								(task) => task.task_id === curr.task_id
-							);
-							if (existingTaskEntry) {
-								existingTaskEntry.time += curr.time || 0;
-							} else {
-								existingJobEntry.tasks.push({
-									task_id: curr?.task_id || 0,
-									task_name: curr?.task_name || "",
-									time: curr?.time || 0,
-									hours: curr?.hours || 0,
-								});
-							}
-						} else {
-							existingProjectEntry.jobs.push({
-								job_id: curr?.job_id || 0,
-								job_name: curr?.job_name || "",
-								job_name_id: curr?.job_name_id || 0,
-								tasks: [
-									{
-										task_id: curr?.task_id || 0,
-										task_name: curr?.task_name || "",
-										time: curr?.time || 0,
-										hours: curr?.hours || 0,
-									},
-								],
-							});
-						}
-					} else {
-						existingClientEntry.jobs.push({
-							job_id: curr?.job_id || 0,
-							job_name: curr?.job_name || "",
-							job_name_id: curr?.job_name_id || 0,
-							tasks: [
-								{
-									task_id: curr?.task_id || 0,
-									task_name: curr?.task_name || "",
-									time: curr?.time || 0,
-									hours: curr?.hours || 0,
-								},
-							],
-						});
-					}
-				} else {
-					acc.push({
-						client_name: curr?.name || "",
-						client_id: curr?.client_id || 0,
-						project_id: curr?.project_id || 0,
-						project_name: curr?.project_name || "",
-						jobs: [
-							{
-								job_id: curr?.job_id || 0,
-								job_name: curr?.job_name || "",
-								job_name_id: curr?.job_name_id || 0,
-								tasks: [
-									{
-										task_id: curr.task_id || 0,
-										task_name: curr.task_name || "",
-										time: curr.time || 0,
-										hours: curr.hours || 0,
-									},
-								],
-							},
-						],
-					});
-				}
-				return acc;
-			}, [] as GroupedTimesheets);
+			const groupedTimesheets = groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
-			// This code will create an array of objects where each object represents a job,
-			// and within each job object, there is an array of tasks.
-			// If a task with the same task_id already exists for a job, it will update the time for that task;
-			// otherwise, it will create a new task object. If a job with the same job_id already exists,
-			// it will add tasks to the existing job; otherwise, it will create a new job object.
-			// console.log(groupedTimesheets);
+
 			const clientOptions: ClientOption[] = [];
 			const projectOptions: ProjectOption[] = [];
 			const jobOptions: JobOption[] = [];
@@ -309,7 +193,6 @@ const Timesheet = () => {
 				projectOptions.push({
 					label: timesheet.project_name,
 					value: timesheet.project_id?.toString() || "0",
-					// jobLabel: timesheet.jobs[0].job_name || "",
 				});
 				timesheet.jobs.forEach((job) => {
 					jobOptions.push({
@@ -516,70 +399,7 @@ const Timesheet = () => {
 		return daysDifference;
 	}
 	const classes = useStyles();
-	const rows = [
-		{
-			id: 1,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Implentation",
-			task: "Opt",
-			hoursLogged: "2hrs",
-			hoursLeft: "2hrs",
-		},
-		{
-			id: 2,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Monthly Management",
-			task: "Reporting",
-			hoursLogged: "2hrs",
-			hoursLeft: "1hrs",
-		},
 
-		{
-			id: 3,
-			client: "Allcare Management Services Ltd",
-			project: "Google Ads",
-			job: "Implementation",
-			task: "Opt",
-			hoursLogged: "1hrs",
-			hoursLeft: "2hrs",
-		},
-		// Add more rows with three columns as needed
-	];
-
-	const columns = [
-		{
-			field: "client",
-			headerName: "Client",
-			flex: 0.7,
-		},
-		{
-			field: "project",
-			headerName: "Project",
-			flex: 0.5,
-		},
-		{
-			field: "job",
-			headerName: "Job",
-			flex: 0.5,
-		},
-		{
-			field: "task",
-			headerName: "Task",
-			flex: 0.5,
-		},
-		{
-			field: "hoursLogged",
-			headerName: "Used",
-			flex: 0.3,
-		},
-		{
-			field: "hoursLeft",
-			headerName: "Left",
-			flex: 0.3,
-		},
-	];
 	return (
 		<>
 			<TimesheetContainer>
@@ -986,196 +806,29 @@ const Timesheet = () => {
 							)}
 						</Paper>
 					</Grid>
-					<Dialog
-						open={showForm}
-						onClose={() => setShowForm(false)}
-						fullScreen
-						maxWidth="lg"
-						style={{
-							marginLeft: "15%",
-						}}
-					>
-						<AppBar sx={{ position: "relative" }}>
-							<Toolbar>
-								<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-									{selectedDate}
-								</Typography>
-								<Button autoFocus color="inherit">
-									Save
-								</Button>
-							</Toolbar>
-						</AppBar>
-
-						<DialogContent>
-							<Grid
-								container
-								spacing={2}
-								style={{ paddingTop: "10px", paddingBottom: "90px" }}
-							>
-								<Grid item xs={12}>
-									<Typography
-										style={{
-											paddingBottom: "20px",
-											fontWeight: "bold",
-											fontSize: "20px",
-										}}
-									>
-										Day Overview:
-									</Typography>
-									<DataGrid
-										autoHeight
-										rows={rows}
-										columns={columns}
-										style={{ display: "flex", justifyContent: "center" }}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<Typography
-										style={{
-											paddingBottom: "20px",
-											fontWeight: "bold",
-											fontSize: "20px",
-										}}
-									>
-										Log Time:
-									</Typography>
-									<form onSubmit={handleFormSubmit}>
-										<TextField
-											label="Date"
-											value={selectedDate}
-											InputProps={{
-												readOnly: true,
-											}}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										/>
-
-										<TextField
-											select
-											label="Select Client"
-											value={selectedClient}
-											onChange={handleClientSelect}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										>
-											{clients.map((client) => (
-												<MenuItem key={client.value} value={client.value}>
-													{client.label}
-												</MenuItem>
-											))}
-										</TextField>
-										{selectedClient && (
-											<TextField
-												select
-												label="Select Project"
-												value={selectedProject}
-												onChange={handleProjectSelect}
-												style={{
-													width: "100%",
-													marginBottom: "20px",
-													textAlign: "left",
-												}}
-												required
-											>
-												{projects.map((project) => (
-													<MenuItem key={project.value} value={project.value}>
-														{project.label}
-													</MenuItem>
-												))}
-											</TextField>
-										)}
-										{selectedProject && (
-											<TextField
-												select
-												label="Select Job"
-												value={selectedJob}
-												onChange={handleJobSelect}
-												style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
-												required
-											>
-												{jobs.map((job) => (
-													<MenuItem key={job.value} value={job.value}>
-														{job.label}
-													</MenuItem>
-												))}
-											</TextField>
-										)}
-										{selectedJob && (
-											<TextField
-												select
-												label="Select Task"
-												value={selectedTask}
-												onChange={(event) => setSelectedTask(event.target.value as string)}
-												style={{
-													width: "100%",
-													marginBottom: "20px",
-													textAlign: "left",
-												}}
-												required
-											>
-												{tasks.map((task) => (
-													<MenuItem key={task.value} value={task.value}>
-														{task.label}
-													</MenuItem>
-												))}
-											</TextField>
-										)}
-										{selectedTask && (
-											<TextField
-												type="number"
-												label="Time Spent (in hours)"
-												value={timeSpent}
-												onChange={(event) => {
-													if (Number(event.target.value) >= 0) {
-														setTimeSpent(event.target.value);
-													}
-												}}
-												style={{
-													width: "100%",
-													marginBottom: "20px",
-													textAlign: "left",
-												}}
-												required
-											/>
-										)}
-										{selectedTask && timeSpent && (
-											<TextField
-												label="Notes"
-												value={notes}
-												onChange={(event) => setNotes(event.target.value)}
-												multiline
-												rows={4}
-												style={{
-													width: "100%",
-													marginBottom: "20px",
-													textAlign: "left",
-												}}
-												required
-											/>
-										)}
-										<Button
-											variant="contained"
-											color="primary"
-											type="submit"
-											style={{ padding: "10px" }}
-											disabled={!selectedTask || !timeSpent}
-											onClick={saveTimeEntry}
-										>
-											Save Time Entry
-										</Button>
-									</form>
-								</Grid>
-							</Grid>
-						</DialogContent>
-					</Dialog>
+					<DayDialog
+						showForm={showForm}
+						setShowForm={setShowForm}
+						selectedDate={selectedDate}
+						handleFormSubmit={handleFormSubmit}
+						selectedClient={selectedClient}
+						handleClientSelect={handleClientSelect}
+						clients={clients}
+						selectedProject={selectedProject}
+						handleProjectSelect={handleProjectSelect}
+						projects={projects}
+						selectedJob={selectedJob}
+						handleJobSelect={handleJobSelect}
+						jobs={jobs}
+						selectedTask={selectedTask}
+						setSelectedTask={setSelectedTask}
+						tasks={tasks}
+						timeSpent={timeSpent}
+						setTimeSpent={setTimeSpent}
+						notes={notes}
+						setNotes={setNotes}
+						saveTimeEntry={saveTimeEntry}
+					/>
 				</Grid>
 			</div>
 		</>
