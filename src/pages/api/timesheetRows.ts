@@ -12,7 +12,7 @@ export const getAllTimesheetRows = async (): // userID: number
 Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v5")
+			.from("all_timesheet_rows_view")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })) as unknown as {
