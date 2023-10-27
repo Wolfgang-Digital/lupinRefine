@@ -17,6 +17,8 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+import { getAllJobTasks } from "@pages/api/jobTasksView";
+import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 
@@ -61,12 +63,34 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const [timeSpent, setTimeSpent] = useState("");
 
 	useEffect(() => {
+		setTasks([]);
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
 				jobId || 0,
 				10
 			);
+
+			const getTasks = await getAllJobTasks(jobId || 0);
+			if (getTasks) {
+				getTasks.forEach((task) => {
+					taskOptions.push({
+						label: task.task_name || "",
+						value: task.id?.toString() || "0",
+					});
+				});
+			}
+			setTasks(taskOptions);
+			const getUsers = await getAllUsers();
+			if (getUsers) {
+				getUsers.forEach((user) => {
+					userOptions.push({
+						label: user.user_name || "",
+						value: user.user_id?.toString() || "0",
+					});
+				});
+			}
+			setUsers(userOptions);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -84,17 +108,17 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 					})
 				);
 				mappedData.forEach((row) => {
-					taskOptions.push({
-						label: row.task_name || "",
-						value: row.task_id?.toString() || "0",
-					});
-					userOptions.push({
-						label: row.user_name || "",
-						value: row.user_id?.toString() || "0",
-					});
+					// taskOptions.push({
+					// 	label: row.task_name || "",
+					// 	value: row.task_id?.toString() || "0",
+					// });
+					// userOptions.push({
+					// 	label: row.user_name || "",
+					// 	value: row.user_id?.toString() || "0",
+					// });
 				});
-				setTasks(taskOptions);
-				setUsers(userOptions);
+				// setTasks(taskOptions);
+				// setUsers(userOptions);
 				setFetchedRows(mappedData);
 				console.log(fetchedRows);
 			}

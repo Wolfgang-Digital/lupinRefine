@@ -7,7 +7,12 @@ import {
 	GridToolbar,
 } from "@mui/x-data-grid";
 import { Typography, styled } from "@mui/material";
-import { getAllJobs, JobsData } from "@api/jobs";
+import {
+	getAllJobs,
+	JobsData,
+	getAllJobsWithProjectsQuery,
+	JobsDataWithProjects,
+} from "@api/jobs";
 import JobDetail from "./JobDetail";
 import { ButtonContainer, JobsContainer } from "@styled-components/jobs";
 
@@ -15,12 +20,12 @@ import { ButtonContainer, JobsContainer } from "@styled-components/jobs";
 import AddJob from "./AddJob";
 
 const JobList: React.FC = () => {
-	const [jobs, setJobs] = useState<JobsData[]>([]);
+	const [jobs, setJobs] = useState<JobsDataWithProjects[]>([]);
 	const [selectedJob, setSelectedJob] = useState<JobsData | null>(null);
 
 	useEffect(() => {
 		const fetchJobs = async () => {
-			const jobsResponse = await getAllJobs();
+			const jobsResponse = await getAllJobsWithProjectsQuery();
 			if (jobsResponse) {
 				setJobs(jobsResponse);
 			}
@@ -45,7 +50,7 @@ const JobList: React.FC = () => {
 		},
 	});
 
-	const columns: (GridColDef & { field: keyof JobsData })[] = [
+	const columns: (GridColDef & { field: keyof JobsDataWithProjects })[] = [
 		{
 			field: "client_name",
 			headerName: "Client Name",
@@ -56,10 +61,11 @@ const JobList: React.FC = () => {
 				</HoverableCell>
 			),
 		},
-		{ field: "job_name", headerName: "Job Name", width: 200 },
-		{ field: "job_type_name", headerName: "Job Type", width: 200 },
+		{ field: "project_name", headerName: "Project Name", width: 200 },
+		{ field: "job_name_name", headerName: "Job Name", width: 200 },
+		// { field: "job_type_name", headerName: "Job Type", width: 200 },
 		{ field: "tier_name", headerName: "Client Tier", width: 200 },
-		{ field: "job_id", headerName: "Job ID", width: 200 },
+		// { field: "job_id", headerName: "Job ID", width: 200 },
 		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
 
@@ -67,6 +73,8 @@ const JobList: React.FC = () => {
 		id: job.job_id,
 		job_id: job.job_id,
 		client_name: job.client_name,
+		project_name: job.project_name,
+		job_name_name: job.job_name_name,
 		job_name: job.job_name,
 		job_type_name: job.job_type_name,
 		tier_name: job.tier_name,
