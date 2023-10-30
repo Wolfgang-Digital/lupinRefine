@@ -10,7 +10,12 @@ import {
 	Toolbar,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { ClientOption, TaskOption, JobOption, ProjectOption } from "./index";
+import {
+	ClientOption,
+	TaskOption,
+	JobOption,
+	ProjectOption,
+} from "./index.page";
 
 export const DayDialog = ({
 	showForm,
