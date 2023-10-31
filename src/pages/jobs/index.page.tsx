@@ -21,7 +21,9 @@ import AddJob from "./AddJob";
 
 const JobList: React.FC = () => {
 	const [jobs, setJobs] = useState<JobsDataWithProjects[]>([]);
-	const [selectedJob, setSelectedJob] = useState<JobsData | null>(null);
+	const [selectedJob, setSelectedJob] = useState<JobsDataWithProjects | null>(
+		null
+	);
 
 	useEffect(() => {
 		const fetchJobs = async () => {
@@ -65,6 +67,7 @@ const JobList: React.FC = () => {
 		{ field: "job_name_name", headerName: "Job Name", width: 200 },
 		// { field: "job_type_name", headerName: "Job Type", width: 200 },
 		{ field: "tier_name", headerName: "Client Tier", width: 200 },
+		{ field: "job_name_id", headerName: "Project ID", width: 200 },
 		// { field: "job_id", headerName: "Job ID", width: 200 },
 		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
@@ -74,7 +77,9 @@ const JobList: React.FC = () => {
 		job_id: job.job_id,
 		client_name: job.client_name,
 		project_name: job.project_name,
+		project_id: job.project_id,
 		job_name_name: job.job_name_name,
+		job_name_id: job.job_name_id,
 		job_name: job.job_name,
 		job_type_name: job.job_type_name,
 		tier_name: job.tier_name,

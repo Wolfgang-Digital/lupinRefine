@@ -23,6 +23,7 @@ import {
 	getAllTasks,
 	PostJobTaskEntry,
 } from "@pages/api/jobTasksView";
+import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import { JobTasksView } from "types";
 
 type RowData = JobTasksView;
@@ -46,7 +47,13 @@ function CustomToolbar() {
 		</GridToolbarContainer>
 	);
 }
-function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
+function CollapsibleTasksGrid({
+	projectId,
+	jobId,
+}: {
+	projectId?: number;
+	jobId?: number;
+}) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
@@ -58,6 +65,11 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 		async function fetchData() {
 			const jobTasksTable = await getAllJobTasks(jobId || 0);
 			const getTasks = await getAllTasks();
+			const getProjectJobTasks = await getAllProjectJobTasks(
+				projectId || 0,
+				jobId || 0
+			);
+			console.log(projectId);
 			if (getTasks) {
 				getTasks.forEach((task) => {
 					taskOptions.push({
