@@ -362,6 +362,7 @@ function JobsFinancialTable({
 					display: "flex",
 					padding: 20,
 					backgroundColor: "#E5E5E8",
+
 					borderTopRightRadius: "10px",
 					borderTopLeftRadius: "10px",
 				}}
@@ -401,6 +402,7 @@ function JobsFinancialTable({
 									backgroundColor: "#C3DDBC",
 									paddingLeft: 0,
 									borderBottom: "none",
+									paddingTop: "10px",
 								}}
 							>
 								Allocated
@@ -411,6 +413,7 @@ function JobsFinancialTable({
 									backgroundColor: "#BEB3D4",
 									paddingLeft: 0,
 									borderBottom: "none",
+									paddingTop: "10px",
 								}}
 							>
 								Actuals
@@ -466,24 +469,29 @@ function JobsFinancialTable({
 										jobs.map((job) => (
 											<>
 												<>
-													<TableRow style={{ borderBottom: "0.8px solid black" }}>
+													<TableRow
+														style={{
+															borderBottom: "0.8px solid black",
+															backgroundColor: "#E5E5E8",
+														}}
+													>
 														{CreateEmptyCells(1)}
 														<ShortTableCell>
 															{(job as Job)?.job_name as string}
 														</ShortTableCell>
 														{CreateEmptyCells(2)}
-														<TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).hours || 0}
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
-														<TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).allocatedValue || 0}
 														</TaskEntryCell>
-														<TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).time || 0}
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
-														<TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).actualValue || 0}
 														</TaskEntryCell>
 													</TableRow>
@@ -498,18 +506,18 @@ function JobsFinancialTable({
 																		{(task as TaskEntry)?.task_name as string}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{((task as TaskEntry)?.total as Total).hours || 0}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{((task as TaskEntry)?.total as Total).allocatedValue || 0}
 																	</TaskEntryCell>
-																	<TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{((task as TaskEntry)?.total as Total).time || 0}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{((task as TaskEntry)?.total as Total).actualValue || 0}
 																	</TaskEntryCell>
 																</TableRow>
@@ -533,12 +541,47 @@ function JobsFinancialTable({
 																					<>
 																						{Number.isInteger(parseInt(taskKey)) && (
 																							<>
-																								<TaskEntryCell>{hours}</TaskEntryCell>
-																								<TaskEntryCell>{rate}</TaskEntryCell>
-																								<TaskEntryCell>{hours * rate}</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{hours}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{rate}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{hours * rate}
+																								</TaskEntryCell>
 																								<TaskEntryCell>{time}</TaskEntryCell>
-																								<TaskEntryCell>{rate}</TaskEntryCell>
-																								<TaskEntryCell>{time * rate}</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									{rate}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									{time * rate}
+																								</TaskEntryCell>
 																							</>
 																						)}
 																					</>
