@@ -8,9 +8,16 @@ import {
 	Dialog,
 	AppBar,
 	Toolbar,
+	IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close"; // Step 1: Import the CloseIcon
 import { DataGrid } from "@mui/x-data-grid";
-import { ClientOption, TaskOption, JobOption, ProjectOption } from "./index";
+import {
+	ClientOption,
+	TaskOption,
+	JobOption,
+	ProjectOption,
+} from "./index.page";
 
 export const DayDialog = ({
 	showForm,
@@ -151,9 +158,16 @@ export const DayDialog = ({
 		>
 			<AppBar sx={{ position: "relative" }}>
 				<Toolbar>
+					<IconButton
+						color="inherit"
+						onClick={() => setShowForm(false)} // Step 2: Handle closing the dialog
+					>
+						<CloseIcon /> {/* Step 1: Render the CloseIcon */}
+					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						{selectedDate}
+						Day Selected: {selectedDate}
 					</Typography>
+
 					<Button autoFocus color="inherit">
 						Save
 					</Button>
@@ -166,7 +180,7 @@ export const DayDialog = ({
 					spacing={2}
 					style={{ paddingTop: "10px", paddingBottom: "90px" }}
 				>
-					<Grid item xs={12}>
+					<Grid item xs={7}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -183,7 +197,7 @@ export const DayDialog = ({
 							style={{ display: "flex", justifyContent: "center" }}
 						/>
 					</Grid>
-					<Grid item xs={12}>
+					<Grid item xs={5}>
 						<Typography
 							style={{
 								paddingBottom: "20px",

@@ -111,7 +111,14 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 
 	return (
 		<>
-			<div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+			<div
+				style={{
+					height: "100%",
+					width: "100%",
+					overflow: "auto",
+					paddingTop: "20px",
+				}}
+			>
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={8}>

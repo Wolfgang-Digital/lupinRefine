@@ -132,38 +132,36 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const monthName = monthNames[selectedMonth];
 
 	return (
-		<div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+		<div
+			style={{
+				height: "100%",
+				width: "100%",
+				overflow: "auto",
+			}}
+		>
 			<Grid container spacing={2}>
 				{/* First Column */}
 				<Grid item xs={8}>
-					<div style={{ display: "flex", paddingTop: "20px" }}>
-						<WeekButton
-							onClick={() => {
-								setSelectedMonth(selectedMonth - 1);
-							}}
-						>
+					<div style={{ display: "flex", alignItems: "center", padding: "20px 0" }}>
+						<WeekButton onClick={() => setSelectedMonth(selectedMonth - 1)}>
 							Previous month
 						</WeekButton>
-						<div
-							style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
-						>
+						<div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
 							{monthName}
 						</div>
-						<WeekButton
-							onClick={() => {
-								setSelectedMonth(selectedMonth + 1);
-							}}
-						>
+						<WeekButton onClick={() => setSelectedMonth(selectedMonth + 1)}>
 							Next month
 						</WeekButton>
 					</div>
 					{Object.keys(groupedRows).map((month) => (
 						<Accordion key={month}>
 							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-								<Typography>{month}</Typography>
+								<Typography variant="h6" fontSize="16px">
+									{monthName}
+								</Typography>
 							</AccordionSummary>
 							<AccordionDetails>
-								<Paper>
+								<Paper style={{ width: "100%" }}>
 									<DataGrid
 										rows={groupedRows[month]}
 										columns={columns.map((col) => ({

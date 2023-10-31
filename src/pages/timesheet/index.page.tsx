@@ -4,7 +4,6 @@ import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 import {
 	Grid,
 	Paper,
-	Button,
 	TableContainer,
 	Table,
 	TableHead,
@@ -12,7 +11,6 @@ import {
 	TableRow,
 	TableBody,
 	Typography,
-	TextField,
 	MenuItem,
 	FormControl,
 	InputLabel,
@@ -647,168 +645,6 @@ const Timesheet = () => {
 						/>
 					</Grid>
 
-					{/* Second column */}
-					<Grid item xs={4}>
-						<Paper
-							variant="outlined"
-							style={{ textAlign: "center", padding: "30px" }}
-						>
-							{showForm ? (
-								<form onSubmit={handleFormSubmit}>
-									<TextField
-										label="Date"
-										value={selectedDate}
-										InputProps={{
-											readOnly: true,
-										}}
-										style={{
-											width: "100%",
-											marginBottom: "20px",
-											textAlign: "left",
-										}}
-										required
-									/>
-
-									<TextField
-										select
-										label="Select Client"
-										value={selectedClient}
-										onChange={handleClientSelect}
-										style={{
-											width: "100%",
-											marginBottom: "20px",
-											textAlign: "left",
-										}}
-										required
-									>
-										{clients.map((client) => (
-											<MenuItem key={client.value} value={client.value}>
-												{client.label}
-											</MenuItem>
-										))}
-									</TextField>
-									{selectedClient && (
-										<TextField
-											select
-											label="Select Project"
-											value={selectedProject}
-											onChange={handleProjectSelect}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										>
-											{projects.map((project) => (
-												<MenuItem key={project.value} value={project.value}>
-													{project.label}
-												</MenuItem>
-											))}
-										</TextField>
-									)}
-									{selectedProject && (
-										<TextField
-											select
-											label="Select Job"
-											value={selectedJob}
-											onChange={handleJobSelect}
-											style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
-											required
-										>
-											{jobs.map((job) => (
-												<MenuItem key={job.value} value={job.value}>
-													{job.label}
-												</MenuItem>
-											))}
-										</TextField>
-									)}
-									{selectedJob && (
-										<TextField
-											select
-											label="Select Task"
-											value={selectedTask}
-											onChange={(event) => setSelectedTask(event.target.value as string)}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										>
-											{tasks.map((task) => (
-												<MenuItem key={task.value} value={task.value}>
-													{task.label}
-												</MenuItem>
-											))}
-										</TextField>
-									)}
-									{selectedTask && (
-										<TextField
-											type="number"
-											label="Time Spent (in hours)"
-											value={timeSpent}
-											onChange={(event) => {
-												if (Number(event.target.value) >= 0) {
-													setTimeSpent(event.target.value);
-												}
-											}}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										/>
-									)}
-									{selectedTask && timeSpent && (
-										<TextField
-											label="Notes"
-											value={notes}
-											onChange={(event) => setNotes(event.target.value)}
-											multiline
-											rows={4}
-											style={{
-												width: "100%",
-												marginBottom: "20px",
-												textAlign: "left",
-											}}
-											required
-										/>
-									)}
-									<Button
-										variant="contained"
-										color="primary"
-										type="submit"
-										style={{ padding: "10px" }}
-										disabled={!selectedTask || !timeSpent}
-										onClick={saveTimeEntry}
-									>
-										Save Time Entry
-									</Button>
-								</form>
-							) : (
-								<>
-									<Button
-										variant="contained"
-										color="primary"
-										onClick={handleAddTimeClick}
-										style={{ padding: "10px" }}
-									>
-										Add Time
-									</Button>
-									<Typography variant="body1" style={{ padding: "30px" }}>
-										Start Tracking Time.
-									</Typography>
-									<Typography variant="body1" style={{ padding: "20px" }}>
-										{`Clicking the Add Time button will create
-						New time entries which you'll be able
-						to review or edit in your daily view.`}
-									</Typography>
-								</>
-							)}
-						</Paper>
-					</Grid>
 					<DayDialog
 						showForm={showForm}
 						setShowForm={setShowForm}

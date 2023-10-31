@@ -123,10 +123,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 							paddingRight: "90px",
 						}}
 					>
-						Security in BigTime is managed with the set of staffer groups listed
-						below. Groups work just like a set of keys: permitting any staffer that
-						has them access to various areas within the program. Check off the groups
-						you would like this staffer to have from the list below.
+						Security in Lupin is managed with the set of user groups listed below.
+						Check off the groups you would like this user to have from the list below.
 					</Typography>
 					<div
 						style={{
@@ -166,7 +164,7 @@ const UserDetail: React.FC<UserDetailProps> = ({ user, onClose }) => {
 					>
 						Below is a list of the departments <strong>{user?.user_name}</strong>{" "}
 						manages (giving this manager authority to view/edit or approve
-						time/expenses logged by staffers in those departments).
+						time/expenses logged by users in those departments).
 					</Typography>
 					<div
 						style={{
