@@ -30,7 +30,9 @@ export const groupTimesheets = (timesheets: TimesheetRowsViewV6[]) => {
 		);
 		if (existingClientEntry) {
 			const existingProjectEntry = acc.find(
-				(project) => project.project_id === curr.project_id
+				(project) =>
+					project.project_id === curr.project_id &&
+					project.client_id === curr.client_id
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
