@@ -18,6 +18,9 @@ import {
 	JobOption,
 	ProjectOption,
 } from "./index.page";
+import { useEffect, useState } from "react";
+import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
+import { GroupedTimesheets } from "./groupTimesheets";
 
 export const DayDialog = ({
 	showForm,
@@ -116,7 +119,7 @@ export const DayDialog = ({
 
 	const columns = [
 		{
-			field: "client",
+			field: "name",
 			headerName: "Client",
 			flex: 0.7,
 		},
@@ -136,16 +139,61 @@ export const DayDialog = ({
 			flex: 0.5,
 		},
 		{
-			field: "hoursLogged",
+			field: "time",
 			headerName: "Used",
 			flex: 0.3,
 		},
 		{
-			field: "hoursLeft",
+			field: "hours",
 			headerName: "Left",
 			flex: 0.3,
 		},
 	];
+
+	interface TimesheetType {
+		client_id: number | null;
+		date: string | null;
+		hours: number | null;
+		time: number | null;
+		id: number | null;
+		job_id: number | null;
+		job_name: string | null;
+		year: number | null;
+		name: string | null;
+		project_name: string | null;
+		task_name: string | null;
+	}
+	const [filteredTimesheets, setFilteredTimesheets] = useState<TimesheetType[]>(
+		[]
+	);
+
+	useEffect(() => {
+		// This code will run after the component renders.
+		// It's the perfect place to perform asynchronous operations like fetching data from Supabase.
+
+		async function fetchData() {
+			try {
+				const timesheetsResponse = await getAllTimesheetRowsV2();
+				console.log(timesheetsResponse);
+
+				if (timesheetsResponse) {
+					const filteredTimesheets = timesheetsResponse.filter(
+						(timesheet) => timesheet.user_id === 13 && timesheet.date === "2023-11-02"
+					);
+					console.log(filteredTimesheets);
+
+					setFilteredTimesheets(filteredTimesheets);
+				} else {
+					console.error("timesheetsResponse is undefined");
+				}
+			} catch (error) {
+				console.error("Error fetching data from Supabase:", error);
+			}
+		}
+
+		fetchData();
+	}, []);
+
 	return (
 		<Dialog
 			open={showForm}
@@ -192,7 +240,15 @@ export const DayDialog = ({
 						</Typography>
 						<DataGrid
 							autoHeight
-							rows={rows}
+							rows={filteredTimesheets.map((timesheet) => ({
+								id: timesheet.id, // Change this to match the actual ID property
+								name: timesheet.name, // Update these fields to match the data in your 'filteredTimesheets'
+								project: timesheet.project_name, // Update these fields to match the data in your 'filteredTimesheets'
+								job: timesheet.job_name, // Update these fields to match the data in your 'filteredTimesheets'
+								task: timesheet.task_name, // Update these fields to match the data in your 'filteredTimesheets'
+								hours: timesheet.hours,
+								time: timesheet.time, // Update these fields to match the data in your 'filteredTimesheets'
+							}))}
 							columns={columns}
 							style={{ display: "flex", justifyContent: "center" }}
 						/>

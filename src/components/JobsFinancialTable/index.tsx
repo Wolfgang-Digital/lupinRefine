@@ -381,7 +381,7 @@ function JobsFinancialTable({
 			</div>
 
 			<TableContainer
-				style={{ maxHeight: "600px", overflowY: "scroll" }}
+				style={{ maxHeight: "800px", overflowY: "scroll" }}
 				component={Paper}
 			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
@@ -460,7 +460,7 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "#1E7F74" }}
+										style={{ background: "#1E7F74", color: "white !important" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
@@ -502,9 +502,9 @@ function JobsFinancialTable({
 															{Number.isInteger(parseInt(key)) && (
 																<TableRow style={{ borderBottom: "0.8px solid black" }}>
 																	{CreateEmptyCells(2)}
-																	<TaskEntryCell>
+																	<ShortTableCell>
 																		{(task as TaskEntry)?.task_name as string}
-																	</TaskEntryCell>
+																	</ShortTableCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{((task as TaskEntry)?.total as Total).hours || 0}
