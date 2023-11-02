@@ -20,7 +20,7 @@ import {
 } from "./index.page";
 import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import { groupTimesheets } from "./groupTimesheets";
 
 export const DayDialog = ({
 	showForm,
@@ -74,8 +74,8 @@ export const DayDialog = ({
 		{ field: "project", headerName: "Project", width: 120 },
 		{ field: "job", headerName: "Job", width: 120 },
 		{ field: "task", headerName: "Task", width: 100 },
-		{ field: "hours", headerName: "Hours", width: 80 },
-		{ field: "time", headerName: "Time", width: 80 },
+		{ field: "hours", headerName: "Logged", width: 80 },
+		{ field: "remainingHours", headerName: "Left", width: 80 },
 	];
 
 	interface TimesheetType {
@@ -103,6 +103,8 @@ export const DayDialog = ({
 			job_name: string;
 			tasks: {
 				task_name: string;
+				time: number;
+				hours: number;
 			}[];
 		}[];
 	}
@@ -138,7 +140,9 @@ export const DayDialog = ({
 		fetchData();
 	}, []);
 
-	const rows = groupedTimesheets.flatMap((timesheet) => {
+	// test to pull in jobs, tasks
+
+	const rowsTEST = groupedTimesheets.flatMap((timesheet) => {
 		console.log("timesheetMap", timesheet);
 
 		const jobNames = timesheet.jobs
@@ -165,6 +169,50 @@ export const DayDialog = ({
 			time: timesheet.time,
 		};
 	});
+
+	// code adjusted from Paul to get entries
+
+	const rows = groupedTimesheets.map((entry, index) => {
+		let totalHours = 0;
+		let totalSpentHours = 0;
+		const multipleJobEntries = entry.jobs.length > 1;
+
+		if (multipleJobEntries) {
+			entry.jobs.forEach((job) => {
+				job.tasks.forEach((task) => {
+					totalHours += task.hours || 0;
+					totalSpentHours += task.time || 0;
+				});
+			});
+		} else {
+			entry.jobs.forEach((job) => {
+				totalHours += job.tasks.reduce((acc, curr) => acc + (curr.hours || 0), 0);
+				totalSpentHours += job.tasks.reduce(
+					(acc, curr) => acc + (curr.time || 0),
+					0
+				);
+			});
+		}
+
+		const remainingHours = Math.max(0, totalHours - totalSpentHours);
+
+		// Create an object representing a row in your DataGrid
+		return {
+			id: entry.client_id,
+			name: entry.client_name,
+			project: entry.project_name,
+			job: entry.jobs
+				.map((job) => {
+					const taskNames = job.tasks.map((task) => task.task_name).join(", ");
+					return `${job.job_name} (${taskNames})`;
+				})
+				.join(", "),
+			hours: totalHours,
+			remainingHours: remainingHours,
+		};
+	});
+
+	console.log("ROWS", rows);
 
 	return (
 		<Dialog
