@@ -126,10 +126,15 @@ const Timesheet = () => {
 
 	const currentDate = new Date();
 	const formattedCurrentDate = format(currentDate, "dd/MM/yy");
+	const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
 
 	const handleDayClick = (index: number) => {
+		setSelectedClient("");
+		setSelectedProject("");
+		setSelectedJob("");
+		setSelectedTask("");
 		if (selectedDay === index) {
 			// If the clicked day is already selected, deselect it
 			setSelectedDay(null);
@@ -237,6 +242,10 @@ const Timesheet = () => {
 
 	// Function to handle "Add Time" button click
 	const handleAddTimeClick = () => {
+		setSelectedClient("");
+		setSelectedProject("");
+		setSelectedJob("");
+		setSelectedTask("");
 		setShowForm(true);
 	};
 
@@ -282,6 +291,7 @@ const Timesheet = () => {
 		const selectedProjectId = entry.project_id.toString();
 		const selectedJobId = job.job_id.toString();
 		const selectedTaskId = task.task_id.toString();
+		setSelectedDate(sbCurrentDate);
 		setSelectedClient(selectedClientId);
 		setSelectedProject(selectedProjectId);
 		setSelectedJob(selectedJobId);
@@ -307,6 +317,8 @@ const Timesheet = () => {
 		};
 
 		setTimeEntries([...timeEntries, newTimeEntry]);
+		setSelectedClient("");
+		setSelectedProject("");
 		setSelectedTask("");
 		setSelectedJob("");
 		setTimeSpent("");
@@ -424,11 +436,13 @@ const Timesheet = () => {
 			staffId: 13,
 			notes,
 			timeSpent: Number(timeSpent),
+			projectId: Number(selectedProject),
 			jobId: Number(selectedJob),
 			taskId: Number(selectedTask),
-			selectedDate: "2023-10-03",
+			selectedDate: selectedDate,
 			rate: 150,
 		};
+		// const parts = selectedDate.split('-');
 		const response = PostTimeEntry(dataToPost);
 		console.log(`PostTimeEntry ${response}`);
 	}

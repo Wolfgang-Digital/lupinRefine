@@ -147,7 +147,9 @@ export const DayDialog = ({
 	return (
 		<Dialog
 			open={showForm}
-			onClose={() => setShowForm(false)}
+			onClose={() => {
+				setShowForm(false);
+			}}
 			fullScreen
 			maxWidth="lg"
 			style={{
@@ -159,8 +161,14 @@ export const DayDialog = ({
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
 						{selectedDate}
 					</Typography>
-					<Button autoFocus color="inherit">
-						Save
+					<Button
+						autoFocus
+						color="inherit"
+						onClick={() => {
+							setShowForm(false);
+						}}
+					>
+						Cancel
 					</Button>
 				</Toolbar>
 			</AppBar>
