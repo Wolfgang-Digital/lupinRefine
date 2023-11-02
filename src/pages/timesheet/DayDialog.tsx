@@ -20,7 +20,7 @@ import {
 } from "./index.page";
 import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { GroupedTimesheets } from "./groupTimesheets";
+import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
 
 export const DayDialog = ({
 	showForm,
@@ -69,85 +69,13 @@ export const DayDialog = ({
 	setNotes: React.Dispatch<React.SetStateAction<string>>;
 	saveTimeEntry: () => void;
 }) => {
-	const rows = [
-		{
-			id: 1,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Implentation",
-			task: "Opt",
-			hoursLogged: "2hrs",
-			hoursLeft: "2hrs",
-		},
-		{
-			id: 2,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Monthly Management",
-			task: "Reporting",
-			hoursLogged: "2hrs",
-			hoursLeft: "1hrs",
-		},
-
-		{
-			id: 3,
-			client: "Allcare Management Services Ltd",
-			project: "Google Ads",
-			job: "Implementation",
-			task: "Opt",
-			hoursLogged: "1hrs",
-			hoursLeft: "2hrs",
-		},
-		// Add more rows with three columns as needed
-	];
-
-	// const rows: TimesheetRowsView[] = [
-	// 	{
-	// 		id: 1,
-	// 		name: "Actavo",
-	// 		project_name: "Google Ads",
-	// 		job_name: "Implentation",
-	// 		task_name: "Opt",
-	// 		hours: 2,
-	// 		time: 2,
-	// 	},
-
-	// 	// Add more rows with three columns as needed
-	// ] as unknown as TimesheetRowsView[];
-
-	// fetch the timesheet rows again here, filter by the day, maybe create a new query to only filter by date, and use groupTimesheets to get the rows into your desired schema
-
 	const columns = [
-		{
-			field: "name",
-			headerName: "Client",
-			flex: 0.7,
-		},
-		{
-			field: "project",
-			headerName: "Project",
-			flex: 0.5,
-		},
-		{
-			field: "job",
-			headerName: "Job",
-			flex: 0.5,
-		},
-		{
-			field: "task",
-			headerName: "Task",
-			flex: 0.5,
-		},
-		{
-			field: "time",
-			headerName: "Used",
-			flex: 0.3,
-		},
-		{
-			field: "hours",
-			headerName: "Left",
-			flex: 0.3,
-		},
+		{ field: "name", headerName: "Name", width: 150 },
+		{ field: "project", headerName: "Project", width: 120 },
+		{ field: "job", headerName: "Job", width: 120 },
+		{ field: "task", headerName: "Task", width: 100 },
+		{ field: "hours", headerName: "Hours", width: 80 },
+		{ field: "time", headerName: "Time", width: 80 },
 	];
 
 	interface TimesheetType {
@@ -163,26 +91,42 @@ export const DayDialog = ({
 		project_name: string | null;
 		task_name: string | null;
 	}
+
+	interface DayTimesheet {
+		client_id: number;
+		client_name: string;
+		project_name: string;
+		task_name: string;
+		hours: number;
+		time: string;
+		jobs: {
+			job_name: string;
+			tasks: {
+				task_name: string;
+			}[];
+		}[];
+	}
+
 	const [filteredTimesheets, setFilteredTimesheets] = useState<TimesheetType[]>(
 		[]
 	);
+	const [groupedTimesheets, setGroupedTimesheets] = useState<DayTimesheet[]>([]);
 
 	useEffect(() => {
-		// This code will run after the component renders.
-		// It's the perfect place to perform asynchronous operations like fetching data from Supabase.
-
 		async function fetchData() {
 			try {
 				const timesheetsResponse = await getAllTimesheetRowsV2();
-				console.log(timesheetsResponse);
 
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
-						(timesheet) => timesheet.user_id === 13 && timesheet.date === "2023-11-02"
+						(timesheet) => timesheet.user_id === 13 && timesheet.date === "2023-11-01"
 					);
-					console.log(filteredTimesheets);
 
 					setFilteredTimesheets(filteredTimesheets);
+
+					const groupedTimesheetsData = groupTimesheets(filteredTimesheets);
+					setGroupedTimesheets(groupedTimesheetsData);
+					console.log("Grouped Data", groupedTimesheetsData);
 				} else {
 					console.error("timesheetsResponse is undefined");
 				}
@@ -193,6 +137,34 @@ export const DayDialog = ({
 
 		fetchData();
 	}, []);
+
+	const rows = groupedTimesheets.flatMap((timesheet) => {
+		console.log("timesheetMap", timesheet);
+
+		const jobNames = timesheet.jobs
+			.map((job) => {
+				console.log("jobMap", job);
+				const taskNames = job.tasks
+					.map((task) => {
+						console.log("taskMap", task);
+
+						return task.task_name;
+					})
+					.join(", ");
+
+				return `${job.job_name} (${taskNames})`;
+			})
+			.join(", ");
+
+		return {
+			id: timesheet.client_id,
+			name: timesheet.client_name,
+			project: timesheet.project_name,
+			job: jobNames,
+			hours: timesheet.hours,
+			time: timesheet.time,
+		};
+	});
 
 	return (
 		<Dialog
@@ -206,16 +178,12 @@ export const DayDialog = ({
 		>
 			<AppBar sx={{ position: "relative" }}>
 				<Toolbar>
-					<IconButton
-						color="inherit"
-						onClick={() => setShowForm(false)} // Step 2: Handle closing the dialog
-					>
-						<CloseIcon /> {/* Step 1: Render the CloseIcon */}
+					<IconButton color="inherit" onClick={() => setShowForm(false)}>
+						<CloseIcon />
 					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
 						Day Selected: {selectedDate}
 					</Typography>
-
 					<Button autoFocus color="inherit">
 						Save
 					</Button>
@@ -240,15 +208,7 @@ export const DayDialog = ({
 						</Typography>
 						<DataGrid
 							autoHeight
-							rows={filteredTimesheets.map((timesheet) => ({
-								id: timesheet.id, // Change this to match the actual ID property
-								name: timesheet.name, // Update these fields to match the data in your 'filteredTimesheets'
-								project: timesheet.project_name, // Update these fields to match the data in your 'filteredTimesheets'
-								job: timesheet.job_name, // Update these fields to match the data in your 'filteredTimesheets'
-								task: timesheet.task_name, // Update these fields to match the data in your 'filteredTimesheets'
-								hours: timesheet.hours,
-								time: timesheet.time, // Update these fields to match the data in your 'filteredTimesheets'
-							}))}
+							rows={rows}
 							columns={columns}
 							style={{ display: "flex", justifyContent: "center" }}
 						/>
