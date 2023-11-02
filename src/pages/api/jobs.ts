@@ -58,7 +58,7 @@ export const getJobByProjectId = async (
 			return;
 		}
 		if (data) {
-			console.log(data);
+			// console.log(data);
 			jobIds = data?.map((projectJob) => projectJob.job_id || 0);
 			// console.log(jobIds);
 		}

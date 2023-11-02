@@ -240,6 +240,54 @@ const Timesheet = () => {
 		setShowForm(true);
 	};
 
+	// Function to handle "Time Icon" button click
+	const handleTimeIconClick = (
+		entry: {
+			client_id: number;
+			client_name: string;
+			project_id: number;
+			project_name: string;
+			jobs: {
+				job_id: number;
+				job_name: string;
+				job_name_id: number;
+				tasks: {
+					task_id: number;
+					task_name: string;
+					time: number;
+					hours?: number | undefined;
+				}[];
+			}[];
+		},
+		job: {
+			job_id: number;
+			job_name: string;
+			job_name_id: number;
+			tasks: {
+				task_id: number;
+				task_name: string;
+				time: number;
+				hours?: number | undefined;
+			}[];
+		},
+		task: {
+			task_id: number;
+			task_name: string;
+			time: number;
+			hours?: number | undefined;
+		}
+	) => {
+		setShowForm(true);
+		const selectedClientId = entry.client_id.toString();
+		const selectedProjectId = entry.project_id.toString();
+		const selectedJobId = job.job_id.toString();
+		const selectedTaskId = task.task_id.toString();
+		setSelectedClient(selectedClientId);
+		setSelectedProject(selectedProjectId);
+		setSelectedJob(selectedJobId);
+		setSelectedTask(selectedTaskId);
+	};
+
 	// Function to handle form submission
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -367,6 +415,7 @@ const Timesheet = () => {
 				}
 			}
 		}
+		PostTimeEntry;
 		fetchTasks();
 	}, [selectedJob]);
 
@@ -613,7 +662,7 @@ const Timesheet = () => {
 																					<div key={task.task_id}>
 																						<MoreTimeIcon
 																							fontSize="small"
-																							onClick={handleAddTimeClick}
+																							onClick={() => handleTimeIconClick(entry, job, task)}
 																						/>
 																					</div>
 																				))}
