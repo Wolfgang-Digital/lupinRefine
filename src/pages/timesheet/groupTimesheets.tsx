@@ -28,7 +28,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsViewV6[]) => {
 		const existingClientEntry = acc.find(
 			(entry) => entry.client_id === curr.client_id
 		);
-		console.log(timesheets);
+
 		if (existingClientEntry) {
 			const existingProjectEntry = acc.find(
 				(project) => project.project_id === curr.project_id

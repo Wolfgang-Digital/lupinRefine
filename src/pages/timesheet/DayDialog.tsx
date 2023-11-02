@@ -21,12 +21,45 @@ import {
 import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { groupTimesheets } from "./groupTimesheets";
+import { format } from "date-fns";
+
+interface TimesheetType {
+	client_name: string;
+	client_id: number | null;
+	date: string | null;
+	hours: number | null;
+	time: number | null;
+	id: number | null;
+	job_id: number | null;
+	job_name: string | null;
+	year: number | null;
+	name: string | null;
+	project_name: string | null;
+	task_name: string | null;
+}
+
+interface DayTimesheet {
+	client_id: number;
+	client_name: string;
+	project_name: string;
+	task_name: string;
+	job_name: string;
+	hours: number;
+	time: string;
+	jobs: {
+		job_name: string;
+		tasks: {
+			task_name: string;
+			time: number;
+			hours: number;
+		}[];
+	}[];
+}
 
 export const DayDialog = ({
 	showForm,
 	setShowForm,
 	selectedDate,
-
 	handleFormSubmit,
 	selectedClient,
 	handleClientSelect,
@@ -49,7 +82,6 @@ export const DayDialog = ({
 	showForm: boolean;
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: string;
-
 	handleFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 	selectedClient: string;
 	handleClientSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -70,49 +102,27 @@ export const DayDialog = ({
 	saveTimeEntry: () => void;
 }) => {
 	const columns = [
-		{ field: "name", headerName: "Name", width: 150 },
-		{ field: "project", headerName: "Project", width: 120 },
-		{ field: "job", headerName: "Job", width: 120 },
-		{ field: "task", headerName: "Task", width: 100 },
-		{ field: "hours", headerName: "Logged", width: 80 },
-		{ field: "remainingHours", headerName: "Left", width: 80 },
+		{ field: "client_name", headerName: "Name", width: 150 },
+		{ field: "project_name", headerName: "Project", width: 120 },
+		{ field: "job_name", headerName: "Job", width: 160 },
+		{ field: "task_name", headerName: "Task", width: 120 },
+		{ field: "time", headerName: "Logged", width: 75 },
+		{ field: "time_left", headerName: "Left", width: 75 },
 	];
-
-	interface TimesheetType {
-		client_id: number | null;
-		date: string | null;
-		hours: number | null;
-		time: number | null;
-		id: number | null;
-		job_id: number | null;
-		job_name: string | null;
-		year: number | null;
-		name: string | null;
-		project_name: string | null;
-		task_name: string | null;
-	}
-
-	interface DayTimesheet {
-		client_id: number;
-		client_name: string;
-		project_name: string;
-		task_name: string;
-		hours: number;
-		time: string;
-		jobs: {
-			job_name: string;
-			tasks: {
-				task_name: string;
-				time: number;
-				hours: number;
-			}[];
-		}[];
-	}
-
 	const [filteredTimesheets, setFilteredTimesheets] = useState<TimesheetType[]>(
 		[]
 	);
 	const [groupedTimesheets, setGroupedTimesheets] = useState<DayTimesheet[]>([]);
+
+	const [rows, setRows] = useState<TimesheetType[]>([]);
+
+	let formattedDate = format(new Date(), "yyyy-dd-MM");
+	try {
+		formattedDate = format(new Date(selectedDate), "yyyy-dd-MM");
+	} catch (error) {
+		console.error("Error formatting date:", error);
+		// Handle the error, set a default date, or take another action
+	}
 
 	useEffect(() => {
 		async function fetchData() {
@@ -121,13 +131,34 @@ export const DayDialog = ({
 
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
-						(timesheet) => timesheet.user_id === 13 && timesheet.date === "2023-11-01"
+						(timesheet) =>
+							timesheet.user_id === 13 && timesheet.date === formattedDate
 					);
+
+					console.log(formattedDate);
 
 					setFilteredTimesheets(filteredTimesheets);
 
 					const groupedTimesheetsData = groupTimesheets(filteredTimesheets);
 					setGroupedTimesheets(groupedTimesheetsData);
+
+					const newRows: TimesheetType[] = [];
+					groupedTimesheetsData.forEach((entry) => {
+						entry.jobs.forEach((jobEntry) => {
+							jobEntry.tasks.forEach((taskEntry) => {
+								newRows.push({
+									...taskEntry,
+									client_name: entry.client_name,
+									project_name: entry.project_name,
+									job_name: jobEntry.job_name,
+									task_name: taskEntry.task_name,
+									time_left: taskEntry.hours - taskEntry.time,
+								});
+							});
+						});
+					});
+					setRows(newRows);
+					console.log({ newRows, groupedTimesheetsData });
 					console.log("Grouped Data", groupedTimesheetsData);
 				} else {
 					console.error("timesheetsResponse is undefined");
@@ -138,81 +169,7 @@ export const DayDialog = ({
 		}
 
 		fetchData();
-	}, []);
-
-	// test to pull in jobs, tasks
-
-	const rowsTEST = groupedTimesheets.flatMap((timesheet) => {
-		console.log("timesheetMap", timesheet);
-
-		const jobNames = timesheet.jobs
-			.map((job) => {
-				console.log("jobMap", job);
-				const taskNames = job.tasks
-					.map((task) => {
-						console.log("taskMap", task);
-
-						return task.task_name;
-					})
-					.join(", ");
-
-				return `${job.job_name} (${taskNames})`;
-			})
-			.join(", ");
-
-		return {
-			id: timesheet.client_id,
-			name: timesheet.client_name,
-			project: timesheet.project_name,
-			job: jobNames,
-			hours: timesheet.hours,
-			time: timesheet.time,
-		};
-	});
-
-	// code adjusted from Paul to get entries
-
-	const rows = groupedTimesheets.map((entry, index) => {
-		let totalHours = 0;
-		let totalSpentHours = 0;
-		const multipleJobEntries = entry.jobs.length > 1;
-
-		if (multipleJobEntries) {
-			entry.jobs.forEach((job) => {
-				job.tasks.forEach((task) => {
-					totalHours += task.hours || 0;
-					totalSpentHours += task.time || 0;
-				});
-			});
-		} else {
-			entry.jobs.forEach((job) => {
-				totalHours += job.tasks.reduce((acc, curr) => acc + (curr.hours || 0), 0);
-				totalSpentHours += job.tasks.reduce(
-					(acc, curr) => acc + (curr.time || 0),
-					0
-				);
-			});
-		}
-
-		const remainingHours = Math.max(0, totalHours - totalSpentHours);
-
-		// Create an object representing a row in your DataGrid
-		return {
-			id: entry.client_id,
-			name: entry.client_name,
-			project: entry.project_name,
-			job: entry.jobs
-				.map((job) => {
-					const taskNames = job.tasks.map((task) => task.task_name).join(", ");
-					return `${job.job_name} (${taskNames})`;
-				})
-				.join(", "),
-			hours: totalHours,
-			remainingHours: remainingHours,
-		};
-	});
-
-	console.log("ROWS", rows);
+	}, [selectedDate, formattedDate]);
 
 	return (
 		<Dialog
@@ -254,12 +211,26 @@ export const DayDialog = ({
 						>
 							Day Overview:
 						</Typography>
-						<DataGrid
-							autoHeight
-							rows={rows}
-							columns={columns}
-							style={{ display: "flex", justifyContent: "center" }}
-						/>
+
+						<div style={{ height: "600px", overflow: "auto" }}>
+							<DataGrid
+								autoHeight
+								rows={rows}
+								getRowId={(timeEntry) => {
+									return (
+										(timeEntry.client_name ?? "could not find client") +
+										(timeEntry.project_name ?? "could not find project") +
+										(timeEntry.job_name ?? "could not find job") +
+										(timeEntry.task_name ?? "could not find task")
+									);
+								}}
+								columns={columns}
+								style={{
+									display: "flex",
+									justifyContent: "center",
+								}}
+							/>
+						</div>
 					</Grid>
 					<Grid item xs={5}>
 						<Typography
