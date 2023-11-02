@@ -31,6 +31,7 @@ import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import SecurityIcon from "@mui/icons-material/Security";
+import supabase from "@config/supaBaseClient";
 
 import "src/pages/app.css";
 import "src/components/components.css";
@@ -72,6 +73,21 @@ const App = (props: React.PropsWithChildren) => {
 		if (status === "unauthenticated") {
 			router.push("/login");
 		}
+
+		async function signInWithGoogleToSupabase() {
+			if (data?.id_token) {
+				const { error } = await supabase.auth.signInWithIdToken({
+					provider: "google",
+					token: data?.id_token,
+				});
+				if (error) {
+					console.log(error);
+					return;
+				}
+			}
+		}
+
+		signInWithGoogleToSupabase();
 	}, [status]);
 
 	const authProvider: AuthBindings = {
