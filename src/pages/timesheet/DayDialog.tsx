@@ -20,41 +20,16 @@ import {
 } from "./index.page";
 import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { groupTimesheets } from "./groupTimesheets";
+import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
 import { format } from "date-fns";
 
 interface TimesheetType {
 	client_name: string;
-	client_id: number | null;
-	date: string | null;
-	hours: number | null;
-	time: number | null;
-	id: number | null;
-	job_id: number | null;
-	job_name: string | null;
-	year: number | null;
-	name: string | null;
 	project_name: string | null;
+	job_name: string | null;
 	task_name: string | null;
-	hours_left: number | null;
-}
-
-interface DayTimesheet {
-	client_id: number;
-	client_name: string;
-	project_name: string;
-	task_name: string;
-	job_name: string;
-	hours: number;
-	time: string;
-	jobs: {
-		job_name: string;
-		tasks: {
-			task_name: string;
-			time: number;
-			hours: number;
-		}[];
-	}[];
+	time: number | null;
+	time_left: number | null;
 }
 
 export const DayDialog = ({
@@ -110,10 +85,6 @@ export const DayDialog = ({
 		{ field: "time", headerName: "Logged", width: 120 },
 		{ field: "time_left", headerName: "Left", width: 100 },
 	];
-	const [filteredTimesheets, setFilteredTimesheets] = useState<TimesheetType[]>(
-		[]
-	);
-	const [groupedTimesheets, setGroupedTimesheets] = useState<DayTimesheet[]>([]);
 
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 
@@ -138,22 +109,20 @@ export const DayDialog = ({
 
 					console.log(formattedDate);
 
-					setFilteredTimesheets(filteredTimesheets);
-
-					const groupedTimesheetsData = groupTimesheets(filteredTimesheets);
-					setGroupedTimesheets(groupedTimesheetsData);
+					const groupedTimesheetsData: GroupedTimesheets =
+						groupTimesheets(filteredTimesheets);
 
 					const newRows: TimesheetType[] = [];
 					groupedTimesheetsData.forEach((entry) => {
 						entry.jobs.forEach((jobEntry) => {
 							jobEntry.tasks.forEach((taskEntry) => {
 								newRows.push({
-									...taskEntry,
 									client_name: entry.client_name,
 									project_name: entry.project_name,
 									job_name: jobEntry.job_name,
 									task_name: taskEntry.task_name,
-									time_left: taskEntry.hours - taskEntry.time,
+									time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
+									time: taskEntry.time,
 								});
 							});
 						});
