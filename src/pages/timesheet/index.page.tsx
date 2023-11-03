@@ -62,12 +62,17 @@ const TableRowCell = styled(TableCell)`
 	font-size: smaller;
 `;
 
+interface TaskState {
+	[taskId: number]: boolean;
+}
+
 export type TimeEntry = {
 	task: string;
 	job: string;
 	hours: string;
 	date: string;
 	notes: string;
+	completed: boolean;
 };
 
 export type ClientOption = {
@@ -90,6 +95,7 @@ export type JobOption = {
 export type TaskOption = {
 	label: string;
 	value: string;
+	completed: boolean;
 };
 
 // Create the Timesheet component
@@ -204,6 +210,7 @@ const Timesheet = () => {
 					taskOptions.push({
 						label: job.tasks[0].task_name || "",
 						value: job.job_id?.toString() || "0",
+						completed: false,
 					});
 				});
 			});
@@ -254,6 +261,7 @@ const Timesheet = () => {
 			hours: parseFloat(timeSpent).toFixed(2),
 			date: "01/09/23",
 			notes: notes,
+			completed: false,
 		};
 
 		setTimeEntries([...timeEntries, newTimeEntry]);
@@ -360,6 +368,7 @@ const Timesheet = () => {
 						response?.map((task) => ({
 							value: task.task_id.toString(),
 							label: task.task_name || "",
+							completed: false,
 						}))
 					);
 				}
@@ -375,11 +384,12 @@ const Timesheet = () => {
 			timeSpent: Number(timeSpent),
 			jobId: Number(selectedJob),
 			taskId: Number(selectedTask),
-			selectedDate: "2023-10-03",
+			selectedDate: selectedDate,
 			rate: 150,
 		};
 		const response = PostTimeEntry(dataToPost);
 		console.log(`PostTimeEntry ${response}`);
+		setShowForm(false);
 	}
 
 	function daysUntilEndOfMonth() {
@@ -401,6 +411,14 @@ const Timesheet = () => {
 	}
 	const classes = useStyles();
 
+	const [taskStates, setTaskStates] = useState<TaskState>({});
+
+	const handleCheckboxChange = (taskId: number) => {
+		setTaskStates((prevState) => ({
+			...prevState,
+			[taskId]: !prevState[taskId] || false,
+		}));
+	};
 	return (
 		<>
 			<TimesheetContainer>
@@ -578,7 +596,17 @@ const Timesheet = () => {
 																			</TableRowCell>
 																			<TableRowCell>
 																				{job.tasks.map((task) => (
-																					<div style={{ whiteSpace: "nowrap" }} key={task.task_id}>
+																					<div
+																						style={{
+																							whiteSpace: "nowrap",
+																							padding: "2px",
+																							textDecoration: taskStates[task.task_id]
+																								? "line-through"
+																								: "none",
+																							color: taskStates[task.task_id] ? "grey" : "black",
+																						}}
+																						key={task.task_id}
+																					>
 																						{task.task_name}
 																					</div>
 																				))}
@@ -588,7 +616,17 @@ const Timesheet = () => {
 																					<div
 																						style={{
 																							whiteSpace: "nowrap",
-																							color: (task.hours || 0) < task.time ? "red" : "green",
+																							padding: "2px",
+																							textDecoration: taskStates[task.task_id]
+																								? "line-through"
+																								: "none",
+																							color:
+																								(task.hours || 0) < task.time &&
+																								!taskStates[task.task_id]
+																									? "red"
+																									: !taskStates[task.task_id]
+																									? "green"
+																									: "grey",
 																						}}
 																						key={task.task_id}
 																					>
@@ -600,9 +638,13 @@ const Timesheet = () => {
 																			<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
 																			<TableRowCell>
 																				{job.tasks.map((task) => (
-																					<div key={task.task_id}>
+																					<div key={task.task_id} style={{ padding: "2px" }}>
 																						{/* <Checkbox size="small" /> */}
-																						<input type="checkbox" />
+																						<input
+																							type="checkbox"
+																							onChange={() => handleCheckboxChange(task.task_id)}
+																							checked={taskStates[task.task_id] || false}
+																						/>
 																					</div>
 																				))}
 																			</TableRowCell>

@@ -36,6 +36,7 @@ interface TimesheetType {
 	name: string | null;
 	project_name: string | null;
 	task_name: string | null;
+	hours_left: number | null;
 }
 
 interface DayTimesheet {
@@ -102,12 +103,12 @@ export const DayDialog = ({
 	saveTimeEntry: () => void;
 }) => {
 	const columns = [
-		{ field: "client_name", headerName: "Name", width: 150 },
-		{ field: "project_name", headerName: "Project", width: 120 },
-		{ field: "job_name", headerName: "Job", width: 160 },
+		{ field: "client_name", headerName: "Name", width: 140 },
+		{ field: "project_name", headerName: "Project", width: 80 },
+		{ field: "job_name", headerName: "Job", width: 140 },
 		{ field: "task_name", headerName: "Task", width: 120 },
-		{ field: "time", headerName: "Logged", width: 75 },
-		{ field: "time_left", headerName: "Left", width: 75 },
+		{ field: "time", headerName: "Logged", width: 120 },
+		{ field: "time_left", headerName: "Left", width: 100 },
 	];
 	const [filteredTimesheets, setFilteredTimesheets] = useState<TimesheetType[]>(
 		[]
@@ -215,7 +216,7 @@ export const DayDialog = ({
 						<div style={{ height: "600px", overflow: "auto" }}>
 							<DataGrid
 								autoHeight
-								rows={rows}
+								rows={rows.filter((row) => row.time && row.time > 0)}
 								getRowId={(timeEntry) => {
 									return (
 										(timeEntry.client_name ?? "could not find client") +
