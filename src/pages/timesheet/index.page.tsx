@@ -125,7 +125,7 @@ const Timesheet = () => {
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
 	const currentDate = new Date();
-	const formattedCurrentDate = format(currentDate, "dd/MM/yy");
+	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 	const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
@@ -135,6 +135,8 @@ const Timesheet = () => {
 		setSelectedProject("");
 		setSelectedJob("");
 		setSelectedTask("");
+		setTimeSpent("");
+		setNotes("");
 		if (selectedDay === index) {
 			// If the clicked day is already selected, deselect it
 			setSelectedDay(null);
@@ -142,7 +144,7 @@ const Timesheet = () => {
 		} else {
 			setSelectedDay(index);
 			setShowForm(true); // Show the form when a day is clicked
-			setSelectedDate(format(weekDays[index], "dd/MM/yy")); // Update selectedDate
+			setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
 		}
 	};
 
@@ -158,9 +160,8 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
-
 			let filteredResponse: typeof timesheetsResponse = [];
-
+			// console.log(timesheetsResponse);
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -223,12 +224,17 @@ const Timesheet = () => {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
 	}
+
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, []);
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
+	// useEffect(() => {
+	// 	console.log("Hello World");
+	// 	fetchTasksAndJobsWithFilter();
+	// }, [PostTimeEntry]);
 
 	const navigateWeeks = (weeks: number) => {
 		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
@@ -246,6 +252,8 @@ const Timesheet = () => {
 		setSelectedProject("");
 		setSelectedJob("");
 		setSelectedTask("");
+		setTimeSpent("");
+		setNotes("");
 		setShowForm(true);
 	};
 
@@ -287,6 +295,8 @@ const Timesheet = () => {
 		}
 	) => {
 		setShowForm(true);
+		setTimeSpent("");
+		setNotes("");
 		const selectedClientId = entry.client_id.toString();
 		const selectedProjectId = entry.project_id.toString();
 		const selectedJobId = job.job_id.toString();
@@ -299,32 +309,52 @@ const Timesheet = () => {
 	};
 
 	// Function to handle form submission
-	const handleFormSubmit = (event: React.FormEvent) => {
-		event.preventDefault();
+	// const handleFormSubmit = (event: React.FormEvent) => {
+	// 	event.preventDefault();
 
-		const selectedTaskLabel = tasks.find(
-			(task) => task.value === selectedTask
-		)?.label;
+	// 	const selectedTaskLabel = tasks.find(
+	// 		(task) => task.value === selectedTask
+	// 	)?.label;
 
-		const selectedJobLabel = jobs.find((job) => job.value === selectedJob)?.label;
+	// 	const selectedJobLabel = jobs.find((job) => job.value === selectedJob)?.label;
 
-		const newTimeEntry: TimeEntry = {
-			job: selectedJobLabel || "",
-			task: selectedTaskLabel || "",
-			hours: parseFloat(timeSpent).toFixed(2),
-			date: "01/09/23",
-			notes: notes,
+	// 	const newTimeEntry: TimeEntry = {
+	// 		job: selectedJobLabel || "",
+	// 		task: selectedTaskLabel || "",
+	// 		hours: parseFloat(timeSpent).toFixed(2),
+	// 		date: "01/09/23",
+	// 		notes: notes,
+	// 	};
+
+	// 	setTimeEntries([...timeEntries, newTimeEntry]);
+	// 	setSelectedClient("");
+	// 	setSelectedProject("");
+	// 	setSelectedTask("");
+	// 	setSelectedJob("");
+	// 	setTimeSpent("");
+	// 	setNotes("");
+	// 	setShowForm(false);
+	// 	fetchTasksAndJobsWithFilter();
+	// };
+
+	// Function to post Data to SupaBase when ADD TIME form is submitted
+	function saveTimeEntry() {
+		const dataToPost = {
+			staffId: 13,
+			notes,
+			timeSpent: Number(timeSpent),
+			projectId: Number(selectedProject),
+			jobId: Number(selectedJob),
+			taskId: Number(selectedTask),
+			selectedDate: selectedDate,
+			rate: 150,
 		};
-
-		setTimeEntries([...timeEntries, newTimeEntry]);
-		setSelectedClient("");
-		setSelectedProject("");
-		setSelectedTask("");
-		setSelectedJob("");
-		setTimeSpent("");
-		setNotes("");
+		// const parts = selectedDate.split('-');
+		const response = PostTimeEntry(dataToPost);
+		console.log(`PostTimeEntry ${response}`);
 		setShowForm(false);
-	};
+		// fetchTasksAndJobsWithFilter();
+	}
 
 	// Update the TimeEntries based on the current page and rows per page
 	const displayedTimeEntries = filteredTimesheets.slice(
@@ -427,25 +457,8 @@ const Timesheet = () => {
 				}
 			}
 		}
-		PostTimeEntry;
 		fetchTasks();
 	}, [selectedJob]);
-
-	function saveTimeEntry() {
-		const dataToPost = {
-			staffId: 13,
-			notes,
-			timeSpent: Number(timeSpent),
-			projectId: Number(selectedProject),
-			jobId: Number(selectedJob),
-			taskId: Number(selectedTask),
-			selectedDate: selectedDate,
-			rate: 150,
-		};
-		// const parts = selectedDate.split('-');
-		const response = PostTimeEntry(dataToPost);
-		console.log(`PostTimeEntry ${response}`);
-	}
 
 	function daysUntilEndOfMonth() {
 		// Get the current date
@@ -711,13 +724,13 @@ const Timesheet = () => {
 					</Grid>
 
 					{/* Second column */}
-					<Grid item xs={4}>
+					{/* <Grid item xs={4}>
 						<Paper
 							variant="outlined"
 							style={{ textAlign: "center", padding: "30px" }}
 						>
 							{showForm ? (
-								<form onSubmit={handleFormSubmit}>
+								<form>
 									<TextField
 										label="Date"
 										value={selectedDate}
@@ -871,12 +884,12 @@ const Timesheet = () => {
 								</>
 							)}
 						</Paper>
-					</Grid>
+					</Grid> */}
 					<DayDialog
 						showForm={showForm}
 						setShowForm={setShowForm}
 						selectedDate={selectedDate}
-						handleFormSubmit={handleFormSubmit}
+						// handleFormSubmit={handleFormSubmit}
 						selectedClient={selectedClient}
 						handleClientSelect={handleClientSelect}
 						clients={clients}

@@ -21,8 +21,6 @@ export const DayDialog = ({
 	showForm,
 	setShowForm,
 	selectedDate,
-
-	handleFormSubmit,
 	selectedClient,
 	handleClientSelect,
 	clients,
@@ -45,7 +43,6 @@ export const DayDialog = ({
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: string;
 
-	handleFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 	selectedClient: string;
 	handleClientSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	clients: ClientOption[];
@@ -206,7 +203,7 @@ export const DayDialog = ({
 						>
 							Log Time:
 						</Typography>
-						<form onSubmit={handleFormSubmit}>
+						<form>
 							<TextField
 								label="Date"
 								value={selectedDate}
@@ -331,7 +328,6 @@ export const DayDialog = ({
 							<Button
 								variant="contained"
 								color="primary"
-								type="submit"
 								style={{ padding: "10px" }}
 								disabled={!selectedTask || !timeSpent}
 								onClick={saveTimeEntry}
