@@ -449,11 +449,10 @@ function JobsFinancialTable({
 					<TableBody>
 						{monthData.map((data: Accumulator, monthIndex: number) => {
 							const jobs = Object.values(data);
-							console.log({ jobs });
 							if (monthIndex !== selectedMonthIndex)
 								return (
 									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}{" "}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
 									</TableRow>
 								);
 							if (Object.keys(jobs).length === 0) return <>Empty</>;

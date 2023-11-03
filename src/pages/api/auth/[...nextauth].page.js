@@ -61,7 +61,7 @@ export const authOptions = {
 				provider: "google",
 				token: account.id_token,
 			});
-			console.log({error})
+			console.log({ error });
 			const userObject = { email: profile.email, name: profile.name };
 			userObject.id = data.user.id;
 			await handleUserInsertion(userObject);

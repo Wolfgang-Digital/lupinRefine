@@ -1,8 +1,8 @@
-import React from 'react';
-import { ErrorComponent } from '@refinedev/mui';
-import { GetServerSideProps } from 'next';
-import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]';
+import React from "react";
+import { ErrorComponent } from "@refinedev/mui";
+import { GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth].page";
 
 export default function CatchAll() {
 	return <ErrorComponent />;
@@ -11,17 +11,13 @@ export default function CatchAll() {
 export const getServerSideProps: GetServerSideProps<object> = async (
 	context
 ) => {
-	const session = await getServerSession(
-		context.req,
-		context.res,
-		authOptions
-	);
+	const session = await getServerSession(context.req, context.res, authOptions);
 
 	if (session) {
 		return {
 			props: {},
 			redirect: {
-				destination: '/dashboard',
+				destination: "/dashboard",
 				permanent: false,
 			},
 		};
@@ -30,7 +26,7 @@ export const getServerSideProps: GetServerSideProps<object> = async (
 	return {
 		props: {},
 		redirect: {
-			destination: '/login',
+			destination: "/login",
 			permanent: false,
 		},
 	};
