@@ -24,3 +24,4 @@ export type JobTasksView = Views["job_tasks_view"]["Row"];
 export type TimesheetRowsViewV6 = Views["timesheet_rows_view_v6"]["Row"];
 export type GetAllJobsWithProjects =
 	Views["jobs_overview_with_projects"]["Row"];
+export type ProjectJobTasksView = Views["project_job_task_view"]["Row"];

@@ -24,9 +24,13 @@ import {
 	PostJobTaskEntry,
 } from "@pages/api/jobTasksView";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
-import { JobTasksView } from "types";
+import {
+	JobTasksView,
+	GetAllJobsWithProjects,
+	ProjectJobTasksView,
+} from "types";
 
-type RowData = JobTasksView;
+type RowData = ProjectJobTasksView;
 
 type TaskOption = {
 	label: string;
@@ -69,9 +73,10 @@ function CollapsibleTasksGrid({
 				projectId || 0,
 				jobId || 0
 			);
-			console.log(projectId);
-			if (getTasks) {
-				getTasks.forEach((task) => {
+			console.log(getProjectJobTasks);
+			console.log(jobId);
+			if (getProjectJobTasks) {
+				getTasks?.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
 						value: task.task_id?.toString() || "0",
@@ -81,14 +86,16 @@ function CollapsibleTasksGrid({
 			setTasks(taskOptions);
 			// console.log(taskOptions);
 
-			if (jobTasksTable) {
+			if (getProjectJobTasks) {
 				// Map the fetched data to match the RowData type
-				const mappedData: RowData[] = jobTasksTable.map((item: JobTasksView) => ({
-					...item,
-					id: item.id,
-					job_id: item.job_id,
-					task_name: item.task_name,
-				}));
+				const mappedData: RowData[] = getProjectJobTasks.map(
+					(item: ProjectJobTasksView) => ({
+						...item,
+						id: item.id,
+						job_id: item.job_id,
+						task_name: item.task_name,
+					})
+				);
 				setFetchedRows(mappedData);
 				// console.log(mappedData);
 			}
