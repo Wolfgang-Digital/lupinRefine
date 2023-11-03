@@ -1,4 +1,4 @@
-import { TimesheetRowsViewV6 } from "types";
+import { TimesheetRowsView } from "types";
 
 type Task = {
 	task_id: number;
@@ -23,7 +23,7 @@ type Client = {
 
 export type GroupedTimesheets = Client[];
 
-export const groupTimesheets = (timesheets: TimesheetRowsViewV6[]) => {
+export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
 			(entry) => entry.client_id === curr.client_id

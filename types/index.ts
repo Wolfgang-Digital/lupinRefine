@@ -12,7 +12,7 @@ export type JobsOverview = Views["jobs_overview"]["Row"];
 export type UsersOverview = Views["user_dept_join"]["Row"];
 export type TimesheetRowsTest = Views["timesheet_rows_test"]["Row"];
 export type TimesheetRowsDemo = Views["timesheet_rows_demo"]["Row"];
-export type TimesheetRowsView = Views["timesheet_rows_view_v6"]["Row"];
+export type TimesheetRowsView = Views["timesheet_rows_view"]["Row"];
 export type AllTimesheetRowsView = Views["all_timesheet_rows_view"]["Row"];
 export type TimesheetRows = Views["timesheet_rows_view"]["Row"];
 export type JobTask = Tables["job_tasks"]["Row"];
@@ -21,7 +21,6 @@ export type AllTasksDemo = Views["all_tasks_demo"]["Row"];
 export type WolfgangTasksDemo = Views["wolfgang_jobs_demo"]["Row"];
 export type AllocateHoursView = Views["allocate_hours_view"]["Row"];
 export type JobTasksView = Views["job_tasks_view"]["Row"];
-export type TimesheetRowsViewV6 = Views["timesheet_rows_view_v6"]["Row"];
 export type GetAllJobsWithProjects =
 	Views["jobs_overview_with_projects"]["Row"];
 export type ProjectJobTasksView = Views["project_job_task_view"]["Row"];
