@@ -1,7 +1,8 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { JobsOverview } from "types";
+import { JobsOverview, GetAllJobsWithProjects } from "types";
 
 export type JobsData = JobsOverview;
+export type JobsDataWithProjects = GetAllJobsWithProjects;
 
 export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
 	try {
@@ -57,6 +58,7 @@ export const getJobByProjectId = async (
 			return;
 		}
 		if (data) {
+			// console.log(data);
 			jobIds = data?.map((projectJob) => projectJob.job_id || 0);
 			// console.log(jobIds);
 		}
@@ -72,6 +74,28 @@ export const getJobByProjectId = async (
 		return jobData;
 	} catch (error) {
 		console.error("Error fetching jobs: ", error);
+	}
+};
+
+export const getAllJobsWithProjectsQuery = async (): Promise<
+	JobsDataWithProjects[] | undefined
+> => {
+	try {
+		const { data, error } = (await supabase
+			.from("jobs_overview_with_projects")
+			.select("*")
+			.order("client_name", { ascending: true })) as unknown as {
+			data: JobsDataWithProjects[];
+			error: PostgrestError;
+		};
+
+		if (error) {
+			console.error("Error fetching Jobs data with projects: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error fetching Jobs data with projects: ", error);
 	}
 };
 

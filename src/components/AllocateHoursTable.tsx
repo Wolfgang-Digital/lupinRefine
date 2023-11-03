@@ -17,6 +17,8 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+import { getAllJobTasks } from "@pages/api/jobTasksView";
+import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 
@@ -61,12 +63,34 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const [timeSpent, setTimeSpent] = useState("");
 
 	useEffect(() => {
+		setTasks([]);
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
 				jobId || 0,
 				10
 			);
+
+			const getTasks = await getAllJobTasks(jobId || 0);
+			if (getTasks) {
+				getTasks.forEach((task) => {
+					taskOptions.push({
+						label: task.task_name || "",
+						value: task.id?.toString() || "0",
+					});
+				});
+			}
+			setTasks(taskOptions);
+			const getUsers = await getAllUsers();
+			if (getUsers) {
+				getUsers.forEach((user) => {
+					userOptions.push({
+						label: user.user_name || "",
+						value: user.user_id?.toString() || "0",
+					});
+				});
+			}
+			setUsers(userOptions);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -83,18 +107,18 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 						// month: item.month,
 					})
 				);
-				mappedData.forEach((row) => {
-					taskOptions.push({
-						label: row.task_name || "",
-						value: row.task_id?.toString() || "0",
-					});
-					userOptions.push({
-						label: row.user_name || "",
-						value: row.user_id?.toString() || "0",
-					});
-				});
-				setTasks(taskOptions);
-				setUsers(userOptions);
+				// mappedData.forEach((row) => {
+				// taskOptions.push({
+				// 	label: row.task_name || "",
+				// 	value: row.task_id?.toString() || "0",
+				// });
+				// userOptions.push({
+				// 	label: row.user_name || "",
+				// 	value: row.user_id?.toString() || "0",
+				// });
+				// });
+				// setTasks(taskOptions);
+				// setUsers(userOptions);
 				setFetchedRows(mappedData);
 				console.log(fetchedRows);
 			}
@@ -132,38 +156,36 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 	const monthName = monthNames[selectedMonth];
 
 	return (
-		<div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+		<div
+			style={{
+				height: "100%",
+				width: "100%",
+				overflow: "auto",
+			}}
+		>
 			<Grid container spacing={2}>
 				{/* First Column */}
 				<Grid item xs={8}>
-					<div style={{ display: "flex", paddingTop: "20px" }}>
-						<WeekButton
-							onClick={() => {
-								setSelectedMonth(selectedMonth - 1);
-							}}
-						>
+					<div style={{ display: "flex", alignItems: "center", padding: "20px 0" }}>
+						<WeekButton onClick={() => setSelectedMonth(selectedMonth - 1)}>
 							Previous month
 						</WeekButton>
-						<div
-							style={{ paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px" }}
-						>
+						<div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
 							{monthName}
 						</div>
-						<WeekButton
-							onClick={() => {
-								setSelectedMonth(selectedMonth + 1);
-							}}
-						>
+						<WeekButton onClick={() => setSelectedMonth(selectedMonth + 1)}>
 							Next month
 						</WeekButton>
 					</div>
 					{Object.keys(groupedRows).map((month) => (
 						<Accordion key={month}>
 							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-								<Typography>{month}</Typography>
+								<Typography variant="h6" fontSize="16px">
+									{monthName}
+								</Typography>
 							</AccordionSummary>
 							<AccordionDetails>
-								<Paper>
+								<Paper style={{ width: "100%" }}>
 									<DataGrid
 										rows={groupedRows[month]}
 										columns={columns.map((col) => ({

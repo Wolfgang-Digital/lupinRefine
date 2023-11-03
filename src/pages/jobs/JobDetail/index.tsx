@@ -16,8 +16,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
-import { JobsData } from "@api/jobs";
-import { JobsOverview } from "types";
+import {
+	// JobsData,
+	JobsDataWithProjects,
+} from "@api/jobs";
+import {
+	// JobsOverview,
+	GetAllJobsWithProjects,
+} from "types";
 import {
 	TabContainer,
 	TabContentContainer,
@@ -38,25 +44,28 @@ const Transition = React.forwardRef(function Transition(
 });
 
 interface JobDetailProps {
-	job: JobsData;
+	job: JobsDataWithProjects;
 	onClose: () => void;
 }
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-
+	// console.log(job);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
 
-	const jobInfoFields: { label: string; field: keyof JobsOverview }[] = [
-		{ label: "Job ID", field: "job_id" },
-		{ label: "Client Name", field: "client_name" },
-		{ label: "Job Name", field: "job_name" },
-		{ label: "Job Type", field: "job_type_name" },
-		{ label: "Tier", field: "tier_name" },
-		// { label: "Currency", field: "currency_symbol" },
-	];
+	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
+		[
+			{ label: "Job ID", field: "job_id" },
+			{ label: "Client Name", field: "client_name" },
+			{ label: "Project Name", field: "project_name" },
+			{ label: "Project ID", field: "job_name_id" },
+			// { label: "Job Name", field: "job_name" },
+			{ label: "Job Type", field: "job_type_name" },
+			{ label: "Tier", field: "tier_name" },
+			// { label: "Currency", field: "currency_symbol" },
+		];
 
 	return (
 		<>
@@ -65,7 +74,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 				open={true}
 				onClose={onClose}
 				TransitionComponent={Transition}
-				PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
+				PaperProps={{ style: { marginLeft: "10%", width: "100%" } }}
 			>
 				<AppBar sx={{ position: "relative" }}>
 					<Toolbar>
@@ -169,7 +178,10 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Tasks
 								</Typography>
-								<CollapsibleTasksGrid jobId={job?.job_id || 0} />
+								<CollapsibleTasksGrid
+									projectId={job?.project_id || 0}
+									jobId={job?.job_name_id || 0}
+								/>
 							</Paper>
 						</Container>
 					</TabPanelContainer>
@@ -182,10 +194,11 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 					>
 						<Container component="main" maxWidth="lg">
 							<CssBaseline />
-							<Paper elevation={3} sx={{ padding: "20px" }}>
+							<Paper elevation={3} sx={{ padding: 3 }}>
 								<Typography component="h1" variant="h5">
-									Allocations: {job?.client_name} : {job?.job_name}
+									Allocations
 								</Typography>
+
 								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
 							</Paper>
 						</Container>

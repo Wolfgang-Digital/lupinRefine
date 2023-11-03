@@ -23,9 +23,14 @@ import {
 	getAllTasks,
 	PostJobTaskEntry,
 } from "@pages/api/jobTasksView";
-import { JobTasksView } from "types";
+import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
+import {
+	// JobTasksView,
+	// GetAllJobsWithProjects,
+	ProjectJobTasksView,
+} from "types";
 
-type RowData = JobTasksView;
+type RowData = ProjectJobTasksView;
 
 type TaskOption = {
 	label: string;
@@ -46,7 +51,13 @@ function CustomToolbar() {
 		</GridToolbarContainer>
 	);
 }
-function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
+function CollapsibleTasksGrid({
+	projectId,
+	jobId,
+}: {
+	projectId?: number;
+	jobId?: number;
+}) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
@@ -57,9 +68,16 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const jobTasksTable = await getAllJobTasks(jobId || 0);
+			console.log({ jobTasksTable });
 			const getTasks = await getAllTasks();
-			if (getTasks) {
-				getTasks.forEach((task) => {
+			const getProjectJobTasks = await getAllProjectJobTasks(
+				projectId || 0,
+				jobId || 0
+			);
+			console.log(getProjectJobTasks);
+			console.log(jobId);
+			if (getProjectJobTasks) {
+				getTasks?.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
 						value: task.task_id?.toString() || "0",
@@ -69,14 +87,16 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 			setTasks(taskOptions);
 			// console.log(taskOptions);
 
-			if (jobTasksTable) {
+			if (getProjectJobTasks) {
 				// Map the fetched data to match the RowData type
-				const mappedData: RowData[] = jobTasksTable.map((item: JobTasksView) => ({
-					...item,
-					id: item.id,
-					job_id: item.job_id,
-					task_name: item.task_name,
-				}));
+				const mappedData: RowData[] = getProjectJobTasks.map(
+					(item: ProjectJobTasksView) => ({
+						...item,
+						id: item.id,
+						job_id: item.job_id,
+						task_name: item.task_name,
+					})
+				);
 				setFetchedRows(mappedData);
 				// console.log(mappedData);
 			}
@@ -111,7 +131,14 @@ function CollapsibleTasksGrid({ jobId }: { jobId?: number }) {
 
 	return (
 		<>
-			<div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+			<div
+				style={{
+					height: "100%",
+					width: "100%",
+					overflow: "auto",
+					paddingTop: "20px",
+				}}
+			>
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={8}>

@@ -8,7 +8,9 @@ import {
 	Dialog,
 	AppBar,
 	Toolbar,
+	IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close"; // Step 1: Import the CloseIcon
 import { DataGrid } from "@mui/x-data-grid";
 import {
 	ClientOption,
@@ -16,13 +18,24 @@ import {
 	JobOption,
 	ProjectOption,
 } from "./index.page";
+import { useEffect, useState } from "react";
+import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
+import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import { format } from "date-fns";
+
+interface TimesheetType {
+	client_name: string;
+	project_name: string | null;
+	job_name: string | null;
+	task_name: string | null;
+	time: number | null;
+	time_left: number | null;
+}
 
 export const DayDialog = ({
 	showForm,
 	setShowForm,
 	selectedDate,
-
-	handleFormSubmit,
 	selectedClient,
 	handleClientSelect,
 	clients,
@@ -45,7 +58,6 @@ export const DayDialog = ({
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: string;
 
-	handleFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 	selectedClient: string;
 	handleClientSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	clients: ClientOption[];
@@ -64,90 +76,70 @@ export const DayDialog = ({
 	setNotes: React.Dispatch<React.SetStateAction<string>>;
 	saveTimeEntry: () => void;
 }) => {
-	const rows = [
-		{
-			id: 1,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Implentation",
-			task: "Opt",
-			hoursLogged: "2hrs",
-			hoursLeft: "2hrs",
-		},
-		{
-			id: 2,
-			client: "Actavo",
-			project: "Google Ads",
-			job: "Monthly Management",
-			task: "Reporting",
-			hoursLogged: "2hrs",
-			hoursLeft: "1hrs",
-		},
-
-		{
-			id: 3,
-			client: "Allcare Management Services Ltd",
-			project: "Google Ads",
-			job: "Implementation",
-			task: "Opt",
-			hoursLogged: "1hrs",
-			hoursLeft: "2hrs",
-		},
-		// Add more rows with three columns as needed
-	];
-
-	// const rows: TimesheetRowsView[] = [
-	// 	{
-	// 		id: 1,
-	// 		name: "Actavo",
-	// 		project_name: "Google Ads",
-	// 		job_name: "Implentation",
-	// 		task_name: "Opt",
-	// 		hours: 2,
-	// 		time: 2,
-	// 	},
-
-	// 	// Add more rows with three columns as needed
-	// ] as unknown as TimesheetRowsView[];
-
-	// fetch the timesheet rows again here, filter by the day, maybe create a new query to only filter by date, and use groupTimesheets to get the rows into your desired schema
-
 	const columns = [
-		{
-			field: "client",
-			headerName: "Client",
-			flex: 0.7,
-		},
-		{
-			field: "project",
-			headerName: "Project",
-			flex: 0.5,
-		},
-		{
-			field: "job",
-			headerName: "Job",
-			flex: 0.5,
-		},
-		{
-			field: "task",
-			headerName: "Task",
-			flex: 0.5,
-		},
-		{
-			field: "hoursLogged",
-			headerName: "Used",
-			flex: 0.3,
-		},
-		{
-			field: "hoursLeft",
-			headerName: "Left",
-			flex: 0.3,
-		},
+		{ field: "client_name", headerName: "Name", width: 140 },
+		{ field: "project_name", headerName: "Project", width: 80 },
+		{ field: "job_name", headerName: "Job", width: 140 },
+		{ field: "task_name", headerName: "Task", width: 120 },
+		{ field: "time", headerName: "Logged", width: 120 },
+		{ field: "time_left", headerName: "Left", width: 100 },
 	];
+
+	const [rows, setRows] = useState<TimesheetType[]>([]);
+	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const timesheetsResponse = await getAllTimesheetRowsV2();
+
+				if (timesheetsResponse) {
+					const filteredTimesheets = timesheetsResponse.filter(
+						(timesheet) =>
+							timesheet.user_id === 13 && timesheet.date === formattedDate
+					);
+
+					console.log({ timesheetsResponse, filteredTimesheets });
+					console.log(formattedDate);
+
+					const groupedTimesheetsData: GroupedTimesheets =
+						groupTimesheets(filteredTimesheets);
+
+					const newRows: TimesheetType[] = [];
+					groupedTimesheetsData.forEach((entry) => {
+						entry.jobs.forEach((jobEntry) => {
+							jobEntry.tasks.forEach((taskEntry) => {
+								newRows.push({
+									client_name: entry.client_name,
+									project_name: entry.project_name,
+									job_name: jobEntry.job_name,
+									task_name: taskEntry.task_name,
+									time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
+									time: taskEntry.time,
+								});
+							});
+						});
+					});
+					setRows(newRows);
+					console.log({ newRows, groupedTimesheetsData });
+					console.log("Grouped Data", groupedTimesheetsData);
+				} else {
+					console.error("timesheetsResponse is undefined");
+				}
+			} catch (error) {
+				console.error("Error fetching data from Supabase:", error);
+			}
+		}
+
+		fetchData();
+	}, [selectedDate, formattedDate]);
+
 	return (
 		<Dialog
 			open={showForm}
-			onClose={() => setShowForm(false)}
+			onClose={() => {
+				setShowForm(false);
+			}}
 			fullScreen
 			maxWidth="lg"
 			style={{
@@ -156,11 +148,20 @@ export const DayDialog = ({
 		>
 			<AppBar sx={{ position: "relative" }}>
 				<Toolbar>
+					<IconButton color="inherit" onClick={() => setShowForm(false)}>
+						<CloseIcon />
+					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						{selectedDate}
+						Day Selected: {selectedDate}
 					</Typography>
-					<Button autoFocus color="inherit">
-						Save
+					<Button
+						autoFocus
+						color="inherit"
+						onClick={() => {
+							setShowForm(false);
+						}}
+					>
+						Cancel
 					</Button>
 				</Toolbar>
 			</AppBar>
@@ -171,7 +172,7 @@ export const DayDialog = ({
 					spacing={2}
 					style={{ paddingTop: "10px", paddingBottom: "90px" }}
 				>
-					<Grid item xs={12}>
+					<Grid item xs={7}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -181,14 +182,28 @@ export const DayDialog = ({
 						>
 							Day Overview:
 						</Typography>
-						<DataGrid
-							autoHeight
-							rows={rows}
-							columns={columns}
-							style={{ display: "flex", justifyContent: "center" }}
-						/>
+
+						<div style={{ height: "600px", overflow: "auto" }}>
+							<DataGrid
+								autoHeight
+								rows={rows.filter((row) => row.time && row.time > 0)}
+								getRowId={(timeEntry) => {
+									return (
+										(timeEntry.client_name ?? "could not find client") +
+										(timeEntry.project_name ?? "could not find project") +
+										(timeEntry.job_name ?? "could not find job") +
+										(timeEntry.task_name ?? "could not find task")
+									);
+								}}
+								columns={columns}
+								style={{
+									display: "flex",
+									justifyContent: "center",
+								}}
+							/>
+						</div>
 					</Grid>
-					<Grid item xs={12}>
+					<Grid item xs={5}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -198,7 +213,7 @@ export const DayDialog = ({
 						>
 							Log Time:
 						</Typography>
-						<form onSubmit={handleFormSubmit}>
+						<form>
 							<TextField
 								label="Date"
 								value={selectedDate}
@@ -323,7 +338,6 @@ export const DayDialog = ({
 							<Button
 								variant="contained"
 								color="primary"
-								type="submit"
 								style={{ padding: "10px" }}
 								disabled={!selectedTask || !timeSpent}
 								onClick={saveTimeEntry}

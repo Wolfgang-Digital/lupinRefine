@@ -19,14 +19,16 @@ export const PostTimeEntry = async ({
 	staffId: staff_id,
 	timeSpent,
 	notes,
+	projectId: project_id,
 	jobId: job_id,
 	taskId: task_id,
-	selectedDate,
+	selectedDate: selectedDate,
 	rate,
 }: {
 	staffId: number;
 	timeSpent: number;
 	notes: string;
+	projectId: number;
 	jobId: number;
 	taskId: number;
 	selectedDate: string;
@@ -42,6 +44,7 @@ export const PostTimeEntry = async ({
 				task_id,
 				date: selectedDate,
 				rate,
+				project_id,
 			},
 		]);
 		if (error) {
