@@ -74,7 +74,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 				open={true}
 				onClose={onClose}
 				TransitionComponent={Transition}
-				PaperProps={{ style: { marginLeft: "10%", width: "90%" } }}
+				PaperProps={{ style: { marginLeft: "10%", width: "100%" } }}
 			>
 				<AppBar sx={{ position: "relative" }}>
 					<Toolbar>
@@ -194,10 +194,11 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 					>
 						<Container component="main" maxWidth="lg">
 							<CssBaseline />
-							<Paper elevation={3} sx={{ padding: "20px" }}>
+							<Paper elevation={3} sx={{ padding: 3 }}>
 								<Typography component="h1" variant="h5">
-									Allocations: {job?.client_name} : {job?.job_name}
+									Allocations
 								</Typography>
+
 								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
 							</Paper>
 						</Container>

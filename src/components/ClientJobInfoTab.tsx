@@ -217,7 +217,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 				onClose={handleCloseDialog}
 				fullScreen
 				maxWidth="lg"
-				PaperProps={{ style: { marginLeft: "5%", width: "100%" } }}
+				PaperProps={{ style: { width: "100%" } }}
 			>
 				<AppBar sx={{ position: "relative" }}>
 					<Toolbar>

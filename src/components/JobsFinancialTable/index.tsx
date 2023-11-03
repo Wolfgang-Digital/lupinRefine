@@ -82,8 +82,8 @@ const monthNames = [
 const NoPadding = styled(TableCell)({
 	paddingLeft: 0,
 	paddingRight: 0,
-	paddingTop: 5,
-	paddingBottom: 5,
+	paddingTop: 0,
+	paddingBottom: 0,
 	textAlign: "center",
 });
 
@@ -91,11 +91,39 @@ const TaskEntryCell = styled(TableCell)({
 	textAlign: "center",
 	width: "6%",
 	maxWidth: "6%",
-	padding: 0,
+	padding: 10,
 	borderTop: "0.8px solid", // Add top border for all cells
 	borderBottom: "0.8px solid", // Add bottom border for all cells
 	fontSize: "12px",
 });
+
+const ShortTaskEntryCell = styled(TableCell)`
+	text-align: center;
+	width: 6%;
+	max-width: 6%;
+	padding: 10px;
+	border-top: 0.8px solid;
+	border-bottom: 0.8px solid;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 15ch; /* Limit text to 15 characters */
+`;
+
+const ShortTableCell = styled(TableCell)`
+	text-align: center;
+	width: 6%;
+	max-width: 6%;
+	padding: 10px;
+	border-top: 0.8px solid;
+	border-bottom: 0.8px solid;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 30ch; /* Limit text to 15 characters */
+`;
 
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
@@ -107,10 +135,8 @@ const CreateRowOfTableCells = (
 	index: number,
 	total = 17
 ): React.ReactNode => {
-	// return total amount of TaskEntryCells
-	// create an array of TaskEntryCells
 	return [...Array(total)].map((_, i) => (
-		<TaskEntryCell key={i}>{index === i && content}</TaskEntryCell>
+		<ShortTableCell key={i}>{index === i && content}</ShortTableCell>
 	));
 };
 
@@ -118,7 +144,11 @@ type Total = {
 	time: number;
 	rate: number;
 	count: number;
+	hours: number;
+	allocatedValue?: number;
+	actualValue?: number;
 };
+
 type UserEntry = {
 	time: number;
 	rate: number;
@@ -144,21 +174,47 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 		if (!accumulator[jobKey]) {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
-				total: { time: 0, rate: 0, count: 0 },
-			};
-		}
-
-		if (!accumulator[jobKey][taskKey]) {
-			accumulator[jobKey][taskKey] = {
 				total: {
 					time: 0,
 					rate: 0,
-					count: 0,
-					user_name: "",
 					hours: 0,
+					count: 1,
+					allocatedValue: 0,
+					actualValue: 0,
+				} as Total,
+			};
+		} else {
+			const job = accumulator[jobKey];
+			const total = job.total as Total;
+			total.time += 0;
+			total.rate += current.rate || 0;
+			total.count += 1;
+		}
+
+		// If task is not existing, create a new task
+		if (!accumulator[jobKey][taskKey]) {
+			accumulator[jobKey][taskKey] = {
+				total: {
+					time: current.time || 0,
+					rate: current.rate || 0,
+					hours: 0,
+					count: 1,
+					allocatedValue: 0,
+					actualValue: (current.time || 0) * (current.rate || 0) || 0,
+					user_name: "",
 				} as unknown as Total,
 				task_name: current.task_name || "",
 			};
+			// If task exists, add the time and rate to the total
+		} else {
+			const task = (accumulator[jobKey] as Task)[taskKey] as User;
+			const total = task.total as Total;
+			total.time += current.time || 0;
+			total.rate += current.rate || 0;
+			total.count += 1;
+			total.actualValue =
+				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
+			(((accumulator[jobKey] as Task)[taskKey] as User).total as Total) = total;
 		}
 
 		const job = accumulator[jobKey];
@@ -172,39 +228,74 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			((accumulator[jobKey] as Task)[taskKey] as User)[userKey] = {
 				time: current.time || 0,
 				rate: current.rate || 0,
-				count: 0,
+				count: 1,
 				user_name: current.user_name || "",
 				hours: current.hours || 0,
 			} as unknown as UserEntry;
+			// sum task hours for each user hours
+			const taskTotal = (accumulator[jobKey][taskKey] as Task).total as Total;
+			taskTotal.hours += current.hours || 0;
+			taskTotal.allocatedValue =
+				(current.rate || 0) * (current.hours || 0) +
+				(taskTotal.allocatedValue || 0);
 		}
 
 		if (userEntry) {
 			(userEntry as UserEntry).time += current?.time || 0;
-			(userEntry as unknown as UserEntry).rate += current.rate || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
+
 		return accumulator;
 	}, {} as Accumulator);
 
 	// Calculate the average rate for each user under each job
 	for (const jobKey in result) {
-		if (typeof result[jobKey] !== "object") continue;
+		if (
+			typeof result[jobKey] !== "object" ||
+			["job_name", "total"].includes(jobKey)
+		)
+			continue;
 		for (const taskKey in result[jobKey] as Task) {
+			if (["job_name", "total"].includes(taskKey)) continue;
+			const jobTotal = result[jobKey].total as Total;
+			const taskTotal = ((result[jobKey] as Task)[taskKey] as User).total as Total;
+			console.log({ jobTotal, taskTotal, jobKey, taskKey });
+			jobTotal.actualValue =
+				(jobTotal.actualValue || 0) + (taskTotal?.actualValue || 0);
+			jobTotal.hours += taskTotal?.hours || 0;
+			jobTotal.time += taskTotal?.time || 0;
+			// console.log({ totalHours: taskTotal?.time });
+			jobTotal.allocatedValue =
+				(jobTotal.allocatedValue || 0) + (taskTotal?.allocatedValue || 0);
 			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;
+
 			for (const userKey in (result[jobKey] as Task)[taskKey] as User) {
 				if (
-					typeof ((result[jobKey] as Task)[taskKey] as User)[userKey] !== "object"
+					typeof ((result[jobKey] as Task)[taskKey] as User)[userKey] !== "object" ||
+					userKey === "total"
 				)
 					continue;
-				const userEntry = ((result[jobKey] as Task)[taskKey] as User)[
-					userKey
-				] as UserEntry;
-				if (userEntry.count !== 0) {
-					userEntry.rate = userEntry.rate / userEntry.count;
-				}
+				// const userEntry = ((result[jobKey] as Task)[taskKey] as User)[
+				// 	userKey
+				// ] as UserEntry;
 			}
 		}
 	}
+
+	// Calculate the average rate for each task under each job
+	for (const jobKey in result) {
+		if (typeof result[jobKey] !== "object") continue;
+		for (const taskKey in result[jobKey] as Task) {
+			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;
+			const taskEntry = (result[jobKey] as Task)[taskKey] as TaskEntry;
+			const total = taskEntry.total as Total;
+			if (total && total.count !== 0) {
+				total.rate /= total.count;
+			}
+		}
+	}
+
+	if (Object.keys(result).length !== 0) console.log({ result });
 
 	return result;
 }
@@ -253,10 +344,8 @@ function JobsFinancialTable({
 				});
 				const groupedData: Accumulator[] = [];
 				ungroupedMonthData.forEach((month, index) => {
-					console.log({ month });
 					groupedData[index] = groupData(month);
 				});
-				console.log({ ungroupedMonthData, groupedData });
 				setMonthData(groupedData);
 			} catch (error) {
 				console.error(error);
@@ -273,6 +362,7 @@ function JobsFinancialTable({
 					display: "flex",
 					padding: 20,
 					backgroundColor: "#E5E5E8",
+
 					borderTopRightRadius: "10px",
 					borderTopLeftRadius: "10px",
 				}}
@@ -290,9 +380,19 @@ function JobsFinancialTable({
 				<h3 style={{ paddingLeft: "5%" }}>+ 5% YoY | + 0% MoM</h3>
 			</div>
 
-			<TableContainer component={Paper}>
+			<TableContainer
+				style={{ maxHeight: "800px", overflowY: "scroll" }}
+				component={Paper}
+			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
-					<TableHead>
+					<TableHead
+						style={{
+							position: "sticky",
+							top: 0,
+							background: "white",
+							zIndex: 2,
+						}}
+					>
 						{/* Allocated Heading Row */}
 						<TableRow>
 							<NoPadding colSpan={4} style={{ borderBottom: "none" }}></NoPadding>
@@ -302,6 +402,7 @@ function JobsFinancialTable({
 									backgroundColor: "#C3DDBC",
 									paddingLeft: 0,
 									borderBottom: "none",
+									paddingTop: "10px",
 								}}
 							>
 								Allocated
@@ -312,10 +413,19 @@ function JobsFinancialTable({
 									backgroundColor: "#BEB3D4",
 									paddingLeft: 0,
 									borderBottom: "none",
+									paddingTop: "10px",
 								}}
 							>
 								Actuals
 							</NoPadding>
+							<NoPadding
+								style={{
+									backgroundColor: "white",
+									paddingLeft: 0,
+									borderBottom: "none",
+								}}
+								colSpan={8}
+							></NoPadding>
 						</TableRow>
 						{/* Column Headers */}
 						<TableRow>
@@ -324,7 +434,10 @@ function JobsFinancialTable({
 									key={columnIndex}
 									style={{
 										width: "6%",
+										padding: "10px",
+										fontSize: "12px",
 										textAlign: "center",
+										lineHeight: "1.2rem",
 										...((typeof column === "object" && column.style) || {}),
 									}}
 								>
@@ -347,29 +460,66 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "green" }}
+										style={{ background: "#1E7F74", color: "white !important" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}{" "}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
 									</TableRow>
 									{monthIndex === selectedMonthIndex &&
 										jobs.map((job) => (
 											<>
 												<>
-													<TableRow>
-														{CreateRowOfTableCells(job.job_name as string, 1, 17)}
+													<TableRow
+														style={{
+															borderBottom: "0.8px solid black",
+															backgroundColor: "#E5E5E8",
+														}}
+													>
+														{CreateEmptyCells(1)}
+														<ShortTableCell>
+															{(job as Job)?.job_name as string}
+														</ShortTableCell>
+														{CreateEmptyCells(2)}
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+															{((job as Job)?.total as Total).hours || 0}
+														</TaskEntryCell>
+														{CreateEmptyCells(1)}
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+															{((job as Job)?.total as Total).allocatedValue || 0}
+														</TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+															{((job as Job)?.total as Total).time || 0}
+														</TaskEntryCell>
+														{CreateEmptyCells(1)}
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+															{((job as Job)?.total as Total).actualValue || 0}
+														</TaskEntryCell>
 													</TableRow>
 												</>
 												{Object.entries(job).map(([key, task]) => {
 													return (
 														<>
 															{Number.isInteger(parseInt(key)) && (
-																<TableRow>
-																	{CreateRowOfTableCells(
-																		(task as TaskEntry)?.task_name as string,
-																		2,
-																		17
-																	)}
+																<TableRow style={{ borderBottom: "0.8px solid black" }}>
+																	{CreateEmptyCells(2)}
+																	<ShortTableCell>
+																		{(task as TaskEntry)?.task_name as string}
+																	</ShortTableCell>
+																	{CreateEmptyCells(1)}
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{((task as TaskEntry)?.total as Total).hours || 0}
+																	</TaskEntryCell>
+																	{CreateEmptyCells(1)}
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{((task as TaskEntry)?.total as Total).allocatedValue || 0}
+																	</TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{((task as TaskEntry)?.total as Total).time || 0}
+																	</TaskEntryCell>
+																	{CreateEmptyCells(1)}
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{((task as TaskEntry)?.total as Total).actualValue || 0}
+																	</TaskEntryCell>
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
@@ -377,18 +527,61 @@ function JobsFinancialTable({
 																	([taskKey, { time, hours, user_name, rate }]) => {
 																		return (
 																			Number.isInteger(parseInt(taskKey)) && (
-																				<TableRow>
+																				<TableRow
+																					style={{
+																						verticalAlign: "middle",
+																						textAlign: "center",
+																						marginTop: "7px",
+																						marginLeft: "10px",
+																						borderBottom: "0.8px solid black",
+																					}}
+																				>
 																					{CreateEmptyCells(3)}
-																					<TaskEntryCell>{user_name}</TaskEntryCell>
+																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
 																					<>
 																						{Number.isInteger(parseInt(taskKey)) && (
 																							<>
-																								<TaskEntryCell>{hours}</TaskEntryCell>
-																								<TaskEntryCell>{rate}</TaskEntryCell>
-																								<TaskEntryCell>{hours * rate}</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{hours}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{rate}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									{hours * rate}
+																								</TaskEntryCell>
 																								<TaskEntryCell>{time}</TaskEntryCell>
-																								<TaskEntryCell>{rate}</TaskEntryCell>
-																								<TaskEntryCell>{time * rate}</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									{rate}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									{time * rate}
+																								</TaskEntryCell>
 																							</>
 																						)}
 																					</>
