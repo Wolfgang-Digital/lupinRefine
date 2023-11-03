@@ -95,8 +95,7 @@ export const DayDialog = ({
 
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
-						(timesheet) =>
-							timesheet.user_id === 13 && timesheet.date === formattedDate
+						(timesheet) => timesheet.date === formattedDate
 					);
 
 					console.log({ timesheetsResponse, filteredTimesheets });

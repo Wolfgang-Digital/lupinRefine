@@ -154,6 +154,7 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
+			console.log({ timesheetsResponse });
 			let filteredResponse: typeof timesheetsResponse = [];
 			// console.log(timesheetsResponse);
 			if (!timesheetsResponse) {
@@ -178,7 +179,8 @@ const Timesheet = () => {
 				);
 			});
 
-			const groupedTimesheets = groupTimesheets(filteredResponse);
+			const groupedTimesheets: GroupedTimesheets =
+				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
 
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}

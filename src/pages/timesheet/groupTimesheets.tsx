@@ -26,22 +26,22 @@ export type GroupedTimesheets = Client[];
 export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
-			(entry) => entry.client_id === curr.client_id
+			(entry: Client) => entry.client_id === curr.client_id
 		);
 
 		if (existingClientEntry) {
 			const existingProjectEntry = acc.find(
-				(project) =>
+				(project: Client) =>
 					project.project_id === curr.project_id &&
 					project.client_id === curr.client_id
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
-					(job) => job.job_id === curr.job_id
+					(job: Job) => job.job_id === curr.job_id
 				);
 				if (existingJobEntry) {
 					const existingTaskEntry = existingJobEntry.tasks.find(
-						(task) => task.task_id === curr.task_id
+						(task: Task) => task.task_id === curr.task_id
 					);
 					if (existingTaskEntry) {
 						existingTaskEntry.time += curr.time || 0;

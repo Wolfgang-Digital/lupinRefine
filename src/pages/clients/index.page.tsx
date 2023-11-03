@@ -31,6 +31,7 @@ const ClientOverview: React.FC = () => {
 	useEffect(() => {
 		const fetchClients = async () => {
 			const clientsResponse = await getAllClients();
+			console.log({ clientsResponse });
 			if (clientsResponse) {
 				setClients(clientsResponse);
 			}

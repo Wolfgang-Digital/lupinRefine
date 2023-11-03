@@ -38,6 +38,7 @@ const Wolfgangers: React.FC = () => {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const usersResponse = await getAllUsers();
+			console.log({ usersResponse });
 			if (usersResponse) {
 				setUsers(usersResponse);
 			}
@@ -125,7 +126,7 @@ const Wolfgangers: React.FC = () => {
 					rows={rows}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
-					getRowId={(row) => row.user_id}
+					getRowId={(row) => row.department_name + row.user_id}
 					onCellClick={(params: GridCellParams) => {
 						if (params.field == "name") {
 							handleUserClick(params);
