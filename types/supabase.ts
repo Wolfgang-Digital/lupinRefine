@@ -43,7 +43,7 @@ export interface Database {
           id: number
           job_task_id: number
           month: number
-          user_id: number
+          user_id: string | null
           year: number | null
         }
         Insert: {
@@ -52,7 +52,7 @@ export interface Database {
           id?: number
           job_task_id: number
           month: number
-          user_id: number
+          user_id?: string | null
           year?: number | null
         }
         Update: {
@@ -61,7 +61,7 @@ export interface Database {
           id?: number
           job_task_id?: number
           month?: number
-          user_id?: number
+          user_id?: string | null
           year?: number | null
         }
         Relationships: [
@@ -98,62 +98,6 @@ export interface Database {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "allocate_hours_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "allocate_hours_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["user_id"]
           },
           {
@@ -243,7 +187,7 @@ export interface Database {
         Row: {
           address: string | null
           city: string | null
-          client_lead: number | null
+          client_lead: string | null
           country: string | null
           created_at: string | null
           currency: number | null
@@ -262,7 +206,7 @@ export interface Database {
         Insert: {
           address?: string | null
           city?: string | null
-          client_lead?: number | null
+          client_lead?: string | null
           country?: string | null
           created_at?: string | null
           currency?: number | null
@@ -281,7 +225,7 @@ export interface Database {
         Update: {
           address?: string | null
           city?: string | null
-          client_lead?: number | null
+          client_lead?: string | null
           country?: string | null
           created_at?: string | null
           currency?: number | null
@@ -317,62 +261,6 @@ export interface Database {
             columns: ["client_lead"]
             isOneToOne: false
             referencedRelation: "allocate_hours_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "client_client_lead_fkey"
-            columns: ["client_lead"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["user_id"]
           },
           {
@@ -764,69 +652,6 @@ export interface Database {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
             referencedRelation: "wolfgang_jobs_demo"
             referencedColumns: ["job_id"]
           },
@@ -849,62 +674,6 @@ export interface Database {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tasks"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["task_id"]
           }
         ]
@@ -985,69 +754,6 @@ export interface Database {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_team_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["job_id"]
           },
           {
@@ -1225,62 +931,6 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["client_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_client_id_fkey"
-            columns: ["job_client_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["client_id"]
-          },
-          {
             foreignKeyName: "jobs_job_department_id_fkey"
             columns: ["job_department_id"]
             isOneToOne: false
@@ -1320,13 +970,6 @@ export interface Database {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
         ]
@@ -1417,13 +1060,6 @@ export interface Database {
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "project_job_task_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["project_id"]
-          },
-          {
             foreignKeyName: "project_job_task_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
@@ -1442,62 +1078,6 @@ export interface Database {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tasks"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["task_id"]
           }
         ]
@@ -1555,13 +1135,6 @@ export interface Database {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "project_jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
         ]
@@ -1768,11 +1341,10 @@ export interface Database {
           notes: string
           project_id: number | null
           rate: number
-          staff_id: number | null
+          staff_id: string | null
           task_id: number | null
           time: number
           unsubmitted: boolean | null
-          user_id_test: string | null
         }
         Insert: {
           created_at?: string
@@ -1783,11 +1355,10 @@ export interface Database {
           notes: string
           project_id?: number | null
           rate?: number
-          staff_id?: number | null
+          staff_id?: string | null
           task_id?: number | null
           time: number
           unsubmitted?: boolean | null
-          user_id_test?: string | null
         }
         Update: {
           created_at?: string
@@ -1798,111 +1369,12 @@ export interface Database {
           notes?: string
           project_id?: number | null
           rate?: number
-          staff_id?: number | null
+          staff_id?: string | null
           task_id?: number | null
           time?: number
           unsubmitted?: boolean | null
-          user_id_test?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "all_timesheet_rows_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "allocate_hours_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "allocate_hours_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "user_dept_join"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "new_foreign_key_name"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "users_allocated_hours"
-            referencedColumns: ["user_id"]
-          },
           {
             foreignKeyName: "timesheet_rows_job_id_fkey"
             columns: ["job_id"]
@@ -1956,69 +1428,6 @@ export interface Database {
             foreignKeyName: "timesheet_rows_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
             referencedRelation: "wolfgang_jobs_demo"
             referencedColumns: ["job_id"]
           },
@@ -2044,11 +1453,46 @@ export interface Database {
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "timesheet_rows_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["project_id"]
+            referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "allocate_hours_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "allocate_hours_view_compare"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "user_dept_join"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "users_allocated_hours"
+            referencedColumns: ["user_id"]
           }
         ]
       }
@@ -2084,19 +1528,19 @@ export interface Database {
           created_at: string
           id: number
           job_task_id: number | null
-          user_id: number | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           job_task_id?: number | null
-          user_id?: number | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           job_task_id?: number | null
-          user_id?: number | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -2138,62 +1582,6 @@ export interface Database {
             foreignKeyName: "user_task_assign_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_task_assign_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_dept_join"
             referencedColumns: ["user_id"]
           },
@@ -2217,56 +1605,6 @@ export interface Database {
         Row: {
           user_department: number | null
           user_email: string | null
-          user_id: number
-          user_job_rate_1: number
-          user_job_rate_2: number
-          user_job_rate_3: number
-          user_job_rate_4: number
-          user_job_rate_5: number
-          user_name: string | null
-          user_role: string | null
-          user_status: string | null
-        }
-        Insert: {
-          user_department?: number | null
-          user_email?: string | null
-          user_id?: number
-          user_job_rate_1?: number
-          user_job_rate_2?: number
-          user_job_rate_3?: number
-          user_job_rate_4?: number
-          user_job_rate_5?: number
-          user_name?: string | null
-          user_role?: string | null
-          user_status?: string | null
-        }
-        Update: {
-          user_department?: number | null
-          user_email?: string | null
-          user_id?: number
-          user_job_rate_1?: number
-          user_job_rate_2?: number
-          user_job_rate_3?: number
-          user_job_rate_4?: number
-          user_job_rate_5?: number
-          user_name?: string | null
-          user_role?: string | null
-          user_status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "users_user_department_fkey"
-            columns: ["user_department"]
-            isOneToOne: false
-            referencedRelation: "department"
-            referencedColumns: ["department_id"]
-          }
-        ]
-      }
-      users_new: {
-        Row: {
-          user_department: number | null
-          user_email: string | null
           user_id: string
           user_job_rate_1: number
           user_job_rate_2: number
@@ -2280,7 +1618,7 @@ export interface Database {
         Insert: {
           user_department?: number | null
           user_email?: string | null
-          user_id: string
+          user_id?: string
           user_job_rate_1?: number
           user_job_rate_2?: number
           user_job_rate_3?: number
@@ -2334,7 +1672,7 @@ export interface Database {
           task_id: number | null
           task_name: string | null
           time: number | null
-          user_id: number | null
+          user_id: string | null
           user_name: string | null
           year: number | null
         }
@@ -2365,7 +1703,7 @@ export interface Database {
           name: string | null
           task_id: number | null
           task_name: string | null
-          user_id: number | null
+          user_id: string | null
           user_name: string | null
           year: number | null
         }
@@ -2423,69 +1761,6 @@ export interface Database {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
             referencedRelation: "wolfgang_jobs_demo"
             referencedColumns: ["job_id"]
           },
@@ -2509,62 +1784,6 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "allocate_hours_view_compare"
             referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["task_id"]
           }
         ]
       }
@@ -2582,7 +1801,7 @@ export interface Database {
           project_name: string | null
           task_id: number | null
           task_name: string | null
-          user_id: number | null
+          user_id: string | null
           user_name: string | null
           year: number | null
         }
@@ -2620,13 +1839,6 @@ export interface Database {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["project_id"]
           }
         ]
@@ -2704,69 +1916,6 @@ export interface Database {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["job_id"]
           },
           {
@@ -2890,69 +2039,6 @@ export interface Database {
             foreignKeyName: "job_tasks_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "job_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
             referencedRelation: "wolfgang_jobs_demo"
             referencedColumns: ["job_id"]
           }
@@ -2990,7 +2076,6 @@ export interface Database {
       }
       project_job_task_view: {
         Row: {
-          id: number | null
           job_id: number | null
           job_name_name: string | null
           project_id: number | null
@@ -3035,13 +2120,6 @@ export interface Database {
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "project_job_task_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["project_id"]
-          },
-          {
             foreignKeyName: "project_job_task_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
@@ -3060,62 +2138,6 @@ export interface Database {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "allocate_hours_view_compare"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["task_id"]
-          },
-          {
-            foreignKeyName: "project_job_task_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
             referencedColumns: ["task_id"]
           }
         ]
@@ -3162,376 +2184,6 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "jobs_overview_with_projects"
             referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "project_jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["project_id"]
-          }
-        ]
-      }
-      timesheet_jobsresponse_dropdown: {
-        Row: {
-          client_name: string | null
-          job_id: number | null
-          job_name: string | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_demo: {
-        Row: {
-          date: string | null
-          job_id: number | null
-          job_name: string | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_name: string | null
-          time: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "all_tasks_demo"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "all_timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "allocate_hours_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "job_client_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs_overview"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_jobsresponse_dropdown"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_test"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_compare"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v2"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v3"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v4"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v5"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["job_id"]
-          },
-          {
-            foreignKeyName: "timesheet_rows_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "wolfgang_jobs_demo"
-            referencedColumns: ["job_id"]
-          }
-        ]
-      }
-      timesheet_rows_test: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          name: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view_compare: {
-        Row: {
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          job_name_id: number | null
-          job_name_name: string | null
-          month: number | null
-          name: string | null
-          project_id: number | null
-          project_name: string | null
-          task_id: number | null
-          task_name: string | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jobs_job_name_id_fkey"
-            columns: ["job_name_id"]
-            isOneToOne: false
-            referencedRelation: "job_names"
-            referencedColumns: ["job_name_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_name_id_fkey"
-            columns: ["job_name_id"]
-            isOneToOne: false
-            referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["job_name_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "all_timesheet_rows_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "jobs_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timesheet_rows_view_v6"
-            referencedColumns: ["project_id"]
-          }
-        ]
-      }
-      timesheet_rows_view_v2: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          month: number | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view_v3: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          month: number | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view_v4: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          month: number | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view_v5: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          month: number | null
-          name: string | null
-          notes: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: []
-      }
-      timesheet_rows_view_v6: {
-        Row: {
-          client_id: number | null
-          date: string | null
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          job_name_id: number | null
-          month: number | null
-          name: string | null
-          notes: string | null
-          project_id: number | null
-          project_name: string | null
-          rate: number | null
-          task_id: number | null
-          task_name: string | null
-          time: number | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jobs_job_name_id_fkey"
-            columns: ["job_name_id"]
-            isOneToOne: false
-            referencedRelation: "job_names"
-            referencedColumns: ["job_name_id"]
-          },
-          {
-            foreignKeyName: "jobs_job_name_id_fkey"
-            columns: ["job_name_id"]
-            isOneToOne: false
-            referencedRelation: "jobs_overview_with_projects"
-            referencedColumns: ["job_name_id"]
           }
         ]
       }
@@ -3539,7 +2191,7 @@ export interface Database {
         Row: {
           department_name: string | null
           user_email: string | null
-          user_id: number | null
+          user_id: string | null
           user_job_rate_1: number | null
           user_job_rate_2: number | null
           user_job_rate_3: number | null
@@ -3557,7 +2209,7 @@ export interface Database {
           month: number | null
           name: string | null
           task_name: string | null
-          user_id: number | null
+          user_id: string | null
           user_name: string | null
         }
         Relationships: []
@@ -3576,28 +2228,6 @@ export interface Database {
       hello: {
         Args: Record<PropertyKey, never>
         Returns: string
-      }
-      unworked_allocated_hours: {
-        Args: {
-          userid: number
-        }
-        Returns: {
-          hours: number | null
-          id: number | null
-          job_id: number | null
-          job_name: string | null
-          job_name_id: number | null
-          job_name_name: string | null
-          month: number | null
-          name: string | null
-          project_id: number | null
-          project_name: string | null
-          task_id: number | null
-          task_name: string | null
-          user_id: number | null
-          user_name: string | null
-          year: number | null
-        }[]
       }
     }
     Enums: {

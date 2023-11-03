@@ -5,7 +5,7 @@ import supabase from "@config/supaBaseClient";
 async function handleUserInsertion(user) {
 	//check user email if it exists in database
 	const { data, error } = await supabase
-		.from("users_new")
+		.from("users")
 		.select("*")
 		.eq("user_email", user.email);
 	if (error) {
@@ -15,7 +15,7 @@ async function handleUserInsertion(user) {
 	//if user doesn't exist, insert user into database
 	if (data.length === 0) {
 		const { error } = await supabase
-			.from("users_new")
+			.from("users")
 			.insert([
 				{ user_email: user.email, user_name: user.name, user_id: user.id },
 			]);
