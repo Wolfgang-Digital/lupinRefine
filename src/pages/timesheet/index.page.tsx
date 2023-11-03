@@ -4,7 +4,7 @@ import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
 import {
 	Grid,
 	Paper,
-	Button,
+	// Button,
 	TableContainer,
 	Table,
 	TableHead,
@@ -12,7 +12,7 @@ import {
 	TableRow,
 	TableBody,
 	Typography,
-	TextField,
+	// TextField,
 	MenuItem,
 	FormControl,
 	InputLabel,
@@ -110,7 +110,7 @@ const Timesheet = () => {
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
-	const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+	// const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
@@ -247,15 +247,15 @@ const Timesheet = () => {
 	}
 
 	// Function to handle "Add Time" button click
-	const handleAddTimeClick = () => {
-		setSelectedClient("");
-		setSelectedProject("");
-		setSelectedJob("");
-		setSelectedTask("");
-		setTimeSpent("");
-		setNotes("");
-		setShowForm(true);
-	};
+	// const handleAddTimeClick = () => {
+	// 	setSelectedClient("");
+	// 	setSelectedProject("");
+	// 	setSelectedJob("");
+	// 	setSelectedTask("");
+	// 	setTimeSpent("");
+	// 	setNotes("");
+	// 	setShowForm(true);
+	// };
 
 	// Function to handle "Time Icon" button click
 	const handleTimeIconClick = (

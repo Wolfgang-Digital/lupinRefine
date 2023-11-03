@@ -25,8 +25,8 @@ import {
 } from "@pages/api/jobTasksView";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import {
-	JobTasksView,
-	GetAllJobsWithProjects,
+	// JobTasksView,
+	// GetAllJobsWithProjects,
 	ProjectJobTasksView,
 } from "types";
 
@@ -68,6 +68,7 @@ function CollapsibleTasksGrid({
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const jobTasksTable = await getAllJobTasks(jobId || 0);
+			console.log({ jobTasksTable });
 			const getTasks = await getAllTasks();
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,

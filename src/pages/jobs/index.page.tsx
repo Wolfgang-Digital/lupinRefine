@@ -8,8 +8,8 @@ import {
 } from "@mui/x-data-grid";
 import { Typography, styled } from "@mui/material";
 import {
-	getAllJobs,
-	JobsData,
+	// getAllJobs,
+	// JobsData,
 	getAllJobsWithProjectsQuery,
 	JobsDataWithProjects,
 } from "@api/jobs";

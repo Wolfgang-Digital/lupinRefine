@@ -16,8 +16,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
-import { JobsData, JobsDataWithProjects } from "@api/jobs";
-import { JobsOverview, GetAllJobsWithProjects } from "types";
+import {
+	// JobsData,
+	JobsDataWithProjects,
+} from "@api/jobs";
+import {
+	// JobsOverview,
+	GetAllJobsWithProjects,
+} from "types";
 import {
 	TabContainer,
 	TabContentContainer,
