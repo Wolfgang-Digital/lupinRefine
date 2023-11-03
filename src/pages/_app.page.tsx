@@ -76,10 +76,12 @@ const App = (props: React.PropsWithChildren) => {
 
 		async function signInWithGoogleToSupabase() {
 			if (data?.id_token) {
-				const { error } = await supabase.auth.signInWithIdToken({
+				const { data: myData, error } = await supabase.auth.signInWithIdToken({
 					provider: "google",
 					token: data?.id_token,
 				});
+				console.log({ myData });
+				localStorage.setItem("user_id", myData?.user?.id || "");
 				if (error) {
 					console.log(error);
 					return;

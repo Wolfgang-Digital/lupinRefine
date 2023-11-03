@@ -25,7 +25,7 @@ export const PostTimeEntry = async ({
 	selectedDate: selectedDate,
 	rate,
 }: {
-	staffId: number;
+	staffId: string;
 	timeSpent: number;
 	notes: string;
 	projectId: number;

@@ -308,7 +308,7 @@ const Timesheet = () => {
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	function saveTimeEntry() {
 		const dataToPost = {
-			staffId: 13,
+			staffId: localStorage.getItem("user_id") || "",
 			notes,
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),

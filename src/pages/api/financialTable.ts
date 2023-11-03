@@ -1,8 +1,11 @@
 import supabase from "../../config/supaBaseClient";
 import { TimesheetRowsView } from "types";
 
-export type groupedFinancialData = {
-	[key: number]: { [key: number]: TimesheetRowsView };
+type Task = {
+	[key: string]: TimesheetRowsView;
+};
+export type GroupedFinancialData = {
+	[key: number]: Task;
 };
 // TODO: add job id, task id, user id, to the grouping here, remove the other grouping on clientjobinfotab
 export const groupFinancialTableData = (
@@ -15,7 +18,7 @@ export const groupFinancialTableData = (
 			return new Date(data.date || new Date()).getMonth() === month;
 		})
 		.reduce((acc, curr) => {
-			const { task_id, user_id } = curr;
+			const { task_id, user_id } = curr as TimesheetRowsView;
 			if (!task_id || !user_id) return acc;
 			if (acc && !acc[task_id]) {
 				acc[task_id] = { [user_id]: curr };
@@ -27,7 +30,7 @@ export const groupFinancialTableData = (
 				acc[task_id][user_id].time = time;
 			}
 			return acc;
-		}, {} as groupedFinancialData);
+		}, {} as GroupedFinancialData);
 	return groupedData;
 };
 

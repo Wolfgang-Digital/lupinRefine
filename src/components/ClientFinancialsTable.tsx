@@ -8,6 +8,7 @@ import {
 import {
 	getFinancialTable,
 	groupFinancialTableData,
+	GroupedFinancialData,
 } from "@api/financialTable";
 import { TimesheetRowsView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
@@ -49,7 +50,10 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	) {
 		const myArr: TimesheetRowsView[] = [];
 		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
-		const groupedData = groupFinancialTableData(copyFinancialData, selectedMonth);
+		const groupedData: GroupedFinancialData = groupFinancialTableData(
+			copyFinancialData,
+			selectedMonth
+		);
 		Object.values(groupedData).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
 				myArr.push(myItem);

@@ -90,9 +90,9 @@ function CollapsibleTasksGrid({
 			if (getProjectJobTasks) {
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = getProjectJobTasks.map(
-					(item: ProjectJobTasksView) => ({
+					(item: ProjectJobTasksView, i) => ({
 						...item,
-						id: item.id,
+						id: i,
 						job_id: item.job_id,
 						task_name: item.task_name,
 					})
