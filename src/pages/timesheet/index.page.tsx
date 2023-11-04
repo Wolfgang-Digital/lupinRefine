@@ -183,6 +183,7 @@ const Timesheet = () => {
 				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
 
+			// console.log({ groupedTimesheets, filteredResponse });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
 			const projectOptions: ProjectOption[] = [];
@@ -306,7 +307,7 @@ const Timesheet = () => {
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
-	function saveTimeEntry() {
+	async function saveTimeEntry() {
 		const dataToPost = {
 			staffId: localStorage.getItem("user_id") || "",
 			notes,
@@ -318,7 +319,7 @@ const Timesheet = () => {
 			rate: 150,
 		};
 		// const parts = selectedDate.split('-');
-		const response = PostTimeEntry(dataToPost);
+		const response = await PostTimeEntry(dataToPost);
 		console.log(`PostTimeEntry ${response}`);
 		setSelectedClient("");
 		setSelectedProject("");
@@ -328,7 +329,7 @@ const Timesheet = () => {
 		setNotes("");
 		setShowForm(false);
 		setShowForm(false);
-		// fetchTasksAndJobsWithFilter();
+		fetchTasksAndJobsWithFilter();
 	}
 
 	// Update the TimeEntries based on the current page and rows per page
