@@ -184,7 +184,7 @@ const Dashboard = () => {
 					</Card>
 				</Grid>
 
-				<Grid item {...gridItemProps}>
+				{/*<Grid item {...gridItemProps}>
 					<a
 						href="https://analytics.wolfgangdigital.com/"
 						target="_blank"
@@ -211,7 +211,7 @@ const Dashboard = () => {
 							</CardActionArea>
 						</Card>
 					</a>
-				</Grid>
+				</Grid>*/}
 			</Grid>
 		</>
 	);
