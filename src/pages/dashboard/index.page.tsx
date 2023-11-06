@@ -161,7 +161,7 @@ const Dashboard = () => {
 						</CardActionArea>
 					</Card>
 				</Grid>*/}
-				<Grid
+				{/*<Grid
 					item
 					{...gridItemProps}
 					onClick={() => navigateToPage("/clients")}
@@ -182,7 +182,7 @@ const Dashboard = () => {
 							</CardContent>
 						</CardActionArea>
 					</Card>
-				</Grid>
+				</Grid>*/}
 
 				{/*<Grid item {...gridItemProps}>
 					<a
