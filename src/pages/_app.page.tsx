@@ -28,9 +28,9 @@ import { ThemedTitleV2 } from "src/components";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 // import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
-import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
+//import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import SecurityIcon from "@mui/icons-material/Security";
+//import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
 
 import "src/pages/app.css";
@@ -69,6 +69,7 @@ const App = (props: React.PropsWithChildren) => {
 	const { data, status } = useSession();
 
 	const router = useRouter();
+
 	useEffect(() => {
 		if (status === "unauthenticated") {
 			router.push("/login");
@@ -95,7 +96,7 @@ const App = (props: React.PropsWithChildren) => {
 	const authProvider: AuthBindings = {
 		login: async () => {
 			signIn("google", {
-				callbackUrl: "/timesheet",
+				callbackUrl: "/dashboard",
 				redirect: true,
 			});
 
@@ -142,7 +143,6 @@ const App = (props: React.PropsWithChildren) => {
 					avatar: user.image,
 				};
 			}
-
 			return null;
 		},
 	};
@@ -178,30 +178,30 @@ const App = (props: React.PropsWithChildren) => {
 								//   options:{label: "Reports"},
 								//   icon: <ContentPasteSearchIcon/>
 								// },
-								{
-									name: "Users",
-									list: "/wolfgangers",
-									options: { label: "Wolfgangers" },
-									icon: <ConnectWithoutContactIcon />,
-								},
+								//{
+								//	name: "Users",
+								//	list: "/wolfgangers",
+								//	options: { label: "Wolfgangers" },
+								//	icon: <ConnectWithoutContactIcon />,
+								//},
 								{
 									name: "Client Overview",
 									list: "/clients",
 									options: { label: "Client Overview" },
 									icon: <RecentActorsIcon />,
 								},
-								{
-									name: "Job List",
-									list: "/jobs",
-									options: { label: "Job List" },
-									icon: <RecentActorsIcon />,
-								},
-								{
-									name: "Admin",
-									list: "/admin",
-									options: { label: "Admin" },
-									icon: <SecurityIcon />,
-								},
+								//{
+								//	name: "Job List",
+								//	list: "/jobs",
+								//	options: { label: "Job List" },
+								//	icon: <RecentActorsIcon />,
+								//},
+								//{
+								//	name: "Admin",
+								//	list: "/admin",
+								//	options: { label: "Admin" },
+								//	icon: <SecurityIcon />,
+								//},
 							]}
 							options={{
 								syncWithLocation: true,

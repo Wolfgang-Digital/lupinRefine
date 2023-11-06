@@ -45,7 +45,7 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 							}}
 							variant="subtitle2"
 						>
-							{user?.name}
+							{user?.user_name}
 						</Typography>
 						<Avatar src={user?.avatar} alt={user?.name} />
 					</Stack>
