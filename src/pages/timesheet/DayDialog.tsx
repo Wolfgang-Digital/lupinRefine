@@ -228,7 +228,7 @@ export const DayDialog = ({
 						<form>
 							<TextField
 								label="Date"
-								value={selectedDate}
+								value={displayDate}
 								InputProps={{
 									readOnly: true,
 								}}
