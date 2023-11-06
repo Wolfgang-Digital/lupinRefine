@@ -29,7 +29,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 // import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 //import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
-import RecentActorsIcon from "@mui/icons-material/RecentActors";
+//import RecentActorsIcon from "@mui/icons-material/RecentActors";
 //import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
 
@@ -184,12 +184,12 @@ const App = (props: React.PropsWithChildren) => {
 								//	options: { label: "Wolfgangers" },
 								//	icon: <ConnectWithoutContactIcon />,
 								//},
-								{
-									name: "Client Overview",
-									list: "/clients",
-									options: { label: "Client Overview" },
-									icon: <RecentActorsIcon />,
-								},
+								//{
+								//	name: "Client Overview",
+								//	list: "/clients",
+								//	options: { label: "Client Overview" },
+								//	icon: <RecentActorsIcon />,
+								//},
 								//{
 								//	name: "Job List",
 								//	list: "/jobs",
