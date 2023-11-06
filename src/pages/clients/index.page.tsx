@@ -82,7 +82,7 @@ const ClientOverview: React.FC = () => {
 			width: 250,
 		},
 		{ field: "tier_name", headerName: "Tier", width: 200 },
-		{ field: "user_name", headerName: "Team Lead", width: 200 },
+		// { field: "user_name", headerName: "Team Lead", width: 200 },
 		// ... Other columns
 	];
 
