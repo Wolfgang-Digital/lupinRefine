@@ -87,6 +87,7 @@ export const DayDialog = ({
 
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
+	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
 
 	useEffect(() => {
 		async function fetchData() {
@@ -151,7 +152,7 @@ export const DayDialog = ({
 						<CloseIcon />
 					</IconButton>
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-						Day Selected: {selectedDate}
+						Day Selected: {displayDate}
 					</Typography>
 					<Button
 						autoFocus
