@@ -85,7 +85,7 @@ const Dashboard = () => {
 				<Typography
 					style={{ paddingBottom: "5px", fontSize: "26px", fontWeight: "bold" }}
 				>
-					Welcome, Liam
+					Welcome to Lupin!
 				</Typography>
 				<Typography
 					style={{
@@ -93,7 +93,7 @@ const Dashboard = () => {
 						fontSize: "18px",
 					}}
 				>
-					Your Weekly Overview:
+					Here is your Weekly Overview:
 				</Typography>
 				<Grid container spacing={2}>
 					{cards.map((card, index) => (
