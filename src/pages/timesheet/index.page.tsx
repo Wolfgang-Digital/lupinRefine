@@ -16,11 +16,11 @@ import {
 	InputLabel,
 	Select,
 	TablePagination,
+	Button,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
-import { WeekButton, TimesheetContainer } from "@styled-components/timesheet";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import styled from "styled-components";
 import { getProjectbyClientId } from "@pages/api/projects";
@@ -466,7 +466,14 @@ const Timesheet = () => {
 	};
 	return (
 		<>
-			<TimesheetContainer>
+			<div
+				style={{
+					margin: "20px 0px",
+					display: "flex",
+					alignItems: "center",
+					paddingBottom: "10px",
+				}}
+			>
 				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
 				<FormControl variant="outlined">
 					<InputLabel id="filter-label">Filter</InputLabel>
@@ -481,25 +488,31 @@ const Timesheet = () => {
 						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
 					</Select>
 				</FormControl>
-			</TimesheetContainer>
+			</div>
 
 			<div>
 				<Grid container spacing={2}>
 					{/* First column */}
 					<Grid item xs={12}>
-						<TimesheetContainer
+						<div
 							style={{
-								display: "flex",
 								margin: "20px 0px",
+								display: "flex",
+								alignItems: "center",
+								paddingBottom: "10px",
 							}}
 						>
-							<WeekButton
+							<Button
 								variant="contained"
-								color="primary"
+								style={{
+									backgroundColor: "#3a2462",
+									color: "white",
+									padding: "8px",
+								}}
 								onClick={() => navigateWeeks(-1)}
 							>
 								Previous Week
-							</WeekButton>
+							</Button>
 							<Typography
 								style={{
 									marginLeft: "20px",
@@ -514,14 +527,18 @@ const Timesheet = () => {
 									"MMM d"
 								)}
 							</Typography>
-							<WeekButton
+							<Button
 								variant="contained"
-								color="primary"
+								style={{
+									backgroundColor: "#3a2462",
+									color: "white",
+									padding: "8px",
+								}}
 								onClick={() => navigateWeeks(1)}
 							>
 								Next Week
-							</WeekButton>
-						</TimesheetContainer>
+							</Button>
+						</div>
 
 						<div
 							style={{

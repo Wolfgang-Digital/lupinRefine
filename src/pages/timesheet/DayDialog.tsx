@@ -78,11 +78,11 @@ export const DayDialog = ({
 }) => {
 	const columns = [
 		{ field: "client_name", headerName: "Name", width: 140 },
-		{ field: "project_name", headerName: "Project", width: 80 },
-		{ field: "job_name", headerName: "Job", width: 140 },
+		{ field: "project_name", headerName: "Project", width: 140 },
+		{ field: "job_name", headerName: "Job", width: 120 },
 		{ field: "task_name", headerName: "Task", width: 120 },
-		{ field: "time", headerName: "Logged", width: 120 },
-		{ field: "time_left", headerName: "Left", width: 100 },
+		{ field: "time", headerName: "Hrs Logged", width: 100 },
+		{ field: "time_left", headerName: "Hrs Left", width: 80 },
 	];
 
 	const [rows, setRows] = useState<TimesheetType[]>([]);
@@ -183,23 +183,35 @@ export const DayDialog = ({
 						</Typography>
 
 						<div style={{ height: "600px", overflow: "auto" }}>
-							<DataGrid
-								autoHeight
-								rows={rows.filter((row) => row.time && row.time > 0)}
-								getRowId={(timeEntry) => {
-									return (
-										(timeEntry.client_name ?? "could not find client") +
-										(timeEntry.project_name ?? "could not find project") +
-										(timeEntry.job_name ?? "could not find job") +
-										(timeEntry.task_name ?? "could not find task")
-									);
-								}}
-								columns={columns}
-								style={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							/>
+							{rows.length > 0 ? (
+								<DataGrid
+									autoHeight
+									rows={rows.filter((row) => row.time && row.time > 0)}
+									getRowId={(timeEntry) => {
+										return (
+											(timeEntry.client_name ?? "could not find client") +
+											(timeEntry.project_name ?? "could not find project") +
+											(timeEntry.job_name ?? "could not find job") +
+											(timeEntry.task_name ?? "could not find task")
+										);
+									}}
+									columns={columns}
+									style={{
+										display: "flex",
+										justifyContent: "center",
+									}}
+								/>
+							) : (
+								<Grid
+									style={{
+										border: "0.5px solid #dedbd2",
+										padding: "20px",
+										borderRadius: "6px",
+									}}
+								>
+									<h3>You have no logged hours today, please check your timesheet.</h3>
+								</Grid>
+							)}
 						</div>
 					</Grid>
 					<Grid item xs={5}>
