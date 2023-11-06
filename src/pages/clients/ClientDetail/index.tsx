@@ -44,7 +44,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 		{ label: "Legal Name", field: "legal_name" },
 		{ label: "Tier", field: "tier_name" },
 		{ label: "Address", field: "address" },
-		{ label: "Team Lead", field: "user_name" },
+		// { label: "Team Lead", field: "user_name" },
 	];
 
 	return (
