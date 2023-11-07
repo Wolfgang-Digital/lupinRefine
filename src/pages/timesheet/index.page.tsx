@@ -120,7 +120,7 @@ const Timesheet = () => {
 
 	const currentDate = new Date();
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
-	const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
+	//const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
 
