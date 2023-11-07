@@ -165,9 +165,10 @@ const Timesheet = () => {
 					(entry) => entry.name === "Wolfgang Digital"
 				);
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse
-					.filter((entry) => entry.name != "Wolfgang Digital")
-					.filter((timesheet) => !!timesheet.time);
+				filteredResponse = timesheetsResponse.filter(
+					(entry) => entry.name != "Wolfgang Digital"
+				);
+				// .filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
@@ -290,7 +291,8 @@ const Timesheet = () => {
 			task_name: string;
 			time: number;
 			hours?: number | undefined;
-		}
+		},
+		selectedDate: string
 	) => {
 		setShowForm(true);
 		setTimeSpent("");
@@ -299,7 +301,7 @@ const Timesheet = () => {
 		const selectedProjectId = entry.project_id.toString();
 		const selectedJobId = job.job_id.toString();
 		const selectedTaskId = task.task_id.toString();
-		setSelectedDate(sbCurrentDate);
+		setSelectedDate(selectedDate);
 		setSelectedClient(selectedClientId);
 		setSelectedProject(selectedProjectId);
 		setSelectedJob(selectedJobId);
@@ -612,7 +614,7 @@ const Timesheet = () => {
 													);
 												});
 											}
-											const remainingHours = Math.max(0, totalHours - totalSpentHours);
+											const remainingHours = Math.max(totalHours - totalSpentHours);
 											const isOpened = openedAccordions[entry?.client_id];
 											return (
 												<React.Fragment key={entry.client_id}>
@@ -715,7 +717,10 @@ const Timesheet = () => {
 																					<div key={task.task_id}>
 																						<MoreTimeIcon
 																							fontSize="small"
-																							onClick={() => handleTimeIconClick(entry, job, task)}
+																							onClick={
+																								() =>
+																									handleTimeIconClick(entry, job, task, selectedDate) // Pass the selectedDate here
+																							}
 																						/>
 																					</div>
 																				))}

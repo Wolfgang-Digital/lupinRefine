@@ -29,7 +29,7 @@ interface TimesheetType {
 	job_name: string | null;
 	task_name: string | null;
 	time: number | null;
-	time_left: number | null;
+	//time_left: number | null;
 }
 
 export const DayDialog = ({
@@ -77,12 +77,12 @@ export const DayDialog = ({
 	saveTimeEntry: () => void;
 }) => {
 	const columns = [
-		{ field: "client_name", headerName: "Name", width: 140 },
-		{ field: "project_name", headerName: "Project", width: 140 },
-		{ field: "job_name", headerName: "Job", width: 120 },
-		{ field: "task_name", headerName: "Task", width: 120 },
+		{ field: "client_name", headerName: "Name", width: 150 },
+		{ field: "project_name", headerName: "Project", width: 150 },
+		{ field: "job_name", headerName: "Job", width: 150 },
+		{ field: "task_name", headerName: "Task", width: 150 },
 		{ field: "time", headerName: "Hrs Logged", width: 100 },
-		{ field: "time_left", headerName: "Hrs Left", width: 80 },
+		//{ field: "time_left", headerName: "Hrs Left", width: 80 },
 	];
 
 	const [rows, setRows] = useState<TimesheetType[]>([]);
@@ -114,8 +114,8 @@ export const DayDialog = ({
 									project_name: entry.project_name,
 									job_name: jobEntry.job_name,
 									task_name: taskEntry.task_name,
-									time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
 									time: taskEntry.time,
+									//time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
 								});
 							});
 						});
@@ -351,7 +351,7 @@ export const DayDialog = ({
 								variant="contained"
 								color="primary"
 								style={{ padding: "10px" }}
-								disabled={!selectedTask || !timeSpent}
+								disabled={!selectedTask || !timeSpent || !notes}
 								onClick={saveTimeEntry}
 							>
 								Save Time Entry
