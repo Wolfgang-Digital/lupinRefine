@@ -351,7 +351,7 @@ export const DayDialog = ({
 								variant="contained"
 								color="primary"
 								style={{ padding: "10px" }}
-								disabled={!selectedTask || !timeSpent}
+								disabled={!selectedTask || !timeSpent || !notes}
 								onClick={saveTimeEntry}
 							>
 								Save Time Entry

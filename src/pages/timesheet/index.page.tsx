@@ -165,9 +165,10 @@ const Timesheet = () => {
 					(entry) => entry.name === "Wolfgang Digital"
 				);
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse
-					.filter((entry) => entry.name != "Wolfgang Digital")
-					.filter((timesheet) => !!timesheet.time);
+				filteredResponse = timesheetsResponse.filter(
+					(entry) => entry.name != "Wolfgang Digital"
+				);
+				// .filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
@@ -612,7 +613,7 @@ const Timesheet = () => {
 													);
 												});
 											}
-											const remainingHours = Math.max(0, totalHours - totalSpentHours);
+											const remainingHours = Math.max(totalHours - totalSpentHours);
 											const isOpened = openedAccordions[entry?.client_id];
 											return (
 												<React.Fragment key={entry.client_id}>
