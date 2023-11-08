@@ -67,25 +67,24 @@ function CollapsibleTasksGrid({
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const jobTasksTable = await getAllJobTasks(jobId || 0);
-			console.log({ jobTasksTable });
+			// const jobTasksTable = await getAllJobTasks(jobId || 0);
 			const getTasks = await getAllTasks();
+
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,
 				jobId || 0
 			);
-			console.log(getProjectJobTasks);
-			console.log(jobId);
 			if (getProjectJobTasks) {
-				getTasks?.forEach((task) => {
-					taskOptions.push({
-						label: task.task_name || "",
-						value: task.task_id?.toString() || "0",
+				if (getTasks) {
+					getTasks?.forEach((task) => {
+						taskOptions.push({
+							label: task.task_name || "",
+							value: task.task_id?.toString() || "0",
+						});
 					});
-				});
+				}
 			}
 			setTasks(taskOptions);
-			// console.log(taskOptions);
 
 			if (getProjectJobTasks) {
 				// Map the fetched data to match the RowData type
@@ -160,14 +159,14 @@ function CollapsibleTasksGrid({
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>
-									<TextField
+									{/* <TextField
 										label="Date"
 										style={{
 											width: "100%",
 											marginBottom: "20px",
 											textAlign: "left",
 										}}
-									/>
+									/> */}
 									<TextField
 										select
 										value={""}

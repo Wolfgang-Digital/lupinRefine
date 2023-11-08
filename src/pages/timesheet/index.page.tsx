@@ -635,7 +635,12 @@ const Timesheet = () => {
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
-														<TableRowCell sx={{ fontWeight: "600" }}>
+														<TableRowCell
+															sx={{
+																fontWeight: "600",
+																color: remainingHours < 0 ? "red" : "black",
+															}}
+														>
 															{remainingHours}
 														</TableRowCell>
 														<TableRowCell></TableRowCell>

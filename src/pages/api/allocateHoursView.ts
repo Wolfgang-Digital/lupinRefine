@@ -47,16 +47,16 @@ export const getUserAllocatedHoursPerMonth = async (
 };
 
 export const getJobAllocatedHoursPerMonth = async (
-	jobID: number,
-	month: number
+	jobID: number
+	// month: number
 ) => {
 	try {
 		const { data, error } = await supabase
 			.from("allocate_hours_view")
 			.select("*")
 			.order("job_id", { ascending: true })
-			.eq("job_id", jobID)
-			.eq("month", month);
+			.eq("job_id", jobID);
+		// .eq("month", month);
 		if (error) {
 			console.error("Error fetching job allocated hours: ", error);
 			return;

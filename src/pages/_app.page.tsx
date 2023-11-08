@@ -81,7 +81,7 @@ const App = (props: React.PropsWithChildren) => {
 					provider: "google",
 					token: data?.id_token,
 				});
-				console.log({ myData });
+				// console.log({ myData });
 				localStorage.setItem("user_id", myData?.user?.id || "");
 				if (error) {
 					console.log(error);

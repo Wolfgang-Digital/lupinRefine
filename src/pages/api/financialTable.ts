@@ -12,7 +12,7 @@ export const groupFinancialTableData = (
 	financialData: TimesheetRowsView[],
 	month: number
 ) => {
-	console.log(financialData);
+	// console.log(financialData);
 	const groupedData = financialData
 		.filter((data) => {
 			return new Date(data.date || new Date()).getMonth() === month;
