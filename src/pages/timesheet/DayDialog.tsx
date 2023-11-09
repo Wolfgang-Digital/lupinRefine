@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
 import { format } from "date-fns";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+//import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 interface TimesheetType {
 	client_name: string;
