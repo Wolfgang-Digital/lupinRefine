@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
 import { format } from "date-fns";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 interface TimesheetType {
 	client_name: string;
@@ -76,14 +77,26 @@ export const DayDialog = ({
 	setNotes: React.Dispatch<React.SetStateAction<string>>;
 	saveTimeEntry: () => void;
 }) => {
-	const columns = [
-		{ field: "client_name", headerName: "Name", width: 150 },
-		{ field: "project_name", headerName: "Project", width: 150 },
-		{ field: "job_name", headerName: "Job", width: 150 },
-		{ field: "task_name", headerName: "Task", width: 150 },
-		{ field: "time", headerName: "Hrs Logged", width: 100 },
-		//{ field: "time_left", headerName: "Hrs Left", width: 80 },
-	];
+	//const columns = {[
+	//	{ field: "client_name", headerName: "Name", width: 140 },
+	//	{ field: "project_name", headerName: "Project", width: 140 },
+	//	{ field: "job_name", headerName: "Job", width: 140 },
+	//	{ field: "task_name", headerName: "Task", width: 100 },
+	//	{ field: "time", headerName: "Hrs Logged", width: 90 },
+	//	{
+	//		field: "delete",
+	//		headerName: "Delete",
+	//		width: 90,
+	//		renderCell: () => (
+	//			<IconButton
+	//				color="secondary"
+	//				//onClick={() => handleDeleteRow(params.row.id)}
+	//			>
+	//				<HighlightOffIcon />
+	//			</IconButton>
+	//		),
+	//	},
+	//]};
 
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
@@ -186,6 +199,7 @@ export const DayDialog = ({
 						<div style={{ height: "600px", overflow: "auto" }}>
 							{rows.length > 0 ? (
 								<DataGrid
+									//checkboxSelection
 									autoHeight
 									rows={rows.filter((row) => row.time && row.time > 0)}
 									getRowId={(timeEntry) => {
@@ -196,7 +210,26 @@ export const DayDialog = ({
 											(timeEntry.task_name ?? "could not find task")
 										);
 									}}
-									columns={columns}
+									columns={[
+										{ field: "client_name", headerName: "Client", width: 120 },
+										{ field: "project_name", headerName: "Project", width: 140 },
+										{ field: "job_name", headerName: "Job", width: 140 },
+										{ field: "task_name", headerName: "Task", width: 100 },
+										{ field: "time", headerName: "Logged", width: 80 },
+										//{
+										//	field: "delete",
+										//	headerName: "Delete",
+										//	width: 80,
+										//	renderCell: () => (
+										//		<IconButton
+										//			color="secondary"
+										//			//onClick={() => handleDeleteRow(params.row.id)}
+										//		>
+										//			<HighlightOffIcon />
+										//		</IconButton>
+										//	),
+										//},
+									]}
 									style={{
 										display: "flex",
 										justifyContent: "center",

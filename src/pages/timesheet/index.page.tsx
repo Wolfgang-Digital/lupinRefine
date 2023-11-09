@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-import { startOfWeek, endOfWeek, addWeeks, format, addDays } from "date-fns";
+import {
+	format,
+	addDays,
+	getDay,
+	getDaysInMonth,
+	addMonths,
+	startOfMonth,
+} from "date-fns";
 import {
 	Grid,
 	Paper,
@@ -92,7 +99,7 @@ export type TaskOption = {
 const Timesheet = () => {
 	// Initialize state variables
 	const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(
-		startOfWeek(new Date(), { weekStartsOn: 1 })
+		startOfMonth(new Date())
 	);
 
 	const [openedAccordions, setOpenedAccordions] = useState<{
@@ -117,7 +124,6 @@ const Timesheet = () => {
 
 	// Create a selected day state
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
-
 	const currentDate = new Date();
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 	//const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
@@ -235,14 +241,28 @@ const Timesheet = () => {
 	// 	fetchTasksAndJobsWithFilter();
 	// }, [PostTimeEntry]);
 
-	const navigateWeeks = (weeks: number) => {
-		setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
-	};
+	//const navigateWeeks = (weeks: number) => {
+	//	setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
+	//};
 
-	// Create an array of week days
+	//// Create an array of week days
+	//const weekDays: Date[] = [];
+	//for (let i = 0; i < 26; i++) {
+	//	weekDays.push(addDays(selectedWeekStart, i));
+	//}
+
+	const daysInMonth = getDaysInMonth(selectedWeekStart);
+
 	const weekDays: Date[] = [];
-	for (let i = 0; i < 7; i++) {
-		weekDays.push(addDays(selectedWeekStart, i));
+	let getCurrentDate = selectedWeekStart; // Use the existing currentDate variable
+
+	for (let i = 0; i < daysInMonth; i++) {
+		const dayOfWeek = getDay(getCurrentDate);
+		// Check if it's not Saturday (6) and not Sunday (0)
+		if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+			weekDays.push(getCurrentDate);
+		}
+		getCurrentDate = addDays(getCurrentDate, 1); // Move to the next day
 	}
 
 	// Function to handle "Add Time" button click
@@ -470,7 +490,6 @@ const Timesheet = () => {
 		<>
 			<div
 				style={{
-					margin: "20px 0px",
 					display: "flex",
 					alignItems: "center",
 					paddingBottom: "10px",
@@ -488,6 +507,7 @@ const Timesheet = () => {
 						<MenuItem value="Allocated Tasks">Allocated Tasks</MenuItem>
 						<MenuItem value="All Tasks">All Tasks</MenuItem>
 						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
+						{/*<MenuItem value="Completed Tasks">Completed Tasks</MenuItem>*/}
 					</Select>
 				</FormControl>
 			</div>
@@ -511,9 +531,9 @@ const Timesheet = () => {
 									color: "white",
 									padding: "8px",
 								}}
-								onClick={() => navigateWeeks(-1)}
+								onClick={() => setSelectedWeekStart(addMonths(selectedWeekStart, -1))}
 							>
-								Previous Week
+								Previous Month
 							</Button>
 							<Typography
 								style={{
@@ -521,13 +541,7 @@ const Timesheet = () => {
 									marginRight: "20px",
 								}}
 							>
-								{format(selectedWeekStart, "MMM d")} -{" "}
-								{format(
-									endOfWeek(addWeeks(selectedWeekStart, 0), {
-										weekStartsOn: 1,
-									}),
-									"MMM d"
-								)}
+								{format(selectedWeekStart, "MMM yyyy")}
 							</Typography>
 							<Button
 								variant="contained"
@@ -536,9 +550,9 @@ const Timesheet = () => {
 									color: "white",
 									padding: "8px",
 								}}
-								onClick={() => navigateWeeks(1)}
+								onClick={() => setSelectedWeekStart(addMonths(selectedWeekStart, 1))}
 							>
-								Next Week
+								Next Month
 							</Button>
 						</div>
 
@@ -554,10 +568,10 @@ const Timesheet = () => {
 									key={day.toISOString()}
 									style={{
 										border: "1px solid #ccc",
-										paddingLeft: "20px",
-										paddingRight: "20px",
-										paddingTop: "5px",
-										paddingBottom: "5px",
+										paddingLeft: "10px",
+										paddingRight: "10px",
+										paddingTop: "2px",
+										paddingBottom: "2px",
 										borderRadius: "5px",
 										textAlign: "center",
 										cursor: "pointer",
@@ -619,7 +633,11 @@ const Timesheet = () => {
 											return (
 												<React.Fragment key={entry.client_id}>
 													<TableRow
-														sx={{ backgroundColor: "#ddd", fontWeight: "600 !important" }}
+														sx={{
+															backgroundColor: "#e8e8e8",
+															fontWeight: "600 !important",
+															cursor: "pointer",
+														}}
 														key={`${index}-1`}
 														onClick={() => {
 															setOpenedAccordions({
@@ -636,9 +654,14 @@ const Timesheet = () => {
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
-														<TableRowCell sx={{ fontWeight: "600" }}>
+														<TableRowCell
+															sx={{
+																fontWeight: "600",
+															}}
+														>
 															{remainingHours}
 														</TableRowCell>
+
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
@@ -703,8 +726,8 @@ const Timesheet = () => {
 																			<TableRowCell>
 																				{job.tasks.map((task) => (
 																					<div key={task.task_id} style={{ padding: "2px" }}>
-																						{/* <Checkbox size="small" /> */}
 																						<input
+																							style={{ cursor: "pointer" }}
 																							type="checkbox"
 																							onChange={() => handleCheckboxChange(task.task_id)}
 																							checked={taskStates[task.task_id] || false}
@@ -716,6 +739,7 @@ const Timesheet = () => {
 																				{job.tasks.map((task) => (
 																					<div key={task.task_id}>
 																						<MoreTimeIcon
+																							style={{ cursor: "pointer" }}
 																							fontSize="small"
 																							onClick={
 																								() =>

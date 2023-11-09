@@ -20,6 +20,7 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 	const { data: user } = useGetIdentity({
 		v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
 	});
+	console.log({ authProvider });
 
 	const prefferedSticky = pickNotDeprecated(sticky, isSticky) ?? true;
 
