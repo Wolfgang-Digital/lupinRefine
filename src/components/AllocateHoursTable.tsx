@@ -17,10 +17,10 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
-import { getAllJobTasks } from "@pages/api/jobTasksView";
+
 import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
-import { WeekButton } from "@styled-components/timesheet";
+
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 
 type RowData = AllocateHoursView;
@@ -64,7 +64,7 @@ function CollapsibleHoursGrid({
 }) {
 	const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+	// const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const taskOptions: TaskOption[] = [];
@@ -171,7 +171,7 @@ function CollapsibleHoursGrid({
 		"December",
 	];
 
-	const monthName = monthNames[selectedMonth - 1];
+	// const monthName = monthNames[selectedMonth - 1];
 
 	return (
 		<div
