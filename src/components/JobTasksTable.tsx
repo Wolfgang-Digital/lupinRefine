@@ -18,11 +18,7 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import {
-	getAllJobTasks,
-	getAllTasks,
-	PostJobTaskEntry,
-} from "@pages/api/jobTasksView";
+import { getAllTasks, PostJobTaskEntry } from "@pages/api/jobTasksView";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import {
 	// JobTasksView,

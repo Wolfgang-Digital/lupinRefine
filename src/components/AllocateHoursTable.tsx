@@ -62,7 +62,7 @@ function CollapsibleHoursGrid({
 	jobId?: number;
 	jobNameId?: number;
 }) {
-	const currentMonth = new Date().getMonth() + 1;
+	// const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	// const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 	const [showForm, setShowForm] = useState(false);
