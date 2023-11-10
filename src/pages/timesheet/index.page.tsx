@@ -638,7 +638,6 @@ const Timesheet = () => {
 														<TableRowCell
 															sx={{
 																fontWeight: "600",
-																color: remainingHours < 0 ? "red" : "black",
 															}}
 														>
 															{remainingHours}
