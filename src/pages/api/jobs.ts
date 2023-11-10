@@ -1,28 +1,28 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { JobsOverview, GetAllJobsWithProjects } from "types";
+import { GetAllJobsWithProjects } from "types";
 
-export type JobsData = JobsOverview;
+// export type JobsData = JobsOverview;
 export type JobsDataWithProjects = GetAllJobsWithProjects;
 
-export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
-	try {
-		const { data, error } = (await supabase
-			.from("jobs_overview")
-			.select("*")
-			.order("client_name", { ascending: true })) as unknown as {
-			data: JobsData[];
-			error: PostgrestError;
-		};
+// export const getAllJobs = async (): Promise<JobsData[] | undefined> => {
+// 	try {
+// 		const { data, error } = (await supabase
+// 			.from("jobs_overview")
+// 			.select("*")
+// 			.order("client_name", { ascending: true })) as unknown as {
+// 			data: JobsData[];
+// 			error: PostgrestError;
+// 		};
 
-		if (error) {
-			console.error("Error fetching clients:", error);
-			return;
-		}
-		return data;
-	} catch (error) {
-		console.error("Error fetching clients:", error);
-	}
-};
+// 		if (error) {
+// 			console.error("Error fetching clients:", error);
+// 			return;
+// 		}
+// 		return data;
+// 	} catch (error) {
+// 		console.error("Error fetching clients:", error);
+// 	}
+// };
 
 export const getJob = async ({ id }: { id: string }) => {
 	try {
