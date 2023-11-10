@@ -99,8 +99,8 @@ export const DayDialog = ({
 						(timesheet) => timesheet.date === formattedDate
 					);
 
-					console.log({ timesheetsResponse, filteredTimesheets });
-					console.log(formattedDate);
+					// console.log({ timesheetsResponse, filteredTimesheets });
+					// console.log(formattedDate);
 
 					const groupedTimesheetsData: GroupedTimesheets =
 						groupTimesheets(filteredTimesheets);
@@ -121,8 +121,8 @@ export const DayDialog = ({
 						});
 					});
 					setRows(newRows);
-					console.log({ newRows, groupedTimesheetsData });
-					console.log("Grouped Data", groupedTimesheetsData);
+					// console.log({ newRows, groupedTimesheetsData });
+					// console.log("Grouped Data", groupedTimesheetsData);
 				} else {
 					console.error("timesheetsResponse is undefined");
 				}

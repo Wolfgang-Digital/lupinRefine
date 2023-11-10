@@ -26,7 +26,8 @@ export type GroupedTimesheets = Client[];
 export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
-			(entry: Client) => entry.client_id === curr.client_id
+			(entry: Client) =>
+				entry.client_id === curr.client_id && entry.project_id === curr.project_id
 		);
 
 		if (existingClientEntry) {
@@ -106,6 +107,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 				],
 			});
 		}
+		console.log(acc);
 		return acc;
 	}, [] as GroupedTimesheets);
 };
