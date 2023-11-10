@@ -21,6 +21,7 @@ import { getAllJobTasks } from "@pages/api/jobTasksView";
 import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
 import { WeekButton } from "@styled-components/timesheet";
+import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 
 type RowData = AllocateHoursView;
 
@@ -52,31 +53,47 @@ function CustomToolbar() {
 	);
 }
 
-function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
+function CollapsibleHoursGrid({
+	projectId,
+	jobId,
+	jobNameId,
+}: {
+	projectId?: number;
+	jobId?: number;
+	jobNameId?: number;
+}) {
+	const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	const [selectedMonth, setSelectedMonth] = useState(9);
+	const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const taskOptions: TaskOption[] = [];
 	const [users, setUsers] = useState<UserOption[]>([]);
 	const userOptions: UserOption[] = [];
+	const [selectedTask, setSelectedTask] = useState("");
+	const [selectedUser, setSelectedUser] = useState("");
+	const [allocatedMonth, setAllocatedMonth] = useState("");
 	const [timeSpent, setTimeSpent] = useState("");
 
 	useEffect(() => {
 		setTasks([]);
 		// Fetch data from Supabase and update the fetchedRows state
+		console.log(jobId);
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
-				jobId || 0,
-				10
+				jobId || 0
+				// currentMonth || 0
 			);
-
-			const getTasks = await getAllJobTasks(jobId || 0);
-			if (getTasks) {
-				getTasks.forEach((task) => {
+			// const getTasks = await getAllJobTasks(jobId || 0);
+			const getProjectJobTasks = await getAllProjectJobTasks(
+				projectId || 0,
+				jobNameId || 0
+			);
+			if (getProjectJobTasks) {
+				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
-						value: task.id?.toString() || "0",
+						value: task.task_id?.toString() || "0",
 					});
 				});
 			}
@@ -120,7 +137,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 				// setTasks(taskOptions);
 				// setUsers(userOptions);
 				setFetchedRows(mappedData);
-				console.log(fetchedRows);
+				// console.log(fetchedRows);
 			}
 		}
 		fetchData();
@@ -136,6 +153,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 			groupedRows[row.month || 0] = [];
 		}
 		groupedRows[row.month || 0].push(row);
+		console.log(groupedRows);
 	});
 
 	const monthNames: string[] = [
@@ -153,7 +171,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 		"December",
 	];
 
-	const monthName = monthNames[selectedMonth];
+	const monthName = monthNames[selectedMonth - 1];
 
 	return (
 		<div
@@ -166,7 +184,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 			<Grid container spacing={2}>
 				{/* First Column */}
 				<Grid item xs={8}>
-					<div style={{ display: "flex", alignItems: "center", padding: "20px 0" }}>
+					{/* <div style={{ display: "flex", alignItems: "center", padding: "20px 0" }}>
 						<WeekButton onClick={() => setSelectedMonth(selectedMonth - 1)}>
 							Previous month
 						</WeekButton>
@@ -176,12 +194,12 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 						<WeekButton onClick={() => setSelectedMonth(selectedMonth + 1)}>
 							Next month
 						</WeekButton>
-					</div>
+					</div> */}
 					{Object.keys(groupedRows).map((month) => (
 						<Accordion key={month}>
 							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 								<Typography variant="h6" fontSize="16px">
-									{monthName}
+									{monthNames[Number(month) - 1]}
 								</Typography>
 							</AccordionSummary>
 							<AccordionDetails>
@@ -210,8 +228,9 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 							<form>
 								<TextField
 									select
-									value={""}
+									value={selectedTask}
 									label="Select Task"
+									onChange={(event) => setSelectedTask(event.target.value)}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 								>
 									{tasks.map((task) => (
@@ -222,8 +241,9 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 								</TextField>
 								<TextField
 									select
-									value={""}
+									value={selectedUser}
 									label="Select User"
+									onChange={(event) => setSelectedUser(event.target.value)}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 								>
 									{users.map((user) => (
@@ -234,8 +254,9 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 								</TextField>
 								<TextField
 									select
-									value={""}
 									label="Select Month"
+									value={allocatedMonth}
+									onChange={(event) => setAllocatedMonth(event.target.value)}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 								>
 									{monthNames.map((month) => (
@@ -246,7 +267,7 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 								</TextField>
 								<TextField
 									type="number"
-									label="Time Spent (in hours)"
+									label="Hours"
 									value={timeSpent}
 									onChange={(event) => {
 										if (Number(event.target.value) >= 0) {
@@ -260,6 +281,15 @@ function CollapsibleHoursGrid({ jobId }: { jobId?: number }) {
 									}}
 									required
 								/>
+								<Button
+									variant="contained"
+									color="primary"
+									type="submit"
+									style={{ padding: "10px" }}
+									/* onClick={} */
+								>
+									Save Allocation
+								</Button>
 							</form>
 						) : (
 							<>

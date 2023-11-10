@@ -199,7 +199,11 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 									Allocations
 								</Typography>
 
-								<CollapsibleHoursGrid jobId={job?.job_id || 0} />
+								<CollapsibleHoursGrid
+									projectId={job?.project_id || 0}
+									jobId={job?.job_id || 0}
+									jobNameId={job?.job_name_id || 0}
+								/>
 							</Paper>
 						</Container>
 					</TabPanelContainer>

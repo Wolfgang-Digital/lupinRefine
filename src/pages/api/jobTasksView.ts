@@ -25,6 +25,7 @@ export const getAllJobTasks = async (jobId: number) => {
 			console.error("Error fetching all Job Tasks: ", error);
 			return;
 		}
+		// console.log(jobId);
 		return data;
 	} catch (error) {
 		console.error("Error fetching all Job Tasks: ", error);

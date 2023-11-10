@@ -160,7 +160,7 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
-			console.log({ timesheetsResponse });
+
 			let filteredResponse: typeof timesheetsResponse = [];
 			// console.log(timesheetsResponse);
 			if (!timesheetsResponse) {
@@ -189,7 +189,7 @@ const Timesheet = () => {
 			const groupedTimesheets: GroupedTimesheets =
 				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
-
+			// console.log({ filteredResponse });
 			// console.log({ groupedTimesheets, filteredResponse });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
@@ -670,7 +670,7 @@ const Timesheet = () => {
 														{entry.jobs.map((job) => (
 															<>
 																{isOpened && (
-																	<TableRow key={`${index}-2`}>
+																	<TableRow key={`${index - 2}`}>
 																		<>
 																			<TableRowCell></TableRowCell>
 																			<TableRowCell>{entry.project_name}</TableRowCell>
