@@ -13,12 +13,15 @@ type Job = {
 	job_name_id: number;
 	tasks: Task[];
 };
-type Client = {
-	client_id: number;
-	client_name: string;
+type Project = {
 	project_id: number;
 	project_name: string;
 	jobs: Job[];
+};
+type Client = {
+	client_id: number;
+	client_name: string;
+	projects: Project[];
 };
 
 export type GroupedTimesheets = Client[];
@@ -26,15 +29,12 @@ export type GroupedTimesheets = Client[];
 export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
-			(entry: Client) =>
-				entry.client_id === curr.client_id && entry.project_id === curr.project_id
+			(entry: Client) => entry.client_id === curr.client_id
 		);
 
 		if (existingClientEntry) {
-			const existingProjectEntry = acc.find(
-				(project: Client) =>
-					project.project_id === curr.project_id &&
-					project.client_id === curr.client_id
+			const existingProjectEntry = existingClientEntry.projects.find(
+				(project: Project) => project.project_id === curr.project_id
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
@@ -70,16 +70,22 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					});
 				}
 			} else {
-				existingClientEntry.jobs.push({
-					job_id: curr?.job_id || 0,
-					job_name: curr?.job_name || "",
-					job_name_id: curr?.job_name_id || 0,
-					tasks: [
+				existingClientEntry.projects.push({
+					project_id: curr?.project_id || 0,
+					project_name: curr?.project_name || "",
+					jobs: [
 						{
-							task_id: curr?.task_id || 0,
-							task_name: curr?.task_name || "",
-							time: curr?.time || 0,
-							hours: curr?.hours || 0,
+							job_id: curr?.job_id || 0,
+							job_name: curr?.job_name || "",
+							job_name_id: curr?.job_name_id || 0,
+							tasks: [
+								{
+									task_id: curr?.task_id || 0,
+									task_name: curr?.task_name || "",
+									time: curr?.time || 0,
+									hours: curr?.hours || 0,
+								},
+							],
 						},
 					],
 				});
@@ -88,19 +94,23 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 			acc.push({
 				client_name: curr?.name || "",
 				client_id: curr?.client_id || 0,
-				project_id: curr?.project_id || 0,
-				project_name: curr?.project_name || "",
-				jobs: [
+				projects: [
 					{
-						job_id: curr?.job_id || 0,
-						job_name: curr?.job_name || "",
-						job_name_id: curr?.job_name_id || 0,
-						tasks: [
+						project_id: curr?.project_id || 0,
+						project_name: curr?.project_name || "",
+						jobs: [
 							{
-								task_id: curr.task_id || 0,
-								task_name: curr.task_name || "",
-								time: curr.time || 0,
-								hours: curr.hours || 0,
+								job_id: curr?.job_id || 0,
+								job_name: curr?.job_name || "",
+								job_name_id: curr?.job_name_id || 0,
+								tasks: [
+									{
+										task_id: curr.task_id || 0,
+										task_name: curr.task_name || "",
+										time: curr.time || 0,
+										hours: curr.hours || 0,
+									},
+								],
 							},
 						],
 					},
