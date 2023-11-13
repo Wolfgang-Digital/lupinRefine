@@ -622,7 +622,6 @@ const Timesheet = () => {
 										<TableHeaderCell>Timer</TableHeaderCell>
 									</TableRow>
 								</TableHead>
-
 								<TableBody>
 									{
 										displayedTimeEntries.map((entry, index) => {
