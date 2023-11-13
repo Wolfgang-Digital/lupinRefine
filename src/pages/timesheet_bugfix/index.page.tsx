@@ -634,8 +634,8 @@ const Timesheet = () => {
 													if (multipleJobEntries) {
 														project.jobs.map((job) => {
 															job.tasks.map((task) => {
-																(totalHours += task.hours || 0),
-																	(totalSpentHours += task.time || 0);
+																totalHours += task.hours || 0;
+																totalSpentHours += task.time || 0;
 															});
 														});
 													} else {
