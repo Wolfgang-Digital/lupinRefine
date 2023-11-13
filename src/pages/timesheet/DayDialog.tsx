@@ -120,15 +120,17 @@ export const DayDialog = ({
 
 					const newRows: TimesheetType[] = [];
 					groupedTimesheetsData.forEach((entry) => {
-						entry.jobs.forEach((jobEntry) => {
-							jobEntry.tasks.forEach((taskEntry) => {
-								newRows.push({
-									client_name: entry.client_name,
-									project_name: entry.project_name,
-									job_name: jobEntry.job_name,
-									task_name: taskEntry.task_name,
-									time: taskEntry.time,
-									//time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
+						entry.projects.forEach((project) => {
+							project.jobs.forEach((jobEntry) => {
+								jobEntry.tasks.forEach((taskEntry) => {
+									newRows.push({
+										client_name: entry.client_name,
+										project_name: project.project_name,
+										job_name: jobEntry.job_name,
+										task_name: taskEntry.task_name,
+										time: taskEntry.time,
+										//time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
+									});
 								});
 							});
 						});
@@ -216,19 +218,6 @@ export const DayDialog = ({
 										{ field: "job_name", headerName: "Job", width: 140 },
 										{ field: "task_name", headerName: "Task", width: 100 },
 										{ field: "time", headerName: "Logged", width: 80 },
-										//{
-										//	field: "delete",
-										//	headerName: "Delete",
-										//	width: 80,
-										//	renderCell: () => (
-										//		<IconButton
-										//			color="secondary"
-										//			//onClick={() => handleDeleteRow(params.row.id)}
-										//		>
-										//			<HighlightOffIcon />
-										//		</IconButton>
-										//	),
-										//},
 									]}
 									style={{
 										display: "flex",

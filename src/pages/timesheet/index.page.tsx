@@ -201,22 +201,24 @@ const Timesheet = () => {
 				clientOptions.push({
 					label: timesheet.client_name,
 					value: timesheet.client_id?.toString() || "0",
-					projectLabel: timesheet.project_name || "",
+					projectLabel: timesheet.client_name || "",
 				});
-				projectOptions.push({
-					label: timesheet.project_name,
-					value: timesheet.project_id?.toString() || "0",
-				});
-				timesheet.jobs.forEach((job) => {
-					jobOptions.push({
-						label: `${job.job_name}`,
-						value: job.job_id?.toString() || "0",
-						taskLabel: job.tasks[0].task_name || "",
+				timesheet.projects.forEach((project) => {
+					projectOptions.push({
+						label: project.project_name,
+						value: project.project_id?.toString() || "0",
 					});
-					taskOptions.push({
-						label: job.tasks[0].task_name || "",
-						value: job.job_id?.toString() || "0",
-						completed: false,
+					project.jobs.forEach((job) => {
+						jobOptions.push({
+							label: `${job.job_name}`,
+							value: job.job_id?.toString() || "0",
+							taskLabel: job.tasks[0].task_name || "",
+						});
+						taskOptions.push({
+							label: job.tasks[0].task_name || "",
+							value: job.job_id?.toString() || "0",
+							completed: false,
+						});
 					});
 				});
 			});
@@ -281,6 +283,23 @@ const Timesheet = () => {
 		entry: {
 			client_id: number;
 			client_name: string;
+			projects: {
+				project_id: number;
+				project_name: string;
+				jobs: {
+					job_id: number;
+					job_name: string;
+					job_name_id: number;
+					tasks: {
+						task_id: number;
+						task_name: string;
+						time: number;
+						hours?: number | undefined;
+					}[];
+				}[];
+			}[];
+		},
+		project: {
 			project_id: number;
 			project_name: string;
 			jobs: {
@@ -318,7 +337,7 @@ const Timesheet = () => {
 		setTimeSpent("");
 		setNotes("");
 		const selectedClientId = entry.client_id.toString();
-		const selectedProjectId = entry.project_id.toString();
+		const selectedProjectId = project.project_id.toString();
 		const selectedJobId = job.job_id.toString();
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
@@ -603,30 +622,51 @@ const Timesheet = () => {
 										<TableHeaderCell>Timer</TableHeaderCell>
 									</TableRow>
 								</TableHead>
-
 								<TableBody>
 									{
 										displayedTimeEntries.map((entry, index) => {
 											let totalHours: number = 0;
 											let totalSpentHours: number = 0;
-											const multipleJobEntries = entry.jobs.length > 1;
-											if (multipleJobEntries) {
-												entry.jobs.map((job) => {
-													job.tasks.map((task) => {
-														totalHours += task.hours || 0;
-														totalSpentHours += task.time || 0;
-													});
+											const multipleProjectEntries = entry.projects.length > 1;
+											if (multipleProjectEntries) {
+												entry.projects.map((project) => {
+													const multipleJobEntries = project.jobs.length > 1;
+													if (multipleJobEntries) {
+														project.jobs.map((job) => {
+															job.tasks.map((task) => {
+																totalHours += task.hours || 0;
+																totalSpentHours += task.time || 0;
+															});
+														});
+													} else {
+														project.jobs.map((job) => {
+															let jobTotalHours: number = 0;
+															let jobTotalSpentHours: number = 0;
+															jobTotalHours = job.tasks.reduce(
+																(acc, curr) => (acc += curr.hours || 0),
+																0
+															);
+															jobTotalSpentHours = job.tasks.reduce(
+																(acc, curr) => acc + curr.time,
+																0
+															);
+															totalHours += jobTotalHours || 0;
+															totalSpentHours += jobTotalSpentHours || 0;
+														});
+													}
 												});
 											} else {
-												entry.jobs.map((job) => {
-													totalHours = job.tasks.reduce(
-														(acc, curr) => (acc += curr.hours || 0),
-														0
-													);
-													totalSpentHours = job.tasks.reduce(
-														(acc, curr) => acc + curr.time,
-														0
-													);
+												entry.projects.map((project) => {
+													project.jobs.map((job) => {
+														totalHours = job.tasks.reduce(
+															(acc, curr) => (acc += curr.hours || 0),
+															0
+														);
+														totalSpentHours = job.tasks.reduce(
+															(acc, curr) => acc + curr.time,
+															0
+														);
+													});
 												});
 											}
 											const remainingHours = Math.max(totalHours - totalSpentHours);
@@ -668,94 +708,102 @@ const Timesheet = () => {
 														<TableRowCell></TableRowCell>
 													</TableRow>
 													<>
-														{entry.jobs.map((job) => (
-															<>
-																{isOpened && (
-																	<TableRow key={`${index - 2}`}>
-																		<>
-																			<TableRowCell></TableRowCell>
-																			<TableRowCell>{entry.project_name}</TableRowCell>
-																			<TableRowCell>
-																				<TableRow key={`${index - 3}`}>
-																					<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
-																						{job.job_name}
-																					</div>
-																				</TableRow>
-																			</TableRowCell>
-																			<TableRowCell>
-																				{job.tasks.map((task) => (
-																					<div
-																						style={{
-																							whiteSpace: "nowrap",
-																							padding: "2px",
-																							textDecoration: taskStates[task.task_id]
-																								? "line-through"
-																								: "none",
-																							color: taskStates[task.task_id] ? "grey" : "black",
-																						}}
-																						key={task.task_id}
-																					>
-																						{task.task_name}
-																					</div>
-																				))}
-																			</TableRowCell>
-																			<TableRowCell>
-																				{job.tasks.map((task) => (
-																					<div
-																						style={{
-																							whiteSpace: "nowrap",
-																							padding: "2px",
-																							textDecoration: taskStates[task.task_id]
-																								? "line-through"
-																								: "none",
-																							color:
-																								(task.hours || 0) < task.time &&
-																								!taskStates[task.task_id]
-																									? "red"
-																									: !taskStates[task.task_id]
-																									? "green"
-																									: "grey",
-																						}}
-																						key={task.task_id}
-																					>
-																						{task.time} hrs of {task.hours}
-																					</div>
-																				))}
-																			</TableRowCell>
-																			<TableRowCell></TableRowCell>
-																			<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
-																			<TableRowCell>
-																				{job.tasks.map((task) => (
-																					<div key={task.task_id} style={{ padding: "2px" }}>
-																						<input
-																							style={{ cursor: "pointer" }}
-																							type="checkbox"
-																							onChange={() => handleCheckboxChange(task.task_id)}
-																							checked={taskStates[task.task_id] || false}
-																						/>
-																					</div>
-																				))}
-																			</TableRowCell>
-																			<TableRowCell>
-																				{job.tasks.map((task) => (
-																					<div key={task.task_id}>
-																						<MoreTimeIcon
-																							style={{ cursor: "pointer" }}
-																							fontSize="small"
-																							onClick={
-																								() =>
-																									handleTimeIconClick(entry, job, task, selectedDate) // Pass the selectedDate here
-																							}
-																						/>
-																					</div>
-																				))}
-																			</TableRowCell>
-																		</>
-																	</TableRow>
-																)}
-																{/* isOpen */}
-															</>
-														))}
+														{entry.projects.map((project) =>
+															project.jobs.map((job) => (
+																<>
+																	{isOpened && (
+																		<TableRow key={`${index - 2}`}>
+																			<>
+																				<TableRowCell></TableRowCell>
+																				<TableRowCell>{project.project_name}</TableRowCell>
+																				<TableRowCell>
+																					<TableRow key={`${index - 3}`}>
+																						<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
+																							{job.job_name}
+																						</div>
+																					</TableRow>
+																				</TableRowCell>
+																				<TableRowCell>
+																					{job.tasks.map((task) => (
+																						<div
+																							style={{
+																								whiteSpace: "nowrap",
+																								padding: "2px",
+																								textDecoration: taskStates[task.task_id]
+																									? "line-through"
+																									: "none",
+																								color: taskStates[task.task_id] ? "grey" : "black",
+																							}}
+																							key={task.task_id}
+																						>
+																							{task.task_name}
+																						</div>
+																					))}
+																				</TableRowCell>
+																				<TableRowCell>
+																					{job.tasks.map((task) => (
+																						<div
+																							style={{
+																								whiteSpace: "nowrap",
+																								padding: "2px",
+																								textDecoration: taskStates[task.task_id]
+																									? "line-through"
+																									: "none",
+																								color:
+																									(task.hours || 0) < task.time &&
+																									!taskStates[task.task_id]
+																										? "red"
+																										: !taskStates[task.task_id]
+																										? "green"
+																										: "grey",
+																							}}
+																							key={task.task_id}
+																						>
+																							{task.time} hrs of {task.hours}
+																						</div>
+																					))}
+																				</TableRowCell>
+																				<TableRowCell></TableRowCell>
+																				<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
+																				<TableRowCell>
+																					{job.tasks.map((task) => (
+																						<div key={task.task_id} style={{ padding: "2px" }}>
+																							<input
+																								style={{ cursor: "pointer" }}
+																								type="checkbox"
+																								onChange={() => handleCheckboxChange(task.task_id)}
+																								checked={taskStates[task.task_id] || false}
+																							/>
+																						</div>
+																					))}
+																				</TableRowCell>
+																				<TableRowCell>
+																					{job.tasks.map((task) => (
+																						<div key={task.task_id}>
+																							<MoreTimeIcon
+																								style={{ cursor: "pointer" }}
+																								fontSize="small"
+																								onClick={
+																									() =>
+																										handleTimeIconClick(
+																											entry,
+																											project,
+																											job,
+																											task,
+																											selectedDate
+																										) // Pass the selectedDate here
+																								}
+																							/>
+																						</div>
+																					))}
+																				</TableRowCell>
+																			</>
+																		</TableRow>
+																	)}
+																	{/* isOpen */}
+																</>
+															))
+														)}
 													</>
 												</React.Fragment>
 											);
