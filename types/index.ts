@@ -20,3 +20,7 @@ export type JobTasksView = Views["job_tasks_view"]["Row"];
 export type GetAllJobsWithProjects =
 	Views["jobs_overview_with_projects"]["Row"];
 export type ProjectJobTasksView = Views["project_job_task_view"]["Row"];
+export type JobNames = Tables["job_names"]["Row"];
+export type ProjectJobsView = Views["project_jobs_view"]["Row"];
+export type GetAllJobsWithProjects2 =
+	Views["jobs_overview_with_projects_2"]["Row"];

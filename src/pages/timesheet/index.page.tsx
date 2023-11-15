@@ -189,7 +189,7 @@ const Timesheet = () => {
 			const groupedTimesheets: GroupedTimesheets =
 				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
-			// console.log({ filteredResponse });
+			console.log({ groupedTimesheets });
 			// console.log({ groupedTimesheets, filteredResponse });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];

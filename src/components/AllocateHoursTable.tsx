@@ -19,9 +19,10 @@ import {
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 
 import { getAllUsers } from "@pages/api/users";
-import { AllocateHoursView } from "types";
+import { AllocateHoursView, JobTask } from "types";
 
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
+import { getJobTasks } from "@pages/api/jobTasks";
 
 type RowData = AllocateHoursView;
 
@@ -78,7 +79,6 @@ function CollapsibleHoursGrid({
 	useEffect(() => {
 		setTasks([]);
 		// Fetch data from Supabase and update the fetchedRows state
-		console.log(jobId);
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
 				jobId || 0
@@ -90,6 +90,7 @@ function CollapsibleHoursGrid({
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
+				console.log({ getProjectJobTasks });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -97,7 +98,6 @@ function CollapsibleHoursGrid({
 					});
 				});
 			}
-			setTasks(taskOptions);
 			const getUsers = await getAllUsers();
 			if (getUsers) {
 				getUsers.forEach((user) => {
@@ -108,6 +108,7 @@ function CollapsibleHoursGrid({
 				});
 			}
 			setUsers(userOptions);
+			const getJobSpecificTasks = await getJobTasks(jobId || 0);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -137,7 +138,6 @@ function CollapsibleHoursGrid({
 				// setTasks(taskOptions);
 				// setUsers(userOptions);
 				setFetchedRows(mappedData);
-				// console.log(fetchedRows);
 			}
 		}
 		fetchData();
@@ -153,7 +153,6 @@ function CollapsibleHoursGrid({
 			groupedRows[row.month || 0] = [];
 		}
 		groupedRows[row.month || 0].push(row);
-		console.log(groupedRows);
 	});
 
 	const monthNames: string[] = [

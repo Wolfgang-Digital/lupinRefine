@@ -23,6 +23,7 @@ import {
 import {
 	// JobsOverview,
 	GetAllJobsWithProjects,
+	JobTask,
 } from "types";
 import {
 	TabContainer,
@@ -50,7 +51,7 @@ interface JobDetailProps {
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-	// console.log(job);
+	// console.log(jobTasks);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
@@ -87,7 +88,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 							<CloseIcon />
 						</IconButton>
 						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-							{`${job?.client_name}: ${job?.job_name}`}
+							{`${job?.client_name}: ${job?.job_name_name}`}
 						</Typography>
 						<Button autoFocus color="inherit" onClick={onClose}>
 							Save
