@@ -125,17 +125,17 @@ function CollapsibleHoursGrid({
 						// month: item.month,
 					})
 				);
-				// mappedData.forEach((row) => {
-				// taskOptions.push({
-				// 	label: row.task_name || "",
-				// 	value: row.task_id?.toString() || "0",
-				// });
-				// userOptions.push({
-				// 	label: row.user_name || "",
-				// 	value: row.user_id?.toString() || "0",
-				// });
-				// });
-				// setTasks(taskOptions);
+				mappedData.forEach((row) => {
+					taskOptions.push({
+						label: row.task_name || "",
+						value: row.task_id?.toString() || "0",
+					});
+					// userOptions.push({
+					// 	label: row.user_name || "",
+					// 	value: row.user_id?.toString() || "0",
+					// });
+				});
+				setTasks(taskOptions);
 				// setUsers(userOptions);
 				setFetchedRows(mappedData);
 			}

@@ -193,9 +193,9 @@ const Timesheet = () => {
 			// console.log({ groupedTimesheets, filteredResponse });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
-			const projectOptions: ProjectOption[] = [];
-			const jobOptions: JobOption[] = [];
-			const taskOptions: TaskOption[] = [];
+			// const projectOptions: ProjectOption[] = [];
+			// const jobOptions: JobOption[] = [];
+			// const taskOptions: TaskOption[] = [];
 
 			groupedTimesheets.forEach((timesheet) => {
 				clientOptions.push({
@@ -203,30 +203,33 @@ const Timesheet = () => {
 					value: timesheet.client_id?.toString() || "0",
 					projectLabel: timesheet.client_name || "",
 				});
-				timesheet.projects.forEach((project) => {
-					projectOptions.push({
-						label: project.project_name,
-						value: project.project_id?.toString() || "0",
-					});
-					project.jobs.forEach((job) => {
-						jobOptions.push({
-							label: `${job.job_name}`,
-							value: job.job_id?.toString() || "0",
-							taskLabel: job.tasks[0].task_name || "",
-						});
-						taskOptions.push({
-							label: job.tasks[0].task_name || "",
-							value: job.job_id?.toString() || "0",
-							completed: false,
-						});
-					});
-				});
+				// timesheet.projects.forEach((project) => {
+				// 	projectOptions.push({
+				// 		label: project.project_name,
+				// 		value: project.project_id?.toString() || "0",
+				// 	});
+				// 	project.jobs.forEach((job) => {
+				// 		jobOptions.push({
+				// 			label: `${job.job_name}`,
+				// 			value: job.job_name_id?.toString() || "0",
+				// 			taskLabel: job.tasks[0].task_name || "",
+				// 		});
+				// 		// job.tasks.forEach((task) => {
+				// 		// 	taskOptions.push({
+				// 		// 		label: task.task_name || "",
+				// 		// 		value: task.task_id?.toString() || "0",
+				// 		// 		completed: false,
+				// 		// 	});
+				// 		// });
+				// 	});
+				// });
 			});
 
 			setClients(clientOptions);
-			setProjects(projectOptions);
-			setJobs(jobOptions);
-			setTasks(taskOptions);
+			// setProjects(projectOptions);
+			// setJobs(jobOptions);
+			// setTasks(taskOptions);
+			// console.log({ tasks });
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
