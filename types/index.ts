@@ -11,6 +11,7 @@ export type ClientOverview = Views["client_overview"]["Row"];
 // export type JobsOverview = Views["jobs_overview"]["Row"];
 export type UsersOverview = Views["user_dept_join"]["Row"];
 export type TimesheetRowsView = Views["timesheet_rows_view"]["Row"];
+export type TimesheetRowsView2 = Views["timesheet_rows_view_2"]["Row"];
 export type AllTimesheetRowsView = Views["all_timesheet_rows_view"]["Row"];
 export type JobTask = Tables["job_tasks"]["Row"];
 export type AllTasksDemo = Views["all_tasks_demo"]["Row"];

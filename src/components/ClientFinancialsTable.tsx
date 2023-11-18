@@ -6,14 +6,14 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import {
-	getFinancialTable,
+	getFinancialTable2,
 	groupFinancialTableData,
 	GroupedFinancialData,
 } from "@api/financialTable";
-import { TimesheetRowsView } from "types";
+import { TimesheetRowsView2 } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 
-type RowData = TimesheetRowsView & {
+type RowData = TimesheetRowsView2 & {
 	month: number;
 };
 
@@ -37,24 +37,28 @@ function CustomToolbar() {
 
 function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	const [financialData, setFinancialData] = useState<TimesheetRowsView[]>([]);
+	const [financialData, setFinancialData] = useState<TimesheetRowsView2[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
-		TimesheetRowsView[]
+		TimesheetRowsView2[]
 	>([]);
 
 	const [selectedMonth, setSelectedMonth] = useState(9);
 
-	function fetchGroupedData(
-		financialTable: TimesheetRowsView[],
+	useEffect(() => {
+		fetchGroupedData2(financialData, selectedMonth);
+	}, [selectedMonth]);
+
+	function fetchGroupedData2(
+		financialTable2: TimesheetRowsView2[],
 		selectedMonth: number
 	) {
-		const myArr: TimesheetRowsView[] = [];
-		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
-		const groupedData: GroupedFinancialData = groupFinancialTableData(
-			copyFinancialData,
+		const myArr: TimesheetRowsView2[] = [];
+		const copyFinancialData2 = [...financialTable2.map((item) => ({ ...item }))];
+		const groupedData2: GroupedFinancialData = groupFinancialTableData(
+			copyFinancialData2,
 			selectedMonth
 		);
-		Object.values(groupedData).forEach((item) => {
+		Object.values(groupedData2).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
 				myArr.push(myItem);
 			});
@@ -63,48 +67,44 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	}
 
 	useEffect(() => {
-		fetchGroupedData(financialData, selectedMonth);
-	}, [selectedMonth]);
-
-	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const financialTable = await getFinancialTable(clientId || 0);
-			if (financialTable) {
-				setFinancialData(financialTable);
-				fetchGroupedData(financialTable, selectedMonth);
+			const financialTable2 = await getFinancialTable2(clientId || 0);
+			if (financialTable2) {
+				setFinancialData(financialTable2);
+				fetchGroupedData2(financialTable2, selectedMonth);
 			}
-			if (financialTable) {
+			if (financialTable2) {
 				// Map the fetched data to match the RowData type
-				const mappedData: RowData[] = financialTable.map(
-					(item: TimesheetRowsView) => ({
+				const mappedData2: RowData[] = financialTable2.map(
+					(item: TimesheetRowsView2) => ({
 						...item,
 						id: item.id,
 						job_id: item.job_id,
 						month: new Date(
 							item.date?.toString() || new Date().toString()
-						).getMonth(), // Format the month name
-						job: item.job_name,
+						).getMonth(),
+						job: item.job_name_name,
 						task: item.task_name,
 						staff: item.user_name,
 						hours: item.time,
 					})
 				);
-				setFetchedRows(mappedData);
+				setFetchedRows(mappedData2);
 			}
 		}
 
 		fetchData();
 	}, []);
 
-	const groupedRows: { [key: string]: RowData[] } = {};
+	const groupedRows2: { [key: string]: RowData[] } = {};
 
 	// Group the fetched rows by month
 	fetchedRows.forEach((row) => {
-		if (!groupedRows[row.month]) {
-			groupedRows[row.month] = [];
+		if (!groupedRows2[row.month]) {
+			groupedRows2[row.month] = [];
 		}
-		groupedRows[row.month].push(row);
+		groupedRows2[row.month].push(row);
 	});
 	const monthNames: string[] = [
 		"January",
@@ -122,7 +122,6 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	];
 
 	const monthName = monthNames[selectedMonth];
-	// console.log(selectedMonth);
 	return (
 		<div
 			style={{

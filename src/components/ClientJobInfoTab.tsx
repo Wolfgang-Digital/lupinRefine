@@ -5,11 +5,11 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import {
-	getFinancialTable,
+	getFinancialTable2,
 	groupFinancialTableData,
 	GroupedFinancialData,
 } from "@api/financialTable";
-import { TimesheetRowsView } from "types";
+import { TimesheetRowsView, TimesheetRowsView2 } from "types";
 import { WeekButton } from "@styled-components/timesheet";
 import {
 	Dialog,
@@ -53,25 +53,25 @@ function CustomToolbar() {
 	);
 }
 
-const groupByJobId = (data: TimesheetRowsView[]) => {
-	const projectData = new Map();
+const groupByJobId2 = (data: TimesheetRowsView2[]) => {
+	const projectData2 = new Map();
 
-	data.forEach((entry: TimesheetRowsView) => {
-		const projectId = entry.project_id;
-		if (projectData.has(projectId)) {
+	data.forEach((entry: TimesheetRowsView2) => {
+		const projectId2 = entry.project_id;
+		if (projectData2.has(projectId2)) {
 			// If the project_id is already in the map, update the time and rate
-			const existingProject = projectData.get(projectId);
-			existingProject.hours += entry.hours;
-			existingProject.time += entry.time;
-			existingProject.rate += entry.rate;
-			existingProject.allocatedValue += (entry.rate || 0) * (entry?.hours || 0);
-			existingProject.actualValue += (entry.rate || 0) * (entry?.time || 0);
-			existingProject.count++;
+			const existingProject2 = projectData2.get(projectId2);
+			existingProject2.hours += entry.hours;
+			existingProject2.time += entry.time;
+			existingProject2.rate += entry.rate;
+			existingProject2.allocatedValue += (entry.rate || 0) * (entry?.hours || 0);
+			existingProject2.actualValue += (entry.rate || 0) * (entry?.time || 0);
+			existingProject2.count++;
 		} else {
 			// If the project_id is not in the map, add a new entry
-			projectData.set(projectId, {
+			projectData2.set(projectId2, {
 				...entry,
-				project_id: projectId,
+				project_id: projectId2,
 				time: entry.time,
 				rate: entry.rate,
 				actualRate: entry.rate,
@@ -83,53 +83,54 @@ const groupByJobId = (data: TimesheetRowsView[]) => {
 	});
 
 	// Calculate the average rate for each project
-	projectData.forEach((project) => {
+	projectData2.forEach((project) => {
 		project.rate /= project.count;
 	});
 
 	// Convert the Map back to an array
-	const result = Array.from(projectData.values());
-	return result;
+	const result2 = Array.from(projectData2.values());
+	return result2;
 };
+
 function JobsInfoGrid({ clientId }: { clientId?: number }) {
-	const [financialData, setFinancialData] = useState<TimesheetRowsView[]>([]);
-	const [filteredFinancialData, setFilteredFinancialData] = useState<
-		TimesheetRowsView[]
+	const [financialData2, setFinancialData2] = useState<TimesheetRowsView2[]>([]);
+	const [filteredFinancialData2, setFilteredFinancialData2] = useState<
+		TimesheetRowsView2[]
 	>([]);
 
 	const [selectedMonth, setSelectedMonth] = useState(10);
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
-	function fetchGroupedData(
-		financialTable: TimesheetRowsView[],
+	function fetchGroupedData2(
+		financialTable2: TimesheetRowsView2[],
 		selectedMonth: number
 	) {
-		const myArr: TimesheetRowsView[] = [];
-		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
-		const groupedData: GroupedFinancialData = groupFinancialTableData(
-			copyFinancialData,
+		const myArr2: TimesheetRowsView2[] = [];
+		const copyFinancialData2 = [...financialTable2.map((item) => ({ ...item }))];
+		const groupedData2: GroupedFinancialData = groupFinancialTableData(
+			copyFinancialData2,
 			selectedMonth
 		);
-		Object.values(groupedData).forEach((item) => {
+		Object.values(groupedData2).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
-				myArr.push(myItem);
+				myArr2.push(myItem);
 			});
 		});
-		const groupedArr = groupByJobId(myArr);
-		setFilteredFinancialData(groupedArr);
+		const groupedArr2 = groupByJobId2(myArr2);
+		setFilteredFinancialData2(groupedArr2);
 	}
 
 	useEffect(() => {
-		fetchGroupedData(financialData, selectedMonth);
+		fetchGroupedData2(financialData2, selectedMonth);
 	}, [selectedMonth]);
 
 	useEffect(() => {
 		async function fetchData() {
-			const financialTable = await getFinancialTable(clientId || 0);
-			if (financialTable) {
-				setFinancialData(financialTable);
-				fetchGroupedData(financialTable, selectedMonth);
+			const financialTable2 = await getFinancialTable2(clientId || 0);
+			if (financialTable2) {
+				setFinancialData2(financialTable2);
+				fetchGroupedData2(financialTable2, selectedMonth);
 			}
 		}
 
@@ -198,7 +199,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 
 			<div style={{ paddingTop: "20px" }}>
 				<DataGrid
-					rows={filteredFinancialData}
+					rows={filteredFinancialData2}
 					columns={columns.map((col) => ({
 						...col,
 						editable: true,
