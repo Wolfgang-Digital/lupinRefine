@@ -23,7 +23,6 @@ import {
 import {
 	// JobsOverview,
 	GetAllJobsWithProjects,
-	JobTask,
 } from "types";
 import {
 	TabContainer,

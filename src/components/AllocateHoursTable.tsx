@@ -19,10 +19,10 @@ import {
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 
 import { getAllUsers } from "@pages/api/users";
-import { AllocateHoursView, JobTask } from "types";
+import { AllocateHoursView } from "types";
 
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
-import { getJobTasks } from "@pages/api/jobTasks";
+// import { getJobTasks } from "@pages/api/jobTasks";
 
 type RowData = AllocateHoursView;
 
@@ -108,7 +108,7 @@ function CollapsibleHoursGrid({
 				});
 			}
 			setUsers(userOptions);
-			const getJobSpecificTasks = await getJobTasks(jobId || 0);
+			// const getJobSpecificTasks = await getJobTasks(jobId || 0);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type

@@ -1,6 +1,6 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { id } from "date-fns/locale";
-import { CLIENT_RENEG_WINDOW } from "tls";
+// import { id } from "date-fns/locale";
+// import { CLIENT_RENEG_WINDOW } from "tls";
 import { GetAllJobsWithProjects, GetAllJobsWithProjects2 } from "types";
 
 export type JobsDataWithProjects = GetAllJobsWithProjects;
