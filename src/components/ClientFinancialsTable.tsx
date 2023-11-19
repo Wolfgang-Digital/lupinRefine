@@ -36,6 +36,7 @@ function CustomToolbar() {
 }
 
 function CollapsibleGrid({ clientId }: { clientId?: number }) {
+	console.log({ clientId });
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [financialData, setFinancialData] = useState<TimesheetRowsView2[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
@@ -80,7 +81,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 					(item: TimesheetRowsView2) => ({
 						...item,
 						id: item.id,
-						job_id: item.job_id,
+						job_id: item.id,
 						month: new Date(
 							item.date?.toString() || new Date().toString()
 						).getMonth(),
@@ -91,6 +92,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 					})
 				);
 				setFetchedRows(mappedData2);
+				// console.log({ financialTable2 });
 			}
 		}
 

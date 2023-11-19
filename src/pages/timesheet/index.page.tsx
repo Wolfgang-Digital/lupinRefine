@@ -26,13 +26,21 @@ import {
 	Button,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
+import {
+	getAllTimesheetRowsV2,
+	getAllTimesheetRows2V2,
+} from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import styled from "styled-components";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import {
+	// groupTimesheets,
+	groupTimesheets2,
+	GroupedTimesheets,
+	GroupedTimesheets2,
+} from "./groupTimesheets";
 import { DayDialog } from "./DayDialog";
 
 const useStyles = makeStyles({
@@ -160,23 +168,25 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
-
-			let filteredResponse: typeof timesheetsResponse = [];
+			console.log(timesheetsResponse);
+			const timesheetsResponse2 = await getAllTimesheetRows2V2();
+			console.log(timesheetsResponse2);
+			let filteredResponse: typeof timesheetsResponse2 = [];
 			// console.log(timesheetsResponse);
-			if (!timesheetsResponse) {
+			if (!timesheetsResponse2 || !timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
 			if (filterOption === "Wolfgang Tasks") {
-				filteredResponse = timesheetsResponse.filter(
+				filteredResponse = timesheetsResponse2.filter(
 					(entry) => entry.name === "Wolfgang Digital"
 				);
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse.filter(
+				filteredResponse = timesheetsResponse2.filter(
 					(entry) => entry.name != "Wolfgang Digital"
 				);
 				// .filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
-				filteredResponse = timesheetsResponse;
+				filteredResponse = timesheetsResponse2;
 			}
 			filteredResponse = filteredResponse.filter(({ date }) => {
 				const dateObj = new Date(date || new Date());
@@ -186,8 +196,8 @@ const Timesheet = () => {
 				);
 			});
 
-			const groupedTimesheets: GroupedTimesheets =
-				groupTimesheets(filteredResponse);
+			const groupedTimesheets: GroupedTimesheets2 =
+				groupTimesheets2(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
 			// console.log({ filteredResponse });
 			// console.log({ groupedTimesheets, filteredResponse });

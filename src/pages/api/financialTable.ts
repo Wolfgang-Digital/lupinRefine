@@ -63,6 +63,7 @@ export const getFinancialTable2 = async (clientId: number) => {
 			console.error("Error fetching clients2: ", error);
 			return;
 		}
+		// console.log({ clientId });
 		return data;
 	} catch (error) {
 		console.error("Error fetching clients : ", error);

@@ -50,17 +50,17 @@ interface JobDetailProps {
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-	// console.log(job);
+	console.log({ job });
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
 
 	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
 		[
-			{ label: "Job ID", field: "job_id" },
+			{ label: "Job ID", field: "client_id" },
 			{ label: "Client Name", field: "client_name" },
 			{ label: "Project Name", field: "project_name" },
-			{ label: "Project ID", field: "job_name_id" },
+			{ label: "Job Name", field: "job_name_name" },
 			// { label: "Job Name", field: "job_name" },
 			{ label: "Job Type", field: "job_type_name" },
 			{ label: "Tier", field: "tier_name" },
@@ -87,7 +87,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 							<CloseIcon />
 						</IconButton>
 						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-							{`${job?.client_name}: ${job?.job_name}`}
+							{`${job?.client_name}: ${job?.job_name_name}`}
 						</Typography>
 						<Button autoFocus color="inherit" onClick={onClose}>
 							Save
@@ -161,7 +161,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 									Financial Details
 								</Typography>
 								{/* <ClientFinancials clientId={client?.id || 0} /> */}
-								<CollapsibleGrid />
+								<CollapsibleGrid clientId={job?.client_id || 0} />
 							</Paper>
 						</Container>
 					</TabPanelContainer>

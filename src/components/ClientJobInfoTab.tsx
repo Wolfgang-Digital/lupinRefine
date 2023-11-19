@@ -9,7 +9,10 @@ import {
 	groupFinancialTableData,
 	GroupedFinancialData,
 } from "@api/financialTable";
-import { TimesheetRowsView, TimesheetRowsView2 } from "types";
+import {
+	// TimesheetRowsView,
+	TimesheetRowsView2,
+} from "types";
 import { WeekButton } from "@styled-components/timesheet";
 import {
 	Dialog,
@@ -25,7 +28,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import JobsFinancialTable from "@components/JobsFinancialTable";
-type RowData = TimesheetRowsView & {
+type RowData = TimesheetRowsView2 & {
 	month: number;
 	job: string;
 	actualValue: number;
@@ -53,14 +56,14 @@ function CustomToolbar() {
 	);
 }
 
-const groupByJobId2 = (data: TimesheetRowsView2[]) => {
-	const projectData2 = new Map();
+const groupByJobId = (data: TimesheetRowsView2[]) => {
+	const projectData = new Map();
 
 	data.forEach((entry: TimesheetRowsView2) => {
-		const projectId2 = entry.project_id;
-		if (projectData2.has(projectId2)) {
+		const projectId = entry.project_id;
+		if (projectData.has(projectId)) {
 			// If the project_id is already in the map, update the time and rate
-			const existingProject2 = projectData2.get(projectId2);
+			const existingProject2 = projectData.get(projectId);
 			existingProject2.hours += entry.hours;
 			existingProject2.time += entry.time;
 			existingProject2.rate += entry.rate;
@@ -69,9 +72,9 @@ const groupByJobId2 = (data: TimesheetRowsView2[]) => {
 			existingProject2.count++;
 		} else {
 			// If the project_id is not in the map, add a new entry
-			projectData2.set(projectId2, {
+			projectData.set(projectId, {
 				...entry,
-				project_id: projectId2,
+				project_id: projectId,
 				time: entry.time,
 				rate: entry.rate,
 				actualRate: entry.rate,
@@ -83,17 +86,18 @@ const groupByJobId2 = (data: TimesheetRowsView2[]) => {
 	});
 
 	// Calculate the average rate for each project
-	projectData2.forEach((project) => {
+	projectData.forEach((project) => {
 		project.rate /= project.count;
 	});
 
 	// Convert the Map back to an array
-	const result2 = Array.from(projectData2.values());
+	const result2 = Array.from(projectData.values());
 	return result2;
 };
 
 function JobsInfoGrid({ clientId }: { clientId?: number }) {
-	const [financialData2, setFinancialData2] = useState<TimesheetRowsView2[]>([]);
+	console.log({ clientId });
+	const [financialData, setFinancialData] = useState<TimesheetRowsView2[]>([]);
 	const [filteredFinancialData2, setFilteredFinancialData2] = useState<
 		TimesheetRowsView2[]
 	>([]);
@@ -102,35 +106,35 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
-	function fetchGroupedData2(
-		financialTable2: TimesheetRowsView2[],
+	function fetchGroupedData(
+		financialTable: TimesheetRowsView2[],
 		selectedMonth: number
 	) {
-		const myArr2: TimesheetRowsView2[] = [];
-		const copyFinancialData2 = [...financialTable2.map((item) => ({ ...item }))];
-		const groupedData2: GroupedFinancialData = groupFinancialTableData(
-			copyFinancialData2,
+		const myArr: TimesheetRowsView2[] = [];
+		const copyFinancialData = [...financialTable.map((item) => ({ ...item }))];
+		const groupedData: GroupedFinancialData = groupFinancialTableData(
+			copyFinancialData,
 			selectedMonth
 		);
-		Object.values(groupedData2).forEach((item) => {
+		Object.values(groupedData).forEach((item) => {
 			Object.values(item).forEach((myItem) => {
-				myArr2.push(myItem);
+				myArr.push(myItem);
 			});
 		});
-		const groupedArr2 = groupByJobId2(myArr2);
-		setFilteredFinancialData2(groupedArr2);
+		const groupedArr = groupByJobId(myArr);
+		setFilteredFinancialData2(groupedArr);
 	}
 
 	useEffect(() => {
-		fetchGroupedData2(financialData2, selectedMonth);
+		fetchGroupedData(financialData, selectedMonth);
 	}, [selectedMonth]);
 
 	useEffect(() => {
 		async function fetchData() {
 			const financialTable2 = await getFinancialTable2(clientId || 0);
 			if (financialTable2) {
-				setFinancialData2(financialTable2);
-				fetchGroupedData2(financialTable2, selectedMonth);
+				setFinancialData(financialTable2);
+				fetchGroupedData(financialTable2, selectedMonth);
 			}
 		}
 

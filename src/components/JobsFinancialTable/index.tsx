@@ -259,7 +259,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			if (["job_name", "total"].includes(taskKey)) continue;
 			const jobTotal = result[jobKey].total as Total;
 			const taskTotal = ((result[jobKey] as Task)[taskKey] as User).total as Total;
-			console.log({ jobTotal, taskTotal, jobKey, taskKey });
+			// console.log({ jobTotal, taskTotal, jobKey, taskKey });
 			jobTotal.actualValue =
 				(jobTotal.actualValue || 0) + (taskTotal?.actualValue || 0);
 			jobTotal.hours += taskTotal?.hours || 0;
@@ -321,6 +321,7 @@ function JobsFinancialTable({
 					(await getAllTimesheetRows()) as unknown as AllTimesheetRowsView[];
 				let filteredResponse: AllTimesheetRowsView[] = [];
 				if (unfilteredResponse) {
+					// console.log({ unfilteredResponse });
 					filteredResponse = unfilteredResponse.filter(
 						({ client_id, project_id }) => {
 							return client_id === clientId && project_id === projectId;

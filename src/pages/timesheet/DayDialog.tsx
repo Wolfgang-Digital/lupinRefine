@@ -19,8 +19,16 @@ import {
 	ProjectOption,
 } from "./index.page";
 import { useEffect, useState } from "react";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import {
+	getAllTimesheetRowsV2,
+	getAllTimesheetRows2V2,
+} from "@pages/api/timesheetRows";
+import {
+	groupTimesheets,
+	groupTimesheets2,
+	GroupedTimesheets,
+	GroupedTimesheets2,
+} from "./groupTimesheets";
 import { format } from "date-fns";
 //import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
@@ -106,15 +114,12 @@ export const DayDialog = ({
 		async function fetchData() {
 			try {
 				const timesheetsResponse = await getAllTimesheetRowsV2();
-
 				if (timesheetsResponse) {
+					// console.log({ timesheetsResponse });
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate
 					);
-
-					// console.log({ timesheetsResponse, filteredTimesheets });
-					// console.log(formattedDate);
-
+					// console.log({ filteredTimesheets });
 					const groupedTimesheetsData: GroupedTimesheets =
 						groupTimesheets(filteredTimesheets);
 
@@ -129,17 +134,42 @@ export const DayDialog = ({
 										job_name: jobEntry.job_name,
 										task_name: taskEntry.task_name,
 										time: taskEntry.time,
-										//time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
+									});
+								});
+							});
+						});
+					});
+					// setRows(newRows);
+				} else {
+					console.error("timesheetsResponse is undefined");
+				}
+				const timesheetsResponse2 = await getAllTimesheetRows2V2();
+				// console.log({ timesheetsResponse2 });
+				if (timesheetsResponse2) {
+					const filteredTimesheets = timesheetsResponse2.filter(
+						(timesheet) => timesheet.date === formattedDate
+					);
+					// console.log({ filteredTimesheets });
+					const groupedTimesheetsData: GroupedTimesheets2 =
+						groupTimesheets2(filteredTimesheets);
+
+					const newRows: TimesheetType[] = [];
+					groupedTimesheetsData.forEach((entry) => {
+						entry.projects.forEach((project) => {
+							project.jobs.forEach((jobEntry) => {
+								jobEntry.tasks.forEach((taskEntry) => {
+									newRows.push({
+										client_name: entry.client_name,
+										project_name: project.project_name,
+										job_name: jobEntry.job_name,
+										task_name: taskEntry.task_name,
+										time: taskEntry.time,
 									});
 								});
 							});
 						});
 					});
 					setRows(newRows);
-					// console.log({ newRows, groupedTimesheetsData });
-					// console.log("Grouped Data", groupedTimesheetsData);
-				} else {
-					console.error("timesheetsResponse is undefined");
 				}
 			} catch (error) {
 				console.error("Error fetching data from Supabase:", error);
