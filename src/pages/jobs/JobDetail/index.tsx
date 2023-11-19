@@ -161,7 +161,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 									Financial Details
 								</Typography>
 								{/* <ClientFinancials clientId={client?.id || 0} /> */}
-								<CollapsibleGrid clientId={job?.client_id || 0} />
+								<CollapsibleGrid clientId={job?.job_id || 0} />
 							</Paper>
 						</Container>
 					</TabPanelContainer>
