@@ -75,6 +75,7 @@ const JobList: React.FC = () => {
 	const rows = jobs.map((job) => ({
 		id: job.job_id,
 		job_id: job.job_id,
+		client_id: job.client_id,
 		client_name: job.client_name,
 		project_name: job.project_name,
 		project_id: job.project_id,
