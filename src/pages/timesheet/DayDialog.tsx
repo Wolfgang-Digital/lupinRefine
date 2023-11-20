@@ -372,7 +372,7 @@ export const DayDialog = ({
 									label="Time Spent (in hours)"
 									value={timeSpent}
 									onChange={(event) => {
-										if (Number(event.target.value) >= 0) {
+										if (Number(event.target.value) >= 0.1) {
 											setTimeSpent(event.target.value);
 										}
 									}}
