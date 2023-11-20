@@ -47,8 +47,8 @@ export const getUserAllocatedHoursPerMonth = async (
 };
 
 export const getJobAllocatedHoursPerMonth = async (
-	jobID: number,
-	clientID: number
+	jobID: number
+	// clientID: number
 	// month: number
 ) => {
 	try {
