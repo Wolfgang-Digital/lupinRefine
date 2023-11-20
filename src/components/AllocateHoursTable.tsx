@@ -17,11 +17,12 @@ import {
 	GridToolbarExport,
 } from "@mui/x-data-grid";
 import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
-
 import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
+import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
+import { PostTimeEntry } from "@pages/api/timesheet";
 // import { getJobTasks } from "@pages/api/jobTasks";
 
 type RowData = AllocateHoursView;
@@ -58,11 +59,14 @@ function CollapsibleHoursGrid({
 	projectId,
 	jobId,
 	jobNameId,
+	jobsId,
 }: {
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
+	jobsId?: number;
 }) {
+	// console.log({ jobsId });
 	// const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	// const [selectedMonth, setSelectedMonth] = useState(currentMonth);
@@ -78,6 +82,7 @@ function CollapsibleHoursGrid({
 
 	useEffect(() => {
 		setTasks([]);
+		console.log({ jobId });
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
@@ -90,7 +95,7 @@ function CollapsibleHoursGrid({
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
-				console.log({ getProjectJobTasks });
+				// console.log({ getProjectJobTasks });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -111,12 +116,14 @@ function CollapsibleHoursGrid({
 			// const getJobSpecificTasks = await getJobTasks(jobId || 0);
 
 			if (allocateHoursTable) {
+				console.log({ allocateHoursTable });
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = allocateHoursTable.map(
 					(item: AllocateHoursView) => ({
 						...item,
 						id: item.id,
 						job_id: item.job_id,
+						jobs_id: item.jobs_id,
 						job_name: item.job_name,
 						task_name: item.task_name,
 						user_name: item.user_name,
@@ -128,7 +135,7 @@ function CollapsibleHoursGrid({
 				mappedData.forEach((row) => {
 					taskOptions.push({
 						label: row.task_name || "",
-						value: row.task_id?.toString() || "0",
+						value: row.job_id?.toString() || "0",
 					});
 					// userOptions.push({
 					// 	label: row.user_name || "",
@@ -169,6 +176,34 @@ function CollapsibleHoursGrid({
 		"November",
 		"December",
 	];
+
+	async function saveAllocateHoursEntry() {
+		const currentDate = new Date();
+		const dataToPostAHE = {
+			jobTaskId: 10,
+			month: currentDate.getMonth() + 1,
+			year: Number(currentDate.getFullYear()),
+			userId: selectedUser,
+			jobId: Number(jobId),
+			taskId: Number(selectedTask),
+			hours: Number(timeSpent),
+		};
+		const dataToPostTSE = {
+			staffId: localStorage.getItem("user_id") || "",
+			notes: "Zero hours for allocate hours",
+			timeSpent: 0,
+			projectId: Number(projectId),
+			jobId: Number(jobsId),
+			jobsId: Number(jobId),
+			taskId: Number(selectedTask),
+			selectedDate: "2023-11-20",
+			rate: 150,
+		};
+		const response = await PostAllocateHoursEntry(dataToPostAHE);
+		const response2 = await PostTimeEntry(dataToPostTSE);
+		console.log(`PostAllocateHoursEntry ${response}`);
+		console.log(`PostTimeEntry ${response2}`);
+	}
 
 	// const monthName = monthNames[selectedMonth - 1];
 
@@ -285,7 +320,7 @@ function CollapsibleHoursGrid({
 									color="primary"
 									type="submit"
 									style={{ padding: "10px" }}
-									/* onClick={} */
+									onClick={saveAllocateHoursEntry}
 								>
 									Save Allocation
 								</Button>

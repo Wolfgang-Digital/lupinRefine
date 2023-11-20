@@ -15,7 +15,6 @@ import {
 } from "@api/jobs";
 import JobDetail from "./JobDetail";
 import { ButtonContainer, JobsContainer } from "@styled-components/jobs";
-
 // Import the AddJob component
 import AddJob from "./AddJob";
 
@@ -72,7 +71,7 @@ const JobList: React.FC = () => {
 		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
 	const rows = jobs.map((job) => ({
-		id: job.job_id,
+		id: job.id,
 		job_id: job.job_id,
 		client_name: job.client_name,
 		project_name: job.project_name,

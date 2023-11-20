@@ -16,14 +16,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
-import {
-	// JobsData,
-	JobsDataWithProjects,
-} from "@api/jobs";
-import {
-	// JobsOverview,
-	GetAllJobsWithProjects,
-} from "types";
+import { JobsDataWithProjects } from "@api/jobs";
+import { GetAllJobsWithProjects } from "types";
 import {
 	TabContainer,
 	TabContentContainer,
@@ -50,7 +44,7 @@ interface JobDetailProps {
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-	// console.log(jobTasks);
+	console.log(job);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
@@ -201,8 +195,9 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 								<CollapsibleHoursGrid
 									projectId={job?.project_id || 0}
-									jobId={job?.job_id || 0}
+									jobId={job?.id || 0}
 									jobNameId={job?.job_name_id || 0}
+									jobsId={job?.job_id || 0}
 								/>
 							</Paper>
 						</Container>

@@ -1,6 +1,7 @@
 import { Database } from "types/supabase";
 export type Tables = Database["public"]["Tables"];
 export type Views = Database["public"]["Views"];
+export type AllocateHours = Tables["allocate_hours"]["Row"];
 export type Client = Tables["client"]["Row"];
 export type Currency = Tables["currency"]["Row"];
 export type Users = Tables["users"]["Row"];
