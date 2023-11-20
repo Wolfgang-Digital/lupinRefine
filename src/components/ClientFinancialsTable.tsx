@@ -36,7 +36,7 @@ function CustomToolbar() {
 }
 
 function CollapsibleGrid({ clientId }: { clientId?: number }) {
-	console.log({ clientId });
+	// console.log({ clientId });
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [financialData, setFinancialData] = useState<TimesheetRowsView2[]>([]);
 	const [filteredFinancialData, setFilteredFinancialData] = useState<

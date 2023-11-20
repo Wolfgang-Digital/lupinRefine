@@ -57,12 +57,12 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
 		[
-			{ label: "Job ID", field: "client_id" },
+			{ label: "Job ID", field: "job_id" },
 			{ label: "Client Name", field: "client_name" },
+			{ label: "Job Type", field: "job_type_name" },
 			{ label: "Project Name", field: "project_name" },
 			{ label: "Job Name", field: "job_name_name" },
 			// { label: "Job Name", field: "job_name" },
-			{ label: "Job Type", field: "job_type_name" },
 			{ label: "Tier", field: "tier_name" },
 			// { label: "Currency", field: "currency_symbol" },
 		];
@@ -201,8 +201,9 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 								<CollapsibleHoursGrid
 									projectId={job?.project_id || 0}
-									jobId={job?.job_id || 0}
+									jobId={job?.job_name_id || 0}
 									jobNameId={job?.job_name_id || 0}
+									clientId={job?.client_id || 0}
 								/>
 							</Paper>
 						</Container>

@@ -168,9 +168,9 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
-			console.log(timesheetsResponse);
+			console.log({ timesheetsResponse });
 			const timesheetsResponse2 = await getAllTimesheetRows2V2();
-			console.log(timesheetsResponse2);
+			console.log({ timesheetsResponse2 });
 			let filteredResponse: typeof timesheetsResponse2 = [];
 			// console.log(timesheetsResponse);
 			if (!timesheetsResponse2 || !timesheetsResponse) {

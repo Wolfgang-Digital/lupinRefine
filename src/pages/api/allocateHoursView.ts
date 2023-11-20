@@ -47,7 +47,8 @@ export const getUserAllocatedHoursPerMonth = async (
 };
 
 export const getJobAllocatedHoursPerMonth = async (
-	jobID: number
+	jobID: number,
+	clientID: number
 	// month: number
 ) => {
 	try {
@@ -55,7 +56,8 @@ export const getJobAllocatedHoursPerMonth = async (
 			.from("allocate_hours_view")
 			.select("*")
 			.order("job_id", { ascending: true })
-			.eq("job_id", jobID);
+			.eq("job_name_id", jobID);
+		// .eq("client_id", clientID);
 		// .eq("month", month);
 		if (error) {
 			console.error("Error fetching job allocated hours: ", error);
