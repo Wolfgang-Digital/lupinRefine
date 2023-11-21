@@ -209,11 +209,11 @@ export const DayDialog = ({
 									getRowId={(timesheet) => timesheet.id}
 									columns={[
 										{ field: "id", headerName: "ID", width: 50 },
-										{ field: "client_name", headerName: "Client", width: 80 },
-										{ field: "project_name", headerName: "Project", width: 80 },
-										{ field: "job_name", headerName: "Job", width: 80 },
-										{ field: "task_name", headerName: "Task", width: 80 },
-										{ field: "time", headerName: "Logged", width: 50 },
+										{ field: "client_name", headerName: "Client", width: 100 },
+										{ field: "project_name", headerName: "Project", width: 120 },
+										{ field: "job_name", headerName: "Job", width: 140 },
+										{ field: "task_name", headerName: "Task", width: 100 },
+										{ field: "time", headerName: "Logged", width: 80 },
 										{
 											field: "delete",
 											headerName: "Delete",
