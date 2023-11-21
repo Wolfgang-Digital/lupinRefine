@@ -23,6 +23,7 @@ import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import { PostTimeEntry } from "@pages/api/timesheet";
+import { format } from "date-fns";
 // import { getJobTasks } from "@pages/api/jobTasks";
 
 type RowData = AllocateHoursView;
@@ -60,13 +61,14 @@ function CollapsibleHoursGrid({
 	jobId,
 	jobNameId,
 	jobsId,
-}: {
+}: //
+{
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
 	jobsId?: number;
 }) {
-	// console.log({ jobsId });
+	console.log({ jobsId });
 	// const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	// const [selectedMonth, setSelectedMonth] = useState(currentMonth);
@@ -82,7 +84,7 @@ function CollapsibleHoursGrid({
 
 	useEffect(() => {
 		setTasks([]);
-		console.log({ jobId });
+		// console.log({ jobsId });
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
@@ -95,7 +97,6 @@ function CollapsibleHoursGrid({
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
-				// console.log({ getProjectJobTasks });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -103,6 +104,8 @@ function CollapsibleHoursGrid({
 					});
 				});
 			}
+			setTasks(taskOptions);
+			// console.log({ taskOptions });
 			const getUsers = await getAllUsers();
 			if (getUsers) {
 				getUsers.forEach((user) => {
@@ -116,7 +119,6 @@ function CollapsibleHoursGrid({
 			// const getJobSpecificTasks = await getJobTasks(jobId || 0);
 
 			if (allocateHoursTable) {
-				console.log({ allocateHoursTable });
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = allocateHoursTable.map(
 					(item: AllocateHoursView) => ({
@@ -142,14 +144,16 @@ function CollapsibleHoursGrid({
 					// 	value: row.user_id?.toString() || "0",
 					// });
 				});
-				setTasks(taskOptions);
+				// setTasks([]);
+				// setTasks(taskOptions);
+				// console.log(tasks);
 				// setUsers(userOptions);
 				setFetchedRows(mappedData);
 			}
 		}
 		fetchData();
 	}, []);
-
+	// console.log({ taskOptions });
 	const handleAllocateHoursClick = () => {
 		setShowForm(true);
 	};
@@ -179,6 +183,7 @@ function CollapsibleHoursGrid({
 
 	async function saveAllocateHoursEntry() {
 		const currentDate = new Date();
+		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		const dataToPostAHE = {
 			jobTaskId: 10,
 			month: currentDate.getMonth() + 1,
@@ -196,7 +201,7 @@ function CollapsibleHoursGrid({
 			jobId: Number(jobsId),
 			jobsId: Number(jobId),
 			taskId: Number(selectedTask),
-			selectedDate: "2023-11-20",
+			selectedDate: formattedDate,
 			rate: 150,
 		};
 		const response = await PostAllocateHoursEntry(dataToPostAHE);

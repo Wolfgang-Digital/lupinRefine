@@ -61,7 +61,7 @@ export const getJobAllocatedHoursPerMonth = async (
 			console.error("Error fetching job allocated hours: ", error);
 			return;
 		}
-		console.log({ jobID });
+		// console.log({ jobID });
 		return data;
 	} catch (error) {
 		console.error("Error fetching job allocated hours: ", error);

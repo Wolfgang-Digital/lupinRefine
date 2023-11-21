@@ -44,7 +44,7 @@ interface JobDetailProps {
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-	console.log(job);
+	// console.log(job);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
@@ -52,6 +52,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
 		[
 			{ label: "Job ID", field: "job_id" },
+			{ label: "Jobs ID", field: "id" },
 			{ label: "Client Name", field: "client_name" },
 			{ label: "Project Name", field: "project_name" },
 			{ label: "Project ID", field: "job_name_id" },

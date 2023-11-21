@@ -70,6 +70,7 @@ const JobList: React.FC = () => {
 		// { field: "job_id", headerName: "Job ID", width: 200 },
 		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
+
 	const rows = jobs.map((job) => ({
 		id: job.id,
 		job_id: job.job_id,
