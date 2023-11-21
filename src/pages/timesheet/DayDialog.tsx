@@ -58,6 +58,7 @@ export const DayDialog = ({
 	notes,
 	setNotes,
 	saveTimeEntry,
+	onUpdateTimesheet,
 }: {
 	showForm: boolean;
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -80,6 +81,7 @@ export const DayDialog = ({
 	notes: string;
 	setNotes: React.Dispatch<React.SetStateAction<string>>;
 	saveTimeEntry: () => void;
+	onUpdateTimesheet: () => Promise<void>;
 }) => {
 	//const columns = {[
 	//	{ field: "client_name", headerName: "Name", width: 140 },
@@ -124,8 +126,6 @@ export const DayDialog = ({
 						id: timesheet.id as number,
 					}));
 
-					console.log({ newRows });
-
 					setRows(newRows);
 				} else {
 					console.error("timesheetsResponse is undefined");
@@ -135,13 +135,17 @@ export const DayDialog = ({
 			}
 		}
 
-		fetchData();
-	}, [selectedDate, formattedDate]);
+		if (showForm) {
+			fetchData();
+		}
+	}, [selectedDate, showForm]);
 
 	const handleDeleteRow = async (id: number) => {
 		try {
 			await deleteTimeEntry(id);
-
+			if (onUpdateTimesheet) {
+				await onUpdateTimesheet();
+			}
 			setShowForm(false);
 		} catch (error) {
 			console.error("Error deleting time entry:", error);

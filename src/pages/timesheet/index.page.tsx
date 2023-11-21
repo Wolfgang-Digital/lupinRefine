@@ -505,6 +505,24 @@ const Timesheet = () => {
 			[taskId]: !prevState[taskId] || false,
 		}));
 	};
+
+	const updateTimesheet = async () => {
+		try {
+			// If you have a loading state, set it to true
+			// setLoading(true);
+
+			await fetchTasksAndJobsWithFilter(); // Refresh the data
+
+			// If you have a loading state, set it to false
+			// setLoading(false);
+		} catch (error) {
+			console.error("Error updating timesheet data:", error);
+			// Handle any errors
+			// Reset the loading state if you have one
+			// setLoading(false);
+		}
+	};
+
 	return (
 		<>
 			<div
@@ -848,6 +866,7 @@ const Timesheet = () => {
 						notes={notes}
 						setNotes={setNotes}
 						saveTimeEntry={saveTimeEntry}
+						onUpdateTimesheet={updateTimesheet}
 					/>
 				</Grid>
 			</div>
