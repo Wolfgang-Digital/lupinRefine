@@ -29,7 +29,6 @@ import { makeStyles } from "@mui/styles";
 import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 import { PostTimeEntry } from "@pages/api/timesheet";
-import styled from "styled-components";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
 import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
@@ -42,22 +41,34 @@ const useStyles = makeStyles({
 			border: "2px solid black",
 		},
 	},
+	tableHeaderCell: {
+		backgroundColor: "#02786d",
+		color: "white",
+		borderRight: "1px solid black",
+		textAlign: "center",
+		fontSize: "smaller",
+	},
+	tableRowCell: {
+		borderRight: "1px solid #ccc",
+		textAlign: "center",
+		whiteSpace: "pre-line",
+		fontSize: "smaller",
+	},
+	flexContainer: {
+		display: "flex",
+		alignItems: "center",
+		paddingBottom: "10px",
+	},
+	buttonStyle: {
+		backgroundColor: "#3a2462",
+		color: "white",
+		padding: "8px",
+		"&:hover": {
+			backgroundColor: "#3a2462",
+		},
+	},
+	// Add other styles as needed
 });
-
-const TableHeaderCell = styled(TableCell)`
-	background-color: #02786d;
-	color: white;
-	border-right: 1px solid black;
-	text-align: center;
-	font-size: smaller;
-`;
-
-const TableRowCell = styled(TableCell)`
-	border-right: 1px solid #ccc;
-	text-align: center;
-	white-space: pre-line;
-	font-size: smaller;
-`;
 
 interface TaskState {
 	[taskId: number]: boolean;
@@ -505,15 +516,27 @@ const Timesheet = () => {
 			[taskId]: !prevState[taskId] || false,
 		}));
 	};
+
+	const updateTimesheet = async () => {
+		try {
+			// If you have a loading state, set it to true
+			// setLoading(true);
+
+			await fetchTasksAndJobsWithFilter(); // Refresh the data
+
+			// If you have a loading state, set it to false
+			// setLoading(false);
+		} catch (error) {
+			console.error("Error updating timesheet data:", error);
+			// Handle any errors
+			// Reset the loading state if you have one
+			// setLoading(false);
+		}
+	};
+
 	return (
 		<>
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					paddingBottom: "10px",
-				}}
-			>
+			<div className={classes.flexContainer}>
 				<h2 style={{ marginRight: "20px" }}>My Timesheet</h2>
 				<FormControl variant="outlined">
 					<InputLabel id="filter-label">Filter</InputLabel>
@@ -587,15 +610,12 @@ const Timesheet = () => {
 									key={day.toISOString()}
 									style={{
 										border: "1px solid #ccc",
-										paddingLeft: "10px",
-										paddingRight: "10px",
-										paddingTop: "2px",
-										paddingBottom: "2px",
 										borderRadius: "5px",
 										textAlign: "center",
 										cursor: "pointer",
 										backgroundColor: selectedDay === index ? "#3A2462" : "white",
 										color: selectedDay === index ? "white" : "black",
+										width: "60px",
 									}}
 									onClick={() => handleDayClick(index)}
 								>
@@ -611,15 +631,19 @@ const Timesheet = () => {
 							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
-										<TableHeaderCell>Client</TableHeaderCell>
-										<TableHeaderCell>Project</TableHeaderCell>
-										<TableHeaderCell>Job</TableHeaderCell>
-										<TableHeaderCell>Task</TableHeaderCell>
-										<TableHeaderCell>Used V Allocated</TableHeaderCell>
-										<TableHeaderCell>Overall Hrs Remaining</TableHeaderCell>
-										<TableHeaderCell>Days Left</TableHeaderCell>
-										<TableHeaderCell>Completed</TableHeaderCell>
-										<TableHeaderCell>Timer</TableHeaderCell>
+										<TableCell className={classes.tableHeaderCell}>Client</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Project</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Job</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Task</TableCell>
+										<TableCell className={classes.tableHeaderCell}>
+											Used V Allocated
+										</TableCell>
+										<TableCell className={classes.tableHeaderCell}>
+											Overall Hrs Remaining
+										</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Days Left</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Completed</TableCell>
+										<TableCell className={classes.tableHeaderCell}>Timer</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -687,25 +711,29 @@ const Timesheet = () => {
 															});
 														}}
 													>
-														<TableRowCell sx={{ fontWeight: "600" }}>
+														<TableCell
+															sx={{ fontWeight: "600" }}
+															className={classes.tableRowCell}
+														>
 															{entry.client_name}
-														</TableRowCell>
+														</TableCell>
 														{/* <TableRowCell colSpan={4}></TableRowCell> */}
-														<TableRowCell></TableRowCell>
-														<TableRowCell></TableRowCell>
-														<TableRowCell></TableRowCell>
-														<TableRowCell></TableRowCell>
-														<TableRowCell
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell
+															className={classes.tableRowCell}
 															sx={{
 																fontWeight: "600",
 															}}
 														>
 															{remainingHours}
-														</TableRowCell>
+														</TableCell>
 
-														<TableRowCell></TableRowCell>
-														<TableRowCell></TableRowCell>
-														<TableRowCell></TableRowCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
+														<TableCell className={classes.tableRowCell}></TableCell>
 													</TableRow>
 													<>
 														{entry.projects.map((project) =>
@@ -714,16 +742,18 @@ const Timesheet = () => {
 																	{isOpened && (
 																		<TableRow key={`${index - 2}`}>
 																			<>
-																				<TableRowCell></TableRowCell>
-																				<TableRowCell>{project.project_name}</TableRowCell>
-																				<TableRowCell>
+																				<TableCell className={classes.tableRowCell}></TableCell>
+																				<TableCell className={classes.tableRowCell}>
+																					{project.project_name}
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}>
 																					<TableRow key={`${index - 3}`}>
 																						<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
 																							{job.job_name}
 																						</div>
 																					</TableRow>
-																				</TableRowCell>
-																				<TableRowCell>
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}>
 																					{job.tasks.map((task) => (
 																						<div
 																							style={{
@@ -739,8 +769,8 @@ const Timesheet = () => {
 																							{task.task_name}
 																						</div>
 																					))}
-																				</TableRowCell>
-																				<TableRowCell>
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}>
 																					{job.tasks.map((task) => (
 																						<div
 																							style={{
@@ -762,10 +792,12 @@ const Timesheet = () => {
 																							{task.time} hrs of {task.hours}
 																						</div>
 																					))}
-																				</TableRowCell>
-																				<TableRowCell></TableRowCell>
-																				<TableRowCell>{daysUntilEndOfMonth()}</TableRowCell>
-																				<TableRowCell>
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}></TableCell>
+																				<TableCell className={classes.tableRowCell}>
+																					{daysUntilEndOfMonth()}
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}>
 																					{job.tasks.map((task) => (
 																						<div key={task.task_id} style={{ padding: "2px" }}>
 																							<input
@@ -776,8 +808,8 @@ const Timesheet = () => {
 																							/>
 																						</div>
 																					))}
-																				</TableRowCell>
-																				<TableRowCell>
+																				</TableCell>
+																				<TableCell className={classes.tableRowCell}>
 																					{job.tasks.map((task) => (
 																						<div key={task.task_id}>
 																							<MoreTimeIcon
@@ -796,7 +828,7 @@ const Timesheet = () => {
 																							/>
 																						</div>
 																					))}
-																				</TableRowCell>
+																				</TableCell>
 																			</>
 																		</TableRow>
 																	)}
@@ -848,6 +880,7 @@ const Timesheet = () => {
 						notes={notes}
 						setNotes={setNotes}
 						saveTimeEntry={saveTimeEntry}
+						onUpdateTimesheet={updateTimesheet}
 					/>
 				</Grid>
 			</div>
