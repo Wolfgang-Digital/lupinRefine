@@ -110,6 +110,7 @@ const Timesheet = () => {
 	const [selectedClient, setSelectedClient] = useState("");
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
+	const [selectedJobsId, setSelectedJobsId] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
 	// const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 
@@ -189,13 +190,9 @@ const Timesheet = () => {
 			const groupedTimesheets: GroupedTimesheets =
 				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
-			console.log({ groupedTimesheets });
-			// console.log({ groupedTimesheets, filteredResponse });
+			// console.log({ groupedTimesheets });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
-			// const projectOptions: ProjectOption[] = [];
-			// const jobOptions: JobOption[] = [];
-			// const taskOptions: TaskOption[] = [];
 
 			groupedTimesheets.forEach((timesheet) => {
 				clientOptions.push({
@@ -203,33 +200,9 @@ const Timesheet = () => {
 					value: timesheet.client_id?.toString() || "0",
 					projectLabel: timesheet.client_name || "",
 				});
-				// timesheet.projects.forEach((project) => {
-				// 	projectOptions.push({
-				// 		label: project.project_name,
-				// 		value: project.project_id?.toString() || "0",
-				// 	});
-				// 	project.jobs.forEach((job) => {
-				// 		jobOptions.push({
-				// 			label: `${job.job_name}`,
-				// 			value: job.job_name_id?.toString() || "0",
-				// 			taskLabel: job.tasks[0].task_name || "",
-				// 		});
-				// 		// job.tasks.forEach((task) => {
-				// 		// 	taskOptions.push({
-				// 		// 		label: task.task_name || "",
-				// 		// 		value: task.task_id?.toString() || "0",
-				// 		// 		completed: false,
-				// 		// 	});
-				// 		// });
-				// 	});
-				// });
 			});
 
 			setClients(clientOptions);
-			// setProjects(projectOptions);
-			// setJobs(jobOptions);
-			// setTasks(taskOptions);
-			// console.log({ tasks });
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
@@ -241,20 +214,6 @@ const Timesheet = () => {
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
-	// useEffect(() => {
-	// 	console.log("Hello World");
-	// 	fetchTasksAndJobsWithFilter();
-	// }, [PostTimeEntry]);
-
-	//const navigateWeeks = (weeks: number) => {
-	//	setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
-	//};
-
-	//// Create an array of week days
-	//const weekDays: Date[] = [];
-	//for (let i = 0; i < 26; i++) {
-	//	weekDays.push(addDays(selectedWeekStart, i));
-	//}
 
 	const daysInMonth = getDaysInMonth(selectedWeekStart);
 
@@ -270,17 +229,6 @@ const Timesheet = () => {
 		getCurrentDate = addDays(getCurrentDate, 1); // Move to the next day
 	}
 
-	// Function to handle "Add Time" button click
-	// const handleAddTimeClick = () => {
-	// 	setSelectedClient("");
-	// 	setSelectedProject("");
-	// 	setSelectedJob("");
-	// 	setSelectedTask("");
-	// 	setTimeSpent("");
-	// 	setNotes("");
-	// 	setShowForm(true);
-	// };
-
 	// Function to handle "Time Icon" button click
 	const handleTimeIconClick = (
 		entry: {
@@ -291,6 +239,7 @@ const Timesheet = () => {
 				project_name: string;
 				jobs: {
 					job_id: number;
+					jobs_id: number;
 					job_name: string;
 					job_name_id: number;
 					tasks: {
@@ -307,6 +256,7 @@ const Timesheet = () => {
 			project_name: string;
 			jobs: {
 				job_id: number;
+				jobs_id: number;
 				job_name: string;
 				job_name_id: number;
 				tasks: {
@@ -319,6 +269,7 @@ const Timesheet = () => {
 		},
 		job: {
 			job_id: number;
+			jobs_id: number;
 			job_name: string;
 			job_name_id: number;
 			tasks: {
@@ -342,6 +293,8 @@ const Timesheet = () => {
 		const selectedClientId = entry.client_id.toString();
 		const selectedProjectId = project.project_id.toString();
 		const selectedJobId = job.job_id.toString();
+		const selectedJobsId = job.jobs_id.toString();
+		setSelectedJobsId(selectedJobsId);
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
 		setSelectedClient(selectedClientId);
@@ -358,11 +311,13 @@ const Timesheet = () => {
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),
 			jobId: Number(selectedJob),
+			jobsId: Number(selectedJobsId),
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 150,
 		};
 		// const parts = selectedDate.split('-');
+
 		const response = await PostTimeEntry(dataToPost);
 		console.log(`PostTimeEntry ${response}`);
 		setSelectedClient("");
@@ -381,7 +336,7 @@ const Timesheet = () => {
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
-
+	// console.log({ displayedTimeEntries });
 	// Function to handle page change
 	const handleChangePage = (
 		event: React.MouseEvent<HTMLButtonElement> | null,
@@ -453,7 +408,7 @@ const Timesheet = () => {
 						response?.map((job) => ({
 							value: job.job_id?.toString() || "",
 							label: job.job_name || "",
-							taskLabel: job.job_id.toString(),
+							taskLabel: job.id.toString(),
 						}))
 					);
 				}
@@ -693,7 +648,6 @@ const Timesheet = () => {
 														<TableRowCell sx={{ fontWeight: "600" }}>
 															{entry.client_name}
 														</TableRowCell>
-														{/* <TableRowCell colSpan={4}></TableRowCell> */}
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>
 														<TableRowCell></TableRowCell>

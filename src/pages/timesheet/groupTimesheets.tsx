@@ -9,6 +9,7 @@ type Task = {
 
 type Job = {
 	job_id: number;
+	jobs_id: number;
 	job_name: string;
 	job_name_id: number;
 	tasks: Task[];
@@ -57,6 +58,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 				} else {
 					existingProjectEntry.jobs.push({
 						job_id: curr?.job_id || 0,
+						jobs_id: curr?.jobs_id || 0,
 						job_name: curr?.job_name || "",
 						job_name_id: curr?.job_name_id || 0,
 						tasks: [
@@ -76,6 +78,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					jobs: [
 						{
 							job_id: curr?.job_id || 0,
+							jobs_id: curr?.jobs_id || 0,
 							job_name: curr?.job_name || "",
 							job_name_id: curr?.job_name_id || 0,
 							tasks: [
@@ -101,6 +104,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 						jobs: [
 							{
 								job_id: curr?.job_id || 0,
+								jobs_id: curr?.jobs_id || 0,
 								job_name: curr?.job_name || "",
 								job_name_id: curr?.job_name_id || 0,
 								tasks: [
