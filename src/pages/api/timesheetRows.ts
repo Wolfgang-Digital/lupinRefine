@@ -45,3 +45,21 @@ export const getAllTimesheetRowsV2 = async (): Promise<
 		console.error("Error fetching timesheet rows: ", error);
 	}
 };
+
+export const deleteTimeEntry = async (id: number) => {
+	try {
+		console.log("Deleting time entry with ID:", id);
+		const { data, error } = await supabase
+			.from("timesheet_rows")
+			.delete()
+			.eq("id", id);
+
+		if (error) {
+			console.error("Error deleting time entry:", error);
+		} else {
+			console.log("Time entry deleted successfully:", id, data);
+		}
+	} catch (error) {
+		console.error("Error deleting time entry:", error);
+	}
+};
