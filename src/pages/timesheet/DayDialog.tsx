@@ -142,7 +142,7 @@ export const DayDialog = ({
 		try {
 			await deleteTimeEntry(id);
 
-			//setShowForm(false);
+			setShowForm(false);
 		} catch (error) {
 			console.error("Error deleting time entry:", error);
 		}
