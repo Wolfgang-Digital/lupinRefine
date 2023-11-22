@@ -52,7 +52,7 @@ const useStyles = makeStyles({
 		borderRight: "1px solid #ccc",
 		textAlign: "center",
 		whiteSpace: "pre-line",
-		fontSize: "smaller",
+		fontSize: "small",
 	},
 	flexContainer: {
 		display: "flex",
