@@ -1,11 +1,9 @@
-import React from 'react'
-
+import React from "react";
 
 const reports = () => {
-	return (
-		<h1>Reports</h1>
+	return <h1>Reports</h1>;
+};
 
-	)
-}
-
-export default reports
+export default reports;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin"]);

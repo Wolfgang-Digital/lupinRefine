@@ -3,7 +3,6 @@
 	type="text/javascript"
 ></script>;
 import React, { useEffect } from "react";
-import { useRouter } from "next/router";
 import { AuthBindings, Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
@@ -27,10 +26,10 @@ import { ThemedTitleV2 } from "src/components";
 //icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-// import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
-//import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
-//import RecentActorsIcon from "@mui/icons-material/RecentActors";
-//import SecurityIcon from "@mui/icons-material/Security";
+import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
+import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
+import RecentActorsIcon from "@mui/icons-material/RecentActors";
+import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
 
 import "src/pages/app.css";
@@ -66,25 +65,16 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const App = (props: React.PropsWithChildren) => {
-	const { data, status } = useSession();
-
-	const router = useRouter();
-
+	const { data: session, status } = useSession();
 	useEffect(() => {
-		if (status === "unauthenticated") {
-			router.push("/login");
-		}
-
 		async function signInWithGoogleToSupabase() {
-			if (data?.id_token) {
+			if (session?.id_token) {
 				const { data: myData, error } = await supabase.auth.signInWithIdToken({
 					provider: "google",
-					token: data?.id_token,
+					token: session?.id_token,
 				});
-				// console.log({ myData });
 				localStorage.setItem("user_id", myData?.user?.id || "");
 				if (error) {
-					console.log(error);
 					return;
 				}
 			}
@@ -136,17 +126,76 @@ const App = (props: React.PropsWithChildren) => {
 			return null;
 		},
 		getIdentity: async () => {
-			if (data?.user) {
-				const { user } = data;
-				return {
-					name: user?.name,
-					avatar: user.image,
-				};
+			if (session?.user) {
+				const { user } = session;
+				return { ...user };
 			}
 			return null;
 		},
 	};
-
+	function getResources() {
+		const resources = [
+			{
+				name: "Dashboard",
+				list: "/dashboard",
+				options: { label: "Dashboard" },
+				icon: <DashboardIcon />,
+			},
+			{
+				name: "Timesheet",
+				list: "/timesheet",
+				options: { label: "Timesheet" },
+				icon: <MoreTimeIcon />,
+			},
+			{
+				name: "Reports",
+				list: "/reports",
+				options: { label: "Reports" },
+				icon: <ContentPasteSearchIcon />,
+			},
+			{
+				name: "Users",
+				list: "/wolfgangers",
+				options: { label: "Wolfgangers" },
+				icon: <ConnectWithoutContactIcon />,
+			},
+			{
+				name: "Client Overview",
+				list: "/clients",
+				options: { label: "Client Overview" },
+				icon: <RecentActorsIcon />,
+			},
+			{
+				name: "Job List",
+				list: "/jobs",
+				options: { label: "Job List" },
+				icon: <RecentActorsIcon />,
+			},
+			{
+				name: "Admin",
+				list: "/admin",
+				options: { label: "Admin" },
+				icon: <SecurityIcon />,
+			},
+		];
+		const resourceRoleMapper: Record<string, string[]> = {
+			admin: [
+				"Dashboard",
+				"Timesheet",
+				"Reports",
+				"Users",
+				"Client Overview",
+				"Job List",
+				"Admin",
+			],
+			user: ["Dashboard", "Timesheet"],
+		};
+		const userRole = session?.user?.role || "user";
+		const allowedResources = resourceRoleMapper[userRole] || [];
+		return resources.filter((resource) =>
+			allowedResources.includes(resource.name)
+		);
+	}
 	return (
 		<>
 			<ThemeProvider theme={overridedLightTheme}>
@@ -159,50 +208,7 @@ const App = (props: React.PropsWithChildren) => {
 							dataProvider={dataProvider(API_URL)}
 							notificationProvider={notificationProvider}
 							authProvider={authProvider}
-							resources={[
-								{
-									name: "Dashboard",
-									list: "/dashboard",
-									options: { label: "Dashboard" },
-									icon: <DashboardIcon />,
-								},
-								{
-									name: "Timesheet",
-									list: "/timesheet",
-									options: { label: "Timesheet" },
-									icon: <MoreTimeIcon />,
-								},
-								// {
-								//   name: "Reports",
-								//   list: '/reports',
-								//   options:{label: "Reports"},
-								//   icon: <ContentPasteSearchIcon/>
-								// },
-								//{
-								//	name: "Users",
-								//	list: "/wolfgangers",
-								//	options: { label: "Wolfgangers" },
-								//	icon: <ConnectWithoutContactIcon />,
-								//},
-								//{
-								//	name: "Client Overview",
-								//	list: "/clients",
-								//	options: { label: "Client Overview" },
-								//	icon: <RecentActorsIcon />,
-								//},
-								//{
-								//	name: "Job List",
-								//	list: "/jobs",
-								//	options: { label: "Job List" },
-								//	icon: <RecentActorsIcon />,
-								//},
-								//{
-								//	name: "Admin",
-								//	list: "/admin",
-								//	options: { label: "Admin" },
-								//	icon: <SecurityIcon />,
-								//},
-							]}
+							resources={getResources()}
 							options={{
 								syncWithLocation: true,
 								warnWhenUnsavedChanges: true,
@@ -215,6 +221,7 @@ const App = (props: React.PropsWithChildren) => {
 					</RefineSnackbarProvider>
 				</RefineKbarProvider>
 			</ThemeProvider>
+			)
 		</>
 	);
 };

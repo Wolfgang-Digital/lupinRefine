@@ -28,7 +28,6 @@ export const getProjectbyClientId = async (clientId: string) => {
 		}
 		if (data) {
 			projectIds = data?.map((clientProject) => clientProject.project_id || 0);
-			// console.log(projectIds);
 		}
 		const { data: projectData, error: projectError } = await supabase
 			.from("project")
@@ -38,7 +37,6 @@ export const getProjectbyClientId = async (clientId: string) => {
 			console.error("Error fetching projects 1: ", error);
 			return;
 		}
-		// console.log(projectData);
 		return projectData;
 	} catch (error) {
 		console.error("Error fetching projects: ", error);

@@ -50,7 +50,6 @@ interface JobDetailProps {
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
-	// console.log(job);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};

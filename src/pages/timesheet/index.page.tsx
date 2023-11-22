@@ -173,7 +173,6 @@ const Timesheet = () => {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
 
 			let filteredResponse: typeof timesheetsResponse = [];
-			// console.log(timesheetsResponse);
 			if (!timesheetsResponse) {
 				throw new Error("Error fetching data");
 			}
@@ -200,8 +199,6 @@ const Timesheet = () => {
 			const groupedTimesheets: GroupedTimesheets =
 				groupTimesheets(filteredResponse);
 			setFilteredTimesheets(groupedTimesheets);
-			// console.log({ filteredResponse });
-			// console.log({ groupedTimesheets, filteredResponse });
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
 			const projectOptions: ProjectOption[] = [];
@@ -249,10 +246,6 @@ const Timesheet = () => {
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
-	// useEffect(() => {
-	// 	console.log("Hello World");
-	// 	fetchTasksAndJobsWithFilter();
-	// }, [PostTimeEntry]);
 
 	//const navigateWeeks = (weeks: number) => {
 	//	setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
@@ -420,7 +413,6 @@ const Timesheet = () => {
 	const handleProjectSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
 		const selectedProjectId = event.target.value as string;
 		setSelectedProject(selectedProjectId);
-		// console.log(selectedProjectId);
 		setSelectedJob("");
 	};
 
@@ -453,7 +445,6 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchJobs() {
 			if (selectedProject) {
-				// console.log(selectedProject);
 				const response = await getJobByProjectId(selectedClient, selectedProject);
 
 				if (response) {
@@ -473,7 +464,6 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchTasks() {
 			if (selectedJob) {
-				// console.log(`selectedJob: ${selectedJob}`);
 				const response = await getTaskByJobId(selectedJob);
 				if (response) {
 					setTasks(
@@ -889,3 +879,5 @@ const Timesheet = () => {
 };
 
 export default Timesheet;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin", "user"]);

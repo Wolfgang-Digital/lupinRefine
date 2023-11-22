@@ -78,7 +78,6 @@ function CollapsibleHoursGrid({
 	useEffect(() => {
 		setTasks([]);
 		// Fetch data from Supabase and update the fetchedRows state
-		console.log(jobId);
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
 				jobId || 0
@@ -137,7 +136,6 @@ function CollapsibleHoursGrid({
 				// setTasks(taskOptions);
 				// setUsers(userOptions);
 				setFetchedRows(mappedData);
-				// console.log(fetchedRows);
 			}
 		}
 		fetchData();
@@ -153,7 +151,6 @@ function CollapsibleHoursGrid({
 			groupedRows[row.month || 0] = [];
 		}
 		groupedRows[row.month || 0].push(row);
-		console.log(groupedRows);
 	});
 
 	const monthNames: string[] = [

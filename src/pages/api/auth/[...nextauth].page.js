@@ -45,13 +45,24 @@ export const authOptions = {
 	callbacks: {
 		async jwt({ token, account }) {
 			// Persist the OAuth access_token to the token right after signin
-
 			if (account) {
 				token.id_token = account.id_token;
 			}
 			return token;
 		},
+
 		async session({ session, token }) {
+			const { data, error } = await supabase
+				.from("users")
+				.select("user_role")
+				.eq("user_email", token.email)
+				.single();
+
+			if (error) {
+				console.error("Error fetching user role:", error);
+				throw new Error("Error fetching user role");
+			}
+			session.user.role = data.user_role;
 			// Send properties to the client, like an access_token from a provider.
 			session.id_token = token.id_token;
 			return session;
@@ -82,6 +93,14 @@ export const authOptions = {
 				);
 			}
 		},
+	},
+	jwt: {
+		secret: process.env.NEXTAUTH_SECRET,
+		maxAge: 24 * 60 * 60, // 24 hours in seconds
+	},
+	session: {
+		strategy: "jwt",
+		maxAge: 24 * 60 * 60, // 24 hours in seconds
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 };
