@@ -72,7 +72,7 @@ function CollapsibleTasksGrid({
 			);
 			if (getProjectJobTasks) {
 				if (getTasks) {
-					getTasks?.forEach((task) => {
+					getProjectJobTasks?.forEach((task) => {
 						taskOptions.push({
 							label: task.task_name || "",
 							value: task.task_id?.toString() || "0",
@@ -81,7 +81,6 @@ function CollapsibleTasksGrid({
 				}
 			}
 			setTasks(taskOptions);
-
 			if (getProjectJobTasks) {
 				// Map the fetched data to match the RowData type
 				const mappedData: RowData[] = getProjectJobTasks.map(
@@ -123,7 +122,6 @@ function CollapsibleTasksGrid({
 
 		setJobTaskEntries([...jobTaskEntries, newJobTaskEntry]);
 	};
-
 	return (
 		<>
 			<div

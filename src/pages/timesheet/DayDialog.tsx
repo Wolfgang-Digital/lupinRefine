@@ -48,6 +48,7 @@ export const DayDialog = ({
 	handleProjectSelect,
 	projects,
 	selectedJob,
+	selectedJobs,
 	handleJobSelect,
 	jobs,
 	selectedTask,
@@ -71,6 +72,7 @@ export const DayDialog = ({
 	handleProjectSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	projects: ProjectOption[];
 	selectedJob: string;
+	selectedJobs: string;
 	handleJobSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	jobs: JobOption[];
 	selectedTask: string;
@@ -83,27 +85,6 @@ export const DayDialog = ({
 	saveTimeEntry: () => void;
 	onUpdateTimesheet: () => Promise<void>;
 }) => {
-	//const columns = {[
-	//	{ field: "client_name", headerName: "Name", width: 140 },
-	//	{ field: "project_name", headerName: "Project", width: 140 },
-	//	{ field: "job_name", headerName: "Job", width: 140 },
-	//	{ field: "task_name", headerName: "Task", width: 100 },
-	//	{ field: "time", headerName: "Hrs Logged", width: 90 },
-	//	{
-	//		field: "delete",
-	//		headerName: "Delete",
-	//		width: 90,
-	//		renderCell: () => (
-	//			<IconButton
-	//				color="secondary"
-	//				//onClick={() => handleDeleteRow(params.row.id)}
-	//			>
-	//				<HighlightOffIcon />
-	//			</IconButton>
-	//		),
-	//	},
-	//]};
-
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
@@ -314,12 +295,13 @@ export const DayDialog = ({
 									select
 									label="Select Job"
 									value={selectedJob}
+									name={selectedJobs}
 									onChange={handleJobSelect}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 									required
 								>
 									{jobs.map((job) => (
-										<MenuItem key={job.value} value={job.value}>
+										<MenuItem key={job.value} value={job.value} title={job.taskLabel}>
 											{job.label}
 										</MenuItem>
 									))}
