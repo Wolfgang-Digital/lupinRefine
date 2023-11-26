@@ -19,17 +19,21 @@ import {
 	ProjectOption,
 } from "./index.page";
 import { useEffect, useState } from "react";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import {
+	deleteTimeEntry,
+	getAllTimesheetRowsV2,
+} from "@pages/api/timesheetRows";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { format } from "date-fns";
 //import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 interface TimesheetType {
-	client_name: string;
+	client_name: string | null;
 	project_name: string | null;
 	job_name: string | null;
 	task_name: string | null;
 	time: number | null;
+	id: number | 0;
 	//time_left: number | null;
 }
 
@@ -55,6 +59,7 @@ export const DayDialog = ({
 	notes,
 	setNotes,
 	saveTimeEntry,
+	onUpdateTimesheet,
 }: {
 	showForm: boolean;
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -78,11 +83,11 @@ export const DayDialog = ({
 	notes: string;
 	setNotes: React.Dispatch<React.SetStateAction<string>>;
 	saveTimeEntry: () => void;
+	onUpdateTimesheet: () => Promise<void>;
 }) => {
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
-
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -93,26 +98,15 @@ export const DayDialog = ({
 						(timesheet) => timesheet.date === formattedDate
 					);
 
-					const groupedTimesheetsData: GroupedTimesheets =
-						groupTimesheets(filteredTimesheets);
+					const newRows: TimesheetType[] = filteredTimesheets.map((timesheet) => ({
+						client_name: timesheet.name,
+						project_name: timesheet.project_name,
+						job_name: timesheet.job_name,
+						task_name: timesheet.task_name,
+						time: timesheet.time,
+						id: timesheet.id as number,
+					}));
 
-					const newRows: TimesheetType[] = [];
-					groupedTimesheetsData.forEach((entry) => {
-						entry.projects.forEach((project) => {
-							project.jobs.forEach((jobEntry) => {
-								jobEntry.tasks.forEach((taskEntry) => {
-									newRows.push({
-										client_name: entry.client_name,
-										project_name: project.project_name,
-										job_name: jobEntry.job_name,
-										task_name: taskEntry.task_name,
-										time: taskEntry.time,
-										//time_left: (taskEntry?.hours || 0) - (taskEntry.time || 0),
-									});
-								});
-							});
-						});
-					});
 					setRows(newRows);
 				} else {
 					console.error("timesheetsResponse is undefined");
@@ -122,8 +116,22 @@ export const DayDialog = ({
 			}
 		}
 
-		fetchData();
-	}, [selectedDate, formattedDate]);
+		if (showForm) {
+			fetchData();
+		}
+	}, [selectedDate, showForm]);
+
+	const handleDeleteRow = async (id: number) => {
+		try {
+			await deleteTimeEntry(id);
+			if (onUpdateTimesheet) {
+				await onUpdateTimesheet();
+			}
+			setShowForm(false);
+		} catch (error) {
+			console.error("Error deleting time entry:", error);
+		}
+	};
 
 	return (
 		<Dialog
@@ -177,23 +185,29 @@ export const DayDialog = ({
 						<div style={{ height: "600px", overflow: "auto" }}>
 							{rows.length > 0 ? (
 								<DataGrid
-									//checkboxSelection
 									autoHeight
 									rows={rows.filter((row) => row.time && row.time > 0)}
-									getRowId={(timeEntry) => {
-										return (
-											(timeEntry.client_name ?? "could not find client") +
-											(timeEntry.project_name ?? "could not find project") +
-											(timeEntry.job_name ?? "could not find job") +
-											(timeEntry.task_name ?? "could not find task")
-										);
-									}}
+									getRowId={(timesheet) => timesheet.id}
 									columns={[
-										{ field: "client_name", headerName: "Client", width: 120 },
-										{ field: "project_name", headerName: "Project", width: 140 },
+										{ field: "id", headerName: "ID", width: 50 },
+										{ field: "client_name", headerName: "Client", width: 100 },
+										{ field: "project_name", headerName: "Project", width: 120 },
 										{ field: "job_name", headerName: "Job", width: 140 },
 										{ field: "task_name", headerName: "Task", width: 100 },
 										{ field: "time", headerName: "Logged", width: 80 },
+										{
+											field: "delete",
+											headerName: "Delete",
+											width: 80,
+											renderCell: (params) => (
+												<IconButton
+													color="secondary"
+													onClick={() => handleDeleteRow(params.row.id)}
+												>
+													<HighlightOffIcon />
+												</IconButton>
+											),
+										},
 									]}
 									style={{
 										display: "flex",
