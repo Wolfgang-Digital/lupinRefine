@@ -11,7 +11,7 @@ export type Country = Tables["countries"]["Row"];
 export type ClientOverview = Views["client_overview"]["Row"];
 // export type JobsOverview = Views["jobs_overview"]["Row"];
 export type UsersOverview = Views["user_dept_join"]["Row"];
-export type TimesheetRowsView = Views["timesheet_rows_view"]["Row"];
+export type TimesheetRowsView = Views["timesheet_rows_view_v2"]["Row"];
 export type AllTimesheetRowsView = Views["all_timesheet_rows_view"]["Row"];
 export type JobTask = Tables["job_tasks"]["Row"];
 export type AllTasksDemo = Views["all_tasks_demo"]["Row"];
@@ -25,3 +25,4 @@ export type JobNames = Tables["job_names"]["Row"];
 export type ProjectJobsView = Views["project_jobs_view"]["Row"];
 export type GetAllJobsWithProjects2 =
 	Views["jobs_overview_with_projects_2"]["Row"];
+export type ClientsWithJobs = Views["clients_with_jobs"]["Row"];

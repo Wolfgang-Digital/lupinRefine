@@ -28,10 +28,10 @@ export const getAllTimesheetRowsV2 = async (): Promise<
 > => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view")
+			.from("timesheet_rows_view_v2")
 			.select("*")
 			.order("name", { ascending: true })
-			.order("job_id", { ascending: true })) as unknown as {
+			.order("jobs_id", { ascending: true })) as unknown as {
 			data: TimesheetRowsView[];
 			error: PostgrestError;
 		};

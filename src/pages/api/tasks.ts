@@ -21,7 +21,7 @@ export const getTaskByJobId = async (jobId: string) => {
 		const { data, error } = await supabase
 			.from("job_tasks")
 			.select("task_id")
-			.eq("job_id", jobId);
+			.eq("jobs_id", jobId);
 		let taskIds: number[] = [];
 		if (error) {
 			console.error("Error fetching job tasks:", error);

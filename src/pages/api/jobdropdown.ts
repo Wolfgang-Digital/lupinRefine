@@ -1,11 +1,8 @@
 import supabase from "../../config/supaBaseClient";
 
-export const jobsDropdown = async () => {
+export const clientsWithJobsDropdown = async () => {
 	try {
-		const { data, error } = await supabase
-			.from("timesheet_jobsresponse_dropdown")
-			.select("*")
-			.order("job_id", { ascending: true });
+		const { data, error } = await supabase.from("clients_with_jobs").select("*");
 
 		if (error) {
 			console.error("Error fetching jobs:", error);

@@ -1,6 +1,4 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-// import { id } from "date-fns/locale";
-// import { CLIENT_RENEG_WINDOW } from "tls";
 import { GetAllJobsWithProjects, GetAllJobsWithProjects2 } from "types";
 
 export type JobsDataWithProjects = GetAllJobsWithProjects;
@@ -31,7 +29,7 @@ export const getJobByProjectId = async (
 	try {
 		const { data, error } = await supabase
 			.from("jobs")
-			.select("job_id")
+			.select("id")
 			.eq("job_client_id", clientId)
 			.eq("project_id", projectId);
 		let jobIds: number[] = [];
@@ -40,14 +38,12 @@ export const getJobByProjectId = async (
 			return;
 		}
 		if (data) {
-			// console.log(data);
-			jobIds = data?.map((projectJob) => projectJob.job_id || 0);
-			// console.log(jobIds);
+			jobIds = data?.map((projectJob) => projectJob.id || 0);
 		}
 		const { data: jobData, error: jobError } = await supabase
 			.from("jobs")
 			.select("job_id, job_name, id, job_name_id")
-			.in("job_id", jobIds);
+			.in("id", jobIds);
 
 		if (jobError) {
 			console.error("Error fetching jobs 1: ", error);

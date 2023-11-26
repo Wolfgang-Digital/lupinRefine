@@ -24,7 +24,6 @@ import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import { format } from "date-fns";
-// import { getJobTasks } from "@pages/api/jobTasks";
 
 type RowData = AllocateHoursView;
 
@@ -39,13 +38,9 @@ type UserOption = {
 };
 
 const columns = [
-	// { field: "job_id", headerName: "Job ID", width: 150 },
-	// { field: "job_name", headerName: "Job", width: 150 },
 	{ field: "task_name", headerName: "Task", width: 300 },
 	{ field: "user_name", headerName: "Wolfganger", width: 150 },
 	{ field: "hours", headerName: "Hours Allocated", width: 150 },
-	// { field: "month", headerName: "Month", width: 150 },
-	// { field: "year", headerName: "Year", width: 150 },
 ];
 
 function CustomToolbar() {
@@ -68,10 +63,7 @@ function CollapsibleHoursGrid({
 	jobNameId?: number;
 	jobsId?: number;
 }) {
-	console.log({ jobsId });
-	// const currentMonth = new Date().getMonth() + 1;
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
-	// const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const taskOptions: TaskOption[] = [];
@@ -80,18 +72,17 @@ function CollapsibleHoursGrid({
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedUser, setSelectedUser] = useState("");
 	const [allocatedMonth, setAllocatedMonth] = useState("");
-	const [timeSpent, setTimeSpent] = useState("");
+	const [allocatedHours, setAllocatedHours] = useState("");
+	const [rate, setRate] = useState("");
 
 	useEffect(() => {
 		setTasks([]);
-		// console.log({ jobsId });
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
 			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
 				jobId || 0
 				// currentMonth || 0
 			);
-			// const getTasks = await getAllJobTasks(jobId || 0);
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,
 				jobNameId || 0
@@ -105,7 +96,6 @@ function CollapsibleHoursGrid({
 				});
 			}
 			setTasks(taskOptions);
-			// console.log({ taskOptions });
 			const getUsers = await getAllUsers();
 			if (getUsers) {
 				getUsers.forEach((user) => {
@@ -116,7 +106,6 @@ function CollapsibleHoursGrid({
 				});
 			}
 			setUsers(userOptions);
-			// const getJobSpecificTasks = await getJobTasks(jobId || 0);
 
 			if (allocateHoursTable) {
 				// Map the fetched data to match the RowData type
@@ -139,21 +128,12 @@ function CollapsibleHoursGrid({
 						label: row.task_name || "",
 						value: row.job_id?.toString() || "0",
 					});
-					// userOptions.push({
-					// 	label: row.user_name || "",
-					// 	value: row.user_id?.toString() || "0",
-					// });
 				});
-				// setTasks([]);
-				// setTasks(taskOptions);
-				// console.log(tasks);
-				// setUsers(userOptions);
 				setFetchedRows(mappedData);
 			}
 		}
 		fetchData();
 	}, []);
-	// console.log({ taskOptions });
 	const handleAllocateHoursClick = () => {
 		setShowForm(true);
 	};
@@ -180,18 +160,41 @@ function CollapsibleHoursGrid({
 		"November",
 		"December",
 	];
+	interface Months {
+		[key: string]: number;
+	}
+	const monthNameToNumber = (monthName: string): number | null => {
+		const months: Months = {
+			January: 1,
+			February: 2,
+			March: 3,
+			April: 4,
+			May: 5,
+			June: 6,
+			July: 7,
+			August: 8,
+			September: 9,
+			October: 10,
+			November: 11,
+			December: 12,
+		};
+		return months[monthName] || null;
+	};
 
 	async function saveAllocateHoursEntry() {
+		const monthNumber = monthNameToNumber(allocatedMonth);
 		const currentDate = new Date();
+		console.log(monthNumber);
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		const dataToPostAHE = {
 			jobTaskId: 10,
-			month: currentDate.getMonth() + 1,
+			month: Number(monthNumber),
 			year: Number(currentDate.getFullYear()),
 			userId: selectedUser,
 			jobId: Number(jobId),
 			taskId: Number(selectedTask),
-			hours: Number(timeSpent),
+			hours: Number(allocatedHours),
+			rate: Number(rate),
 		};
 		const dataToPostTSE = {
 			staffId: localStorage.getItem("user_id") || "",
@@ -202,7 +205,7 @@ function CollapsibleHoursGrid({
 			jobsId: Number(jobId),
 			taskId: Number(selectedTask),
 			selectedDate: formattedDate,
-			rate: 150,
+			rate: Number(rate),
 		};
 		const response = await PostAllocateHoursEntry(dataToPostAHE);
 		const response2 = await PostTimeEntry(dataToPostTSE);
@@ -210,7 +213,9 @@ function CollapsibleHoursGrid({
 		console.log(`PostTimeEntry ${response2}`);
 	}
 
-	// const monthName = monthNames[selectedMonth - 1];
+	const handleFormSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+	};
 
 	return (
 		<div
@@ -223,17 +228,6 @@ function CollapsibleHoursGrid({
 			<Grid container spacing={2}>
 				{/* First Column */}
 				<Grid item xs={8}>
-					{/* <div style={{ display: "flex", alignItems: "center", padding: "20px 0" }}>
-						<WeekButton onClick={() => setSelectedMonth(selectedMonth - 1)}>
-							Previous month
-						</WeekButton>
-						<div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
-							{monthName}
-						</div>
-						<WeekButton onClick={() => setSelectedMonth(selectedMonth + 1)}>
-							Next month
-						</WeekButton>
-					</div> */}
 					{Object.keys(groupedRows).map((month) => (
 						<Accordion key={month}>
 							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -264,7 +258,7 @@ function CollapsibleHoursGrid({
 				<Grid item xs={4}>
 					<Paper variant="outlined" style={{ textAlign: "center", padding: "30px" }}>
 						{showForm ? (
-							<form>
+							<form onSubmit={handleFormSubmit}>
 								<TextField
 									select
 									value={selectedTask}
@@ -307,12 +301,24 @@ function CollapsibleHoursGrid({
 								<TextField
 									type="number"
 									label="Hours"
-									value={timeSpent}
+									value={allocatedHours}
 									onChange={(event) => {
 										if (Number(event.target.value) >= 0) {
-											setTimeSpent(event.target.value);
+											setAllocatedHours(event.target.value);
 										}
 									}}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+									required
+								/>
+								<TextField
+									type="text"
+									label="Rate"
+									value={rate}
+									onChange={(event) => setRate(event.target.value)}
 									style={{
 										width: "100%",
 										marginBottom: "20px",
