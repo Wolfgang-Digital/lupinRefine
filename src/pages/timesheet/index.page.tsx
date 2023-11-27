@@ -339,18 +339,7 @@ const Timesheet = () => {
 			rate: 0,
 		};
 		let dataToPostAHE: DataToPostAHE;
-		if (timerIconSelected) {
-			dataToPostAHE = {
-				jobTaskId: 10,
-				month: currentDate.getMonth() + 1,
-				year: Number(currentDate.getFullYear()),
-				userId: localStorage.getItem("user_id") || "",
-				jobId: Number(selectedJob),
-				taskId: Number(selectedTask),
-				hours: -1,
-				rate: 0,
-			};
-		} else {
+		if (!timerIconSelected) {
 			dataToPostAHE = {
 				jobTaskId: 10,
 				month: currentDate.getMonth() + 1,
@@ -361,12 +350,14 @@ const Timesheet = () => {
 				hours: 0,
 				rate: 0,
 			};
+			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
+			console.log(`PostAllocateHoursEntry ${response2}`);
 		}
 
 		const response = await PostTimeEntry(dataToPostTSE);
-		const response2 = await PostAllocateHoursEntry(dataToPostAHE);
+
 		console.log(`PostTimeEntry ${response}`);
-		console.log(`PostAllocateHoursEntry ${response2}`);
+
 		// console.log({ dataToPostTSE });
 		// console.log({ dataToPostAHE });
 		setSelectedClient("");
