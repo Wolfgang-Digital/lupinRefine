@@ -107,6 +107,17 @@ export type TaskOption = {
 	completed: boolean;
 };
 
+export type DataToPostAHE = {
+	jobTaskId: number;
+	month: number;
+	year: number;
+	userId: string;
+	jobId: number;
+	taskId: number;
+	hours: number;
+	rate: number;
+};
+
 // Create the Timesheet component
 const Timesheet = () => {
 	// Initialize state variables
@@ -140,8 +151,10 @@ const Timesheet = () => {
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
+	const [timerIconSelected, setTimerIconSelected] = useState(false);
 
 	const handleDayClick = (index: number) => {
+		setTimerIconSelected(false);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -309,6 +322,7 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
 		setSelectedJobs(selectedJobsId);
+		setTimerIconSelected(true);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
@@ -324,16 +338,31 @@ const Timesheet = () => {
 			selectedDate: selectedDate,
 			rate: 0,
 		};
-		const dataToPostAHE = {
-			jobTaskId: 10,
-			month: currentDate.getMonth() + 1,
-			year: Number(currentDate.getFullYear()),
-			userId: localStorage.getItem("user_id") || "",
-			jobId: Number(selectedJob),
-			taskId: Number(selectedTask),
-			hours: -1,
-			rate: 0,
-		};
+		let dataToPostAHE: DataToPostAHE;
+		if (timerIconSelected) {
+			dataToPostAHE = {
+				jobTaskId: 10,
+				month: currentDate.getMonth() + 1,
+				year: Number(currentDate.getFullYear()),
+				userId: localStorage.getItem("user_id") || "",
+				jobId: Number(selectedJob),
+				taskId: Number(selectedTask),
+				hours: -1,
+				rate: 0,
+			};
+		} else {
+			dataToPostAHE = {
+				jobTaskId: 10,
+				month: currentDate.getMonth() + 1,
+				year: Number(currentDate.getFullYear()),
+				userId: localStorage.getItem("user_id") || "",
+				jobId: Number(selectedJob),
+				taskId: Number(selectedTask),
+				hours: 0,
+				rate: 0,
+			};
+		}
+
 		const response = await PostTimeEntry(dataToPostTSE);
 		const response2 = await PostAllocateHoursEntry(dataToPostAHE);
 		console.log(`PostTimeEntry ${response}`);
@@ -690,7 +719,6 @@ const Timesheet = () => {
 															className={classes.tableRowCell}
 														>
 															{entry.client_name}
-
 														</TableCell>
 														{/* <TableRowCell colSpan={4}></TableRowCell> */}
 														<TableCell className={classes.tableRowCell}></TableCell>
