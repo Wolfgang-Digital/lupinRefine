@@ -33,8 +33,6 @@ interface ClientDetailProps {
 const ClientDetail: React.FC<ClientDetailProps> = ({ client, onClose }) => {
 	const [tabValue, setTabValue] = useState(0);
 
-	// console.log(client);
-
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};

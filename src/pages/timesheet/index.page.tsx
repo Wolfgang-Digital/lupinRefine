@@ -884,3 +884,5 @@ const Timesheet = () => {
 };
 
 export default Timesheet;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin", "user"]);

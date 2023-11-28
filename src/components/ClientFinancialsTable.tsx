@@ -122,7 +122,6 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	];
 
 	const monthName = monthNames[selectedMonth];
-	// console.log(selectedMonth);
 	return (
 		<div
 			style={{

@@ -144,77 +144,85 @@ const Dashboard = () => {
 						</CardActionArea>
 					</Card>
 				</Grid>
-				{/*<Grid item {...gridItemProps}>
-					<Card sx={cardStyle}>
-						<CardActionArea>
-							<CardMedia
-								component="img"
-								height="200px"
-								src="https://www.wolfgangdigital.com/uploads/banners/reports.png"
-								alt="Reports"
-							/>
-							<CardContent>
-								<Typography gutterBottom variant="h6" fontSize="16px">
-									Reports
-								</Typography>
-							</CardContent>
-						</CardActionArea>
-					</Card>
-				</Grid>*/}
-				{/*<Grid
-					item
-					{...gridItemProps}
-					onClick={() => navigateToPage("/clients")}
-					style={{ cursor: "pointer" }}
-				>
-					<Card sx={cardStyle}>
-						<CardActionArea>
-							<CardMedia
-								component="img"
-								height="200px"
-								src="https://www.wolfgangdigital.com/uploads/banners/wg_(1).png"
-								alt="Clients"
-							/>
-							<CardContent>
-								<Typography gutterBottom variant="h6" fontSize="16px">
-									Clients
-								</Typography>
-							</CardContent>
-						</CardActionArea>
-					</Card>
-				</Grid>*/}
-
-				{/*<Grid item {...gridItemProps}>
-					<a
-						href="https://analytics.wolfgangdigital.com/"
-						target="_blank"
-						style={{ textDecoration: "none" }}
+				{
+					<Grid item {...gridItemProps}>
+						<Card sx={cardStyle}>
+							<CardActionArea>
+								<CardMedia
+									component="img"
+									height="200px"
+									src="https://www.wolfgangdigital.com/uploads/banners/reports.png"
+									alt="Reports"
+								/>
+								<CardContent>
+									<Typography gutterBottom variant="h6" fontSize="16px">
+										Reports
+									</Typography>
+								</CardContent>
+							</CardActionArea>
+						</Card>
+					</Grid>
+				}
+				{
+					<Grid
+						item
+						{...gridItemProps}
+						onClick={() => navigateToPage("/clients")}
+						style={{ cursor: "pointer" }}
 					>
 						<Card sx={cardStyle}>
 							<CardActionArea>
 								<CardMedia
 									component="img"
 									height="200px"
-									src="https://www.wolfgangdigital.com/uploads/banners/pipeline_(1).png"
-									alt="Pipeline"
+									src="https://www.wolfgangdigital.com/uploads/banners/wg_(1).png"
+									alt="Clients"
 								/>
 								<CardContent>
-									<Typography
-										gutterBottom
-										variant="h6"
-										fontSize="16px"
-										style={{ textDecoration: "none" }}
-									>
-										Pipeline
+									<Typography gutterBottom variant="h6" fontSize="16px">
+										Clients
 									</Typography>
 								</CardContent>
 							</CardActionArea>
 						</Card>
-					</a>
-				</Grid>*/}
+					</Grid>
+				}
+
+				{
+					<Grid item {...gridItemProps}>
+						<a
+							href="https://analytics.wolfgangdigital.com/"
+							target="_blank"
+							style={{ textDecoration: "none" }}
+						>
+							<Card sx={cardStyle}>
+								<CardActionArea>
+									<CardMedia
+										component="img"
+										height="200px"
+										src="https://www.wolfgangdigital.com/uploads/banners/pipeline_(1).png"
+										alt="Pipeline"
+									/>
+									<CardContent>
+										<Typography
+											gutterBottom
+											variant="h6"
+											fontSize="16px"
+											style={{ textDecoration: "none" }}
+										>
+											Pipeline
+										</Typography>
+									</CardContent>
+								</CardActionArea>
+							</Card>
+						</a>
+					</Grid>
+				}
 			</Grid>{" "}
 		</>
 	);
 };
 
 export default Dashboard;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["user", "admin"]);

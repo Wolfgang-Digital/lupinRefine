@@ -38,7 +38,6 @@ const Wolfgangers: React.FC = () => {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const usersResponse = await getAllUsers();
-			console.log({ usersResponse });
 			if (usersResponse) {
 				setUsers(usersResponse);
 			}
@@ -210,3 +209,5 @@ const Wolfgangers: React.FC = () => {
 };
 
 export default Wolfgangers;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin"]);

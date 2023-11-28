@@ -121,3 +121,5 @@ const JobList: React.FC = () => {
 };
 
 export default JobList;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin", "user"]);
