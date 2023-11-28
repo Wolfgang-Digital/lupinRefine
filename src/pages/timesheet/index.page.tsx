@@ -33,6 +33,8 @@ import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
 import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
 import { DayDialog } from "./DayDialog";
+import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
+import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 
 const useStyles = makeStyles({
 	table: {
@@ -91,7 +93,6 @@ export type ClientOption = {
 export type ProjectOption = {
 	label: string;
 	value: string;
-	// jobLabel: string;
 };
 
 export type JobOption = {
@@ -104,6 +105,17 @@ export type TaskOption = {
 	label: string;
 	value: string;
 	completed: boolean;
+};
+
+export type DataToPostAHE = {
+	jobTaskId: number;
+	month: number;
+	year: number;
+	userId: string;
+	jobId: number;
+	taskId: number;
+	hours: number;
+	rate: number;
 };
 
 // Create the Timesheet component
@@ -121,8 +133,8 @@ const Timesheet = () => {
 	const [selectedClient, setSelectedClient] = useState("");
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
+	const [selectedJobs, setSelectedJobs] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
-	// const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
 
 	const [filteredTimesheets, setFilteredTimesheets] =
 		useState<GroupedTimesheets>([]);
@@ -137,11 +149,12 @@ const Timesheet = () => {
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 	const currentDate = new Date();
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
-	//const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
+	const [timerIconSelected, setTimerIconSelected] = useState(false);
 
 	const handleDayClick = (index: number) => {
+		setTimerIconSelected(false);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -171,6 +184,7 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const timesheetsResponse = await getAllTimesheetRowsV2();
+			const clientsWithJobsResponse = await clientsWithJobsDropdown();
 
 			let filteredResponse: typeof timesheetsResponse = [];
 			if (!timesheetsResponse) {
@@ -184,7 +198,6 @@ const Timesheet = () => {
 				filteredResponse = timesheetsResponse.filter(
 					(entry) => entry.name != "Wolfgang Digital"
 				);
-				// .filter((timesheet) => !!timesheet.time);
 			} else if (filterOption === "All Tasks") {
 				filteredResponse = timesheetsResponse;
 			}
@@ -201,40 +214,16 @@ const Timesheet = () => {
 			setFilteredTimesheets(groupedTimesheets);
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
-			const projectOptions: ProjectOption[] = [];
-			const jobOptions: JobOption[] = [];
-			const taskOptions: TaskOption[] = [];
 
-			groupedTimesheets.forEach((timesheet) => {
+			clientsWithJobsResponse?.forEach((timesheet) => {
 				clientOptions.push({
-					label: timesheet.client_name,
-					value: timesheet.client_id?.toString() || "0",
-					projectLabel: timesheet.client_name || "",
-				});
-				timesheet.projects.forEach((project) => {
-					projectOptions.push({
-						label: project.project_name,
-						value: project.project_id?.toString() || "0",
-					});
-					project.jobs.forEach((job) => {
-						jobOptions.push({
-							label: `${job.job_name}`,
-							value: job.job_id?.toString() || "0",
-							taskLabel: job.tasks[0].task_name || "",
-						});
-						taskOptions.push({
-							label: job.tasks[0].task_name || "",
-							value: job.job_id?.toString() || "0",
-							completed: false,
-						});
-					});
+					label: timesheet.name || "",
+					value: timesheet.job_client_id?.toString() || "0",
+					projectLabel: timesheet.name || "",
 				});
 			});
 
 			setClients(clientOptions);
-			setProjects(projectOptions);
-			setJobs(jobOptions);
-			setTasks(taskOptions);
 		} catch (error) {
 			console.error("Error fetching jobs and tasks: ", error);
 		}
@@ -246,16 +235,6 @@ const Timesheet = () => {
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
-
-	//const navigateWeeks = (weeks: number) => {
-	//	setSelectedWeekStart(addWeeks(selectedWeekStart, weeks));
-	//};
-
-	//// Create an array of week days
-	//const weekDays: Date[] = [];
-	//for (let i = 0; i < 26; i++) {
-	//	weekDays.push(addDays(selectedWeekStart, i));
-	//}
 
 	const daysInMonth = getDaysInMonth(selectedWeekStart);
 
@@ -271,17 +250,6 @@ const Timesheet = () => {
 		getCurrentDate = addDays(getCurrentDate, 1); // Move to the next day
 	}
 
-	// Function to handle "Add Time" button click
-	// const handleAddTimeClick = () => {
-	// 	setSelectedClient("");
-	// 	setSelectedProject("");
-	// 	setSelectedJob("");
-	// 	setSelectedTask("");
-	// 	setTimeSpent("");
-	// 	setNotes("");
-	// 	setShowForm(true);
-	// };
-
 	// Function to handle "Time Icon" button click
 	const handleTimeIconClick = (
 		entry: {
@@ -292,6 +260,7 @@ const Timesheet = () => {
 				project_name: string;
 				jobs: {
 					job_id: number;
+					jobs_id: number;
 					job_name: string;
 					job_name_id: number;
 					tasks: {
@@ -308,6 +277,7 @@ const Timesheet = () => {
 			project_name: string;
 			jobs: {
 				job_id: number;
+				jobs_id: number;
 				job_name: string;
 				job_name_id: number;
 				tasks: {
@@ -320,6 +290,7 @@ const Timesheet = () => {
 		},
 		job: {
 			job_id: number;
+			jobs_id: number;
 			job_name: string;
 			job_name_id: number;
 			tasks: {
@@ -342,30 +313,53 @@ const Timesheet = () => {
 		setNotes("");
 		const selectedClientId = entry.client_id.toString();
 		const selectedProjectId = project.project_id.toString();
-		const selectedJobId = job.job_id.toString();
+		const selectedJobId = job.jobs_id.toString();
+		const selectedJobsId = job.jobs_id.toString();
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
 		setSelectedClient(selectedClientId);
 		setSelectedProject(selectedProjectId);
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
+		setSelectedJobs(selectedJobsId);
+		setTimerIconSelected(true);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	async function saveTimeEntry() {
-		const dataToPost = {
+		const dataToPostTSE = {
 			staffId: localStorage.getItem("user_id") || "",
 			notes,
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),
-			jobId: Number(selectedJob),
+			jobId: 3565,
+			jobsId: Number(selectedJob),
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
-			rate: 150,
+			rate: 0,
 		};
-		// const parts = selectedDate.split('-');
-		const response = await PostTimeEntry(dataToPost);
+		let dataToPostAHE: DataToPostAHE;
+		if (!timerIconSelected) {
+			dataToPostAHE = {
+				jobTaskId: 10,
+				month: currentDate.getMonth() + 1,
+				year: Number(currentDate.getFullYear()),
+				userId: localStorage.getItem("user_id") || "",
+				jobId: Number(selectedJob),
+				taskId: Number(selectedTask),
+				hours: 0,
+				rate: 0,
+			};
+			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
+			console.log(`PostAllocateHoursEntry ${response2}`);
+		}
+
+		const response = await PostTimeEntry(dataToPostTSE);
+
 		console.log(`PostTimeEntry ${response}`);
+
+		// console.log({ dataToPostTSE });
+		// console.log({ dataToPostAHE });
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedTask("");
@@ -382,7 +376,6 @@ const Timesheet = () => {
 		page * rowsPerPage,
 		page * rowsPerPage + rowsPerPage
 	);
-
 	// Function to handle page change
 	const handleChangePage = (
 		event: React.MouseEvent<HTMLButtonElement> | null,
@@ -417,9 +410,13 @@ const Timesheet = () => {
 	};
 
 	// Function to handle job selection
-	const handleJobSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
+	const handleJobSelect = (
+		event: React.ChangeEvent<{ value: unknown; name: unknown }>
+	) => {
 		const selectedJobId = event.target.value as string;
+		const selectedJobsId = event.target.name as string;
 		setSelectedJob(selectedJobId);
+		setSelectedJobs(selectedJobsId);
 
 		// Filter tasks based on the selected job
 		setSelectedTask(""); // Reset the selected task
@@ -450,9 +447,9 @@ const Timesheet = () => {
 				if (response) {
 					setJobs(
 						response?.map((job) => ({
-							value: job.job_id?.toString() || "",
+							value: job.id?.toString() || "",
 							label: job.job_name || "",
-							taskLabel: job.job_id.toString(),
+							taskLabel: job.id.toString(),
 						}))
 					);
 				}
@@ -648,8 +645,15 @@ const Timesheet = () => {
 													if (multipleJobEntries) {
 														project.jobs.map((job) => {
 															job.tasks.map((task) => {
-																totalHours += task.hours || 0;
-																totalSpentHours += task.time || 0;
+																if (task.hours) {
+																	if (task.hours < 0) {
+																		totalHours = 0;
+																		totalSpentHours += task.time || 0;
+																	} else {
+																		totalHours += task.hours || 0;
+																		totalSpentHours += task.time || 0;
+																	}
+																}
 															});
 														});
 													} else {
@@ -861,6 +865,7 @@ const Timesheet = () => {
 						projects={projects}
 						selectedJob={selectedJob}
 						handleJobSelect={handleJobSelect}
+						selectedJobs={selectedJobs}
 						jobs={jobs}
 						selectedTask={selectedTask}
 						setSelectedTask={setSelectedTask}

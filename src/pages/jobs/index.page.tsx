@@ -15,7 +15,6 @@ import {
 } from "@api/jobs";
 import JobDetail from "./JobDetail";
 import { ButtonContainer, JobsContainer } from "@styled-components/jobs";
-
 // Import the AddJob component
 import AddJob from "./AddJob";
 
@@ -73,14 +72,14 @@ const JobList: React.FC = () => {
 	];
 
 	const rows = jobs.map((job) => ({
-		id: job.job_id,
+		id: job.id,
 		job_id: job.job_id,
 		client_name: job.client_name,
 		project_name: job.project_name,
 		project_id: job.project_id,
 		job_name_name: job.job_name_name,
 		job_name_id: job.job_name_id,
-		job_name: job.job_name,
+		// job_name: job.job_name,
 		job_type_name: job.job_type_name,
 		tier_name: job.tier_name,
 		currency_symbol: job.currency_symbol,

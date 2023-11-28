@@ -3,7 +3,7 @@ import supabase from "@config/supaBaseClient";
 export const getAllProjects = async () => {
 	try {
 		const { data, error } = await supabase
-			.from("projects")
+			.from("project")
 			.select("project_id, project_name");
 		if (error) {
 			console.error("Error fetching projects: ", error);
