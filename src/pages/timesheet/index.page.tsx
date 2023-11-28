@@ -506,7 +506,6 @@ const Timesheet = () => {
 
 		return daysDifference;
 	}
-	const classes = useStyles();
 
 	const [taskStates, setTaskStates] = useState<TaskState>({});
 
@@ -533,6 +532,8 @@ const Timesheet = () => {
 			// setLoading(false);
 		}
 	};
+
+	const classes = useStyles();
 
 	return (
 		<>

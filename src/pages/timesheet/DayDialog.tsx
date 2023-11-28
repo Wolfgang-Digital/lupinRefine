@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
 	Grid,
 	Button,
@@ -10,31 +11,31 @@ import {
 	Toolbar,
 	IconButton,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close"; // Step 1: Import the CloseIcon
+import CloseIcon from "@mui/icons-material/Close";
 import { DataGrid } from "@mui/x-data-grid";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import EditIcon from "@mui/icons-material/Edit";
+import { format } from "date-fns";
+import UpdateForm from "./updateForm";
 import {
 	ClientOption,
-	TaskOption,
 	JobOption,
 	ProjectOption,
+	TaskOption,
 } from "./index.page";
-import { useEffect, useState } from "react";
 import {
 	deleteTimeEntry,
 	getAllTimesheetRowsV2,
 } from "@pages/api/timesheetRows";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { format } from "date-fns";
-//import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
-interface TimesheetType {
+export interface TimesheetType {
 	client_name: string | null;
 	project_name: string | null;
 	job_name: string | null;
 	task_name: string | null;
 	time: number | null;
 	id: number | 0;
-	//time_left: number | null;
+	notes: string | null;
 }
 
 export const DayDialog = ({
@@ -63,7 +64,6 @@ export const DayDialog = ({
 	showForm: boolean;
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: string;
-
 	selectedClient: string;
 	handleClientSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	clients: ClientOption[];
@@ -83,30 +83,11 @@ export const DayDialog = ({
 	saveTimeEntry: () => void;
 	onUpdateTimesheet: () => Promise<void>;
 }) => {
-	//const columns = {[
-	//	{ field: "client_name", headerName: "Name", width: 140 },
-	//	{ field: "project_name", headerName: "Project", width: 140 },
-	//	{ field: "job_name", headerName: "Job", width: 140 },
-	//	{ field: "task_name", headerName: "Task", width: 100 },
-	//	{ field: "time", headerName: "Hrs Logged", width: 90 },
-	//	{
-	//		field: "delete",
-	//		headerName: "Delete",
-	//		width: 90,
-	//		renderCell: () => (
-	//			<IconButton
-	//				color="secondary"
-	//				//onClick={() => handleDeleteRow(params.row.id)}
-	//			>
-	//				<HighlightOffIcon />
-	//			</IconButton>
-	//		),
-	//	},
-	//]};
-
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
+	const [editableRow, setEditableRow] = useState<TimesheetType | null>(null);
+
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -124,6 +105,7 @@ export const DayDialog = ({
 						task_name: timesheet.task_name,
 						time: timesheet.time,
 						id: timesheet.id as number,
+						notes: timesheet.notes,
 					}));
 
 					setRows(newRows);
@@ -150,6 +132,11 @@ export const DayDialog = ({
 		} catch (error) {
 			console.error("Error deleting time entry:", error);
 		}
+	};
+
+	const handleEditRow = (id: number) => {
+		const editableRowData = rows.find((row) => row.id === id);
+		setEditableRow(editableRowData ?? null);
 	};
 
 	return (
@@ -208,7 +195,19 @@ export const DayDialog = ({
 									rows={rows.filter((row) => row.time && row.time > 0)}
 									getRowId={(timesheet) => timesheet.id}
 									columns={[
-										{ field: "id", headerName: "ID", width: 50 },
+										{
+											field: "edit",
+											headerName: "Edit",
+											width: 50,
+											renderCell: (params) => (
+												<IconButton
+													color="secondary"
+													onClick={() => handleEditRow(params.row.id)}
+												>
+													<EditIcon />
+												</IconButton>
+											),
+										},
 										{ field: "client_name", headerName: "Client", width: 100 },
 										{ field: "project_name", headerName: "Project", width: 120 },
 										{ field: "job_name", headerName: "Job", width: 140 },
@@ -391,6 +390,13 @@ export const DayDialog = ({
 					</Grid>
 				</Grid>
 			</DialogContent>
+			{editableRow && (
+				<UpdateForm
+					rowData={editableRow}
+					onUpdate={onUpdateTimesheet} // Call the existing update logic in UpdateForm
+					onClose={() => setEditableRow(null)}
+				/>
+			)}
 		</Dialog>
 	);
 };
