@@ -139,6 +139,14 @@ export const DayDialog = ({
 		setEditableRow(editableRowData ?? null);
 	};
 
+	// Callback function to update the row in the state
+	const handleUpdateRow = (updatedData: TimesheetType) => {
+		const updatedRows = rows.map((row) =>
+			row.id === updatedData.id ? updatedData : row
+		);
+		setRows(updatedRows);
+	};
+
 	return (
 		<Dialog
 			open={showForm}
@@ -393,7 +401,11 @@ export const DayDialog = ({
 			{editableRow && (
 				<UpdateForm
 					rowData={editableRow}
-					onUpdate={onUpdateTimesheet} // Call the existing update logic in UpdateForm
+					onUpdate={(updatedData) => {
+						handleUpdateRow(updatedData);
+						onUpdateTimesheet(); // You may need to adjust this call based on your logic
+						setEditableRow(null);
+					}}
 					onClose={() => setEditableRow(null)}
 				/>
 			)}

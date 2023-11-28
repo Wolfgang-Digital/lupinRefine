@@ -550,7 +550,7 @@ const Timesheet = () => {
 						<MenuItem value="Allocated Tasks">Allocated Tasks</MenuItem>
 						<MenuItem value="All Tasks">All Tasks</MenuItem>
 						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
-						{/*<MenuItem value="Completed Tasks">Completed Tasks</MenuItem>*/}
+						<MenuItem value="Completed Tasks">Completed Tasks</MenuItem>
 					</Select>
 				</FormControl>
 			</div>
