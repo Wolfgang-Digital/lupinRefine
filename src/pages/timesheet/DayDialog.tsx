@@ -208,7 +208,7 @@ export const DayDialog = ({
 					spacing={2}
 					style={{ paddingTop: "10px", paddingBottom: "90px" }}
 				>
-					<Grid item xs={7}>
+					<Grid item xs={8}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -244,6 +244,7 @@ export const DayDialog = ({
 										{ field: "job_name", headerName: "Job", width: 140 },
 										{ field: "task_name", headerName: "Task", width: 100 },
 										{ field: "time", headerName: "Logged", width: 80 },
+										{ field: "notes", headerName: "Notes", width: 100 },
 										{
 											field: "delete",
 											headerName: "Delete",
@@ -276,7 +277,7 @@ export const DayDialog = ({
 							)}
 						</div>
 					</Grid>
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
