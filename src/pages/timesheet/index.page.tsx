@@ -54,7 +54,7 @@ const useStyles = makeStyles({
 		borderRight: "1px solid #ccc",
 		textAlign: "center",
 		whiteSpace: "pre-line",
-		fontSize: "smaller",
+		fontSize: "small",
 	},
 	flexContainer: {
 		display: "flex",
@@ -492,7 +492,6 @@ const Timesheet = () => {
 
 		return daysDifference;
 	}
-	const classes = useStyles();
 
 	const [taskStates, setTaskStates] = useState<TaskState>({});
 
@@ -520,6 +519,8 @@ const Timesheet = () => {
 		}
 	};
 
+	const classes = useStyles();
+
 	return (
 		<>
 			<div className={classes.flexContainer}>
@@ -535,7 +536,7 @@ const Timesheet = () => {
 						<MenuItem value="Allocated Tasks">Allocated Tasks</MenuItem>
 						<MenuItem value="All Tasks">All Tasks</MenuItem>
 						<MenuItem value="Wolfgang Tasks">Wolfgang Tasks</MenuItem>
-						{/*<MenuItem value="Completed Tasks">Completed Tasks</MenuItem>*/}
+						<MenuItem value="Completed Tasks">Completed Tasks</MenuItem>
 					</Select>
 				</FormControl>
 			</div>

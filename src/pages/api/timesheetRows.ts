@@ -35,7 +35,7 @@ export const getAllTimesheetRowsV2 = async (): Promise<
 			data: TimesheetRowsView[];
 			error: PostgrestError;
 		};
-
+		console.log("timesheetrows", { data });
 		if (error) {
 			console.error("Error fetching timesheet rows: ", error);
 			return;
@@ -61,5 +61,29 @@ export const deleteTimeEntry = async (id: number) => {
 		}
 	} catch (error) {
 		console.error("Error deleting time entry:", error);
+	}
+};
+
+export const updateTimeEntry = async (
+	id: number,
+	time: number | null,
+	notes: string | null
+) => {
+	try {
+		const { data, error } = await supabase
+			.from("timesheet_rows")
+			.update({
+				time: time !== null ? time : undefined,
+				notes: notes !== null ? notes : undefined,
+			})
+			.eq("id", id);
+
+		if (error) {
+			console.error("Error updating time entry:", error);
+		} else {
+			console.log("Time entry updated successfully:", data);
+		}
+	} catch (error) {
+		console.error("Error updating time entry:", error);
 	}
 };
