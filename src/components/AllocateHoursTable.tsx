@@ -56,8 +56,7 @@ function CollapsibleHoursGrid({
 	jobId,
 	jobNameId,
 	jobsId,
-}: //
-{
+}: {
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
@@ -74,67 +73,103 @@ function CollapsibleHoursGrid({
 	const [allocatedMonth, setAllocatedMonth] = useState("");
 	const [allocatedHours, setAllocatedHours] = useState("");
 	const [rate, setRate] = useState("");
+	const [postData, setPostData] = useState(false);
+
+	// Fetch data from Supabase and update the fetchedRows state
+	const fetchData = async () => {
+		setTasks([]);
+		const allocateHoursTable = await getJobAllocatedHoursPerMonth(
+			jobId || 0
+			// currentMonth || 0
+		);
+		const getProjectJobTasks = await getAllProjectJobTasks(
+			projectId || 0,
+			jobNameId || 0
+		);
+		if (getProjectJobTasks) {
+			getProjectJobTasks.forEach((task) => {
+				taskOptions.push({
+					label: task.task_name || "",
+					value: task.task_id?.toString() || "0",
+				});
+			});
+		}
+		setTasks(taskOptions);
+
+		const getUsers = await getAllUsers();
+		if (getUsers) {
+			getUsers.forEach((user) => {
+				userOptions.push({
+					label: user.user_name || "",
+					value: user.user_id?.toString() || "0",
+				});
+			});
+		}
+		setUsers(userOptions);
+
+		if (allocateHoursTable) {
+			// Map the fetched data to match the RowData type
+			const mappedData: RowData[] = allocateHoursTable.map(
+				(item: AllocateHoursView) => ({
+					...item,
+					id: item.id,
+					job_id: item.job_id,
+					jobs_id: item.jobs_id,
+					job_name: item.job_name,
+					task_name: item.task_name,
+					user_name: item.user_name,
+					hours: item.hours,
+				})
+			);
+			setFetchedRows(mappedData);
+		}
+	};
+
+	async function saveAllocateHoursEntry() {
+		setShowForm(false);
+		const monthNumber = monthNameToNumber(allocatedMonth);
+		const currentDate = new Date();
+		const formattedDate = format(currentDate, "yyyy-MM-dd");
+		const dataToPostAHE = {
+			jobTaskId: 10,
+			month: Number(monthNumber),
+			year: Number(currentDate.getFullYear()),
+			userId: selectedUser,
+			jobId: Number(jobId),
+			taskId: Number(selectedTask),
+			hours: Number(allocatedHours),
+			rate: Number(rate),
+		};
+		const dataToPostTSE = {
+			staffId: localStorage.getItem("user_id") || "",
+			notes: "Zero hours for allocate hours",
+			timeSpent: 0,
+			projectId: Number(projectId),
+			jobId: Number(jobsId),
+			jobsId: Number(jobId),
+			taskId: Number(selectedTask),
+			selectedDate: formattedDate,
+			rate: Number(rate),
+		};
+		const response = await PostAllocateHoursEntry(dataToPostAHE);
+		const response2 = await PostTimeEntry(dataToPostTSE);
+		console.log(`PostAllocateHoursEntry ${response}`);
+		console.log(`PostTimeEntry ${response2}`);
+		setSelectedTask("");
+		setSelectedUser("");
+		setAllocatedMonth("");
+		setAllocatedHours("");
+		setRate("");
+		setPostData(true);
+	}
 
 	useEffect(() => {
 		setTasks([]);
-		// Fetch data from Supabase and update the fetchedRows state
-		async function fetchData() {
-			const allocateHoursTable = await getJobAllocatedHoursPerMonth(
-				jobId || 0
-				// currentMonth || 0
-			);
-			const getProjectJobTasks = await getAllProjectJobTasks(
-				projectId || 0,
-				jobNameId || 0
-			);
-			if (getProjectJobTasks) {
-				getProjectJobTasks.forEach((task) => {
-					taskOptions.push({
-						label: task.task_name || "",
-						value: task.task_id?.toString() || "0",
-					});
-				});
-			}
-			setTasks(taskOptions);
-			const getUsers = await getAllUsers();
-			if (getUsers) {
-				getUsers.forEach((user) => {
-					userOptions.push({
-						label: user.user_name || "",
-						value: user.user_id?.toString() || "0",
-					});
-				});
-			}
-			setUsers(userOptions);
-
-			if (allocateHoursTable) {
-				// Map the fetched data to match the RowData type
-				const mappedData: RowData[] = allocateHoursTable.map(
-					(item: AllocateHoursView) => ({
-						...item,
-						id: item.id,
-						job_id: item.job_id,
-						jobs_id: item.jobs_id,
-						job_name: item.job_name,
-						task_name: item.task_name,
-						user_name: item.user_name,
-						hours: item.hours,
-						// year: item.year,
-						// month: item.month,
-					})
-				);
-				mappedData.forEach((row) => {
-					taskOptions.push({
-						label: row.task_name || "",
-						value: row.job_id?.toString() || "0",
-					});
-				});
-				setFetchedRows(mappedData);
-			}
-		}
 		fetchData();
-	}, []);
+	}, [postData]);
+
 	const handleAllocateHoursClick = () => {
+		setPostData(false);
 		setShowForm(true);
 	};
 	const groupedRows: { [key: string]: RowData[] } = {};
@@ -181,38 +216,6 @@ function CollapsibleHoursGrid({
 		return months[monthName] || null;
 	};
 
-	async function saveAllocateHoursEntry() {
-		const monthNumber = monthNameToNumber(allocatedMonth);
-		const currentDate = new Date();
-		console.log(monthNumber);
-		const formattedDate = format(currentDate, "yyyy-MM-dd");
-		const dataToPostAHE = {
-			jobTaskId: 10,
-			month: Number(monthNumber),
-			year: Number(currentDate.getFullYear()),
-			userId: selectedUser,
-			jobId: Number(jobId),
-			taskId: Number(selectedTask),
-			hours: Number(allocatedHours),
-			rate: Number(rate),
-		};
-		const dataToPostTSE = {
-			staffId: localStorage.getItem("user_id") || "",
-			notes: "Zero hours for allocate hours",
-			timeSpent: 0,
-			projectId: Number(projectId),
-			jobId: Number(jobsId),
-			jobsId: Number(jobId),
-			taskId: Number(selectedTask),
-			selectedDate: formattedDate,
-			rate: Number(rate),
-		};
-		const response = await PostAllocateHoursEntry(dataToPostAHE);
-		const response2 = await PostTimeEntry(dataToPostTSE);
-		console.log(`PostAllocateHoursEntry ${response}`);
-		console.log(`PostTimeEntry ${response2}`);
-	}
-
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 	};
@@ -230,7 +233,10 @@ function CollapsibleHoursGrid({
 				<Grid item xs={8}>
 					{Object.keys(groupedRows).map((month) => (
 						<Accordion key={month}>
-							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+							<AccordionSummary
+								style={{ backgroundColor: "#f6f6f6" }}
+								expandIcon={<ExpandMoreIcon />}
+							>
 								<Typography variant="h6" fontSize="16px">
 									{monthNames[Number(month) - 1]}
 								</Typography>
