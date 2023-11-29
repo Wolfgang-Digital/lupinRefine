@@ -367,7 +367,6 @@ const Timesheet = () => {
 		setTimeSpent("");
 		setNotes("");
 		setShowForm(false);
-		setShowForm(false);
 		fetchTasksAndJobsWithFilter();
 	}
 
