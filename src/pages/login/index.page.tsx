@@ -5,11 +5,6 @@ import Container from "@mui/material/Container";
 import { useLogin } from "@refinedev/core";
 import { ThemedTitleV2 } from "src/components";
 
-import { GetServerSideProps } from "next";
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "@api/auth/[...nextauth].page";
-
 export default function Login() {
 	const { mutate: login } = useLogin();
 
@@ -50,23 +45,3 @@ export default function Login() {
 }
 
 Login.noLayout = true;
-
-export const getServerSideProps: GetServerSideProps<object> = async (
-	context
-) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (session) {
-		return {
-			props: {},
-			redirect: {
-				destination: "/dashboard",
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {},
-	};
-};

@@ -259,12 +259,10 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			if (["job_name", "total"].includes(taskKey)) continue;
 			const jobTotal = result[jobKey].total as Total;
 			const taskTotal = ((result[jobKey] as Task)[taskKey] as User).total as Total;
-			console.log({ jobTotal, taskTotal, jobKey, taskKey });
 			jobTotal.actualValue =
 				(jobTotal.actualValue || 0) + (taskTotal?.actualValue || 0);
 			jobTotal.hours += taskTotal?.hours || 0;
 			jobTotal.time += taskTotal?.time || 0;
-			// console.log({ totalHours: taskTotal?.time });
 			jobTotal.allocatedValue =
 				(jobTotal.allocatedValue || 0) + (taskTotal?.allocatedValue || 0);
 			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;

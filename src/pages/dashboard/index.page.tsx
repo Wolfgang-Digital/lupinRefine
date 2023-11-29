@@ -144,7 +144,7 @@ const Dashboard = () => {
 						</CardActionArea>
 					</Card>
 				</Grid>
-				{/*<Grid item {...gridItemProps}>
+				{/* <Grid item {...gridItemProps}>
 					<Card sx={cardStyle}>
 						<CardActionArea>
 							<CardMedia
@@ -160,8 +160,8 @@ const Dashboard = () => {
 							</CardContent>
 						</CardActionArea>
 					</Card>
-				</Grid>*/}
-				{/*<Grid
+				</Grid>
+				<Grid
 					item
 					{...gridItemProps}
 					onClick={() => navigateToPage("/clients")}
@@ -182,9 +182,8 @@ const Dashboard = () => {
 							</CardContent>
 						</CardActionArea>
 					</Card>
-				</Grid>*/}
-
-				{/*<Grid item {...gridItemProps}>
+				</Grid>
+				<Grid item {...gridItemProps}>
 					<a
 						href="https://analytics.wolfgangdigital.com/"
 						target="_blank"
@@ -211,10 +210,12 @@ const Dashboard = () => {
 							</CardActionArea>
 						</Card>
 					</a>
-				</Grid>*/}
+				</Grid> */}
 			</Grid>{" "}
 		</>
 	);
 };
 
 export default Dashboard;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["user", "admin"]);

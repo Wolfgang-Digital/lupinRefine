@@ -92,7 +92,6 @@ function CollapsibleTasksGrid({
 					})
 				);
 				setFetchedRows(mappedData);
-				// console.log(mappedData);
 			}
 		}
 		fetchData();
@@ -104,7 +103,7 @@ function CollapsibleTasksGrid({
 			taskId: 2,
 		};
 		const response = PostJobTaskEntry(dataToPost);
-		console.log(response);
+		console.log({ response });
 	}
 	// Function to handle "Add Task" button click
 	const handleAddTaskClick = () => {

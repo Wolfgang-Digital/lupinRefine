@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { getJob } from '@api/jobs';
+import React, { useEffect, useState } from "react";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { getJob } from "@api/jobs";
 
-import { Job as JobType } from 'types';
+import { Job as JobType } from "types";
 
 const Job: NextPage = () => {
 	const router = useRouter();
@@ -32,3 +32,5 @@ const Job: NextPage = () => {
 };
 
 export default Job;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin"]);

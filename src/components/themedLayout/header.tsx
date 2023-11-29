@@ -1,9 +1,7 @@
 import React from "react";
-import {
-	useGetIdentity,
-	useActiveAuthProvider,
-	pickNotDeprecated,
-} from "@refinedev/core";
+import { pickNotDeprecated } from "@refinedev/core";
+import { useSession } from "next-auth/react";
+
 import { HamburgerMenu } from "./hamburgerMenu";
 import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
@@ -16,14 +14,9 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 	isSticky,
 	sticky,
 }) => {
-	const authProvider = useActiveAuthProvider();
-	const { data: user } = useGetIdentity({
-		v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
-	});
-	console.log({ authProvider });
-
+	const { data: session } = useSession();
 	const prefferedSticky = pickNotDeprecated(sticky, isSticky) ?? true;
-
+	const user = session?.user || {};
 	return (
 		<AppBar position={prefferedSticky ? "sticky" : "relative"}>
 			<Toolbar>
@@ -46,9 +39,9 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 							}}
 							variant="subtitle2"
 						>
-							{user?.user_name}
+							{user?.name}
 						</Typography>
-						<Avatar src={user?.avatar} alt={user?.name} />
+						<Avatar src={user?.image || ""} alt={user?.name || ""} />
 					</Stack>
 				</Stack>
 			</Toolbar>

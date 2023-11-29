@@ -347,14 +347,19 @@ const Timesheet = () => {
 				userId: localStorage.getItem("user_id") || "",
 				jobId: Number(selectedJob),
 				taskId: Number(selectedTask),
-				hours: -1,
+				hours: 0,
 				rate: 0,
 			};
 			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
 			console.log(`PostAllocateHoursEntry ${response2}`);
 		}
+
 		const response = await PostTimeEntry(dataToPostTSE);
+
 		console.log(`PostTimeEntry ${response}`);
+
+		// console.log({ dataToPostTSE });
+		// console.log({ dataToPostAHE });
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedTask("");
@@ -878,3 +883,5 @@ const Timesheet = () => {
 };
 
 export default Timesheet;
+import { getServerSidePropsWithAuth } from "@pages/authenticationRedirector";
+export const getServerSideProps = getServerSidePropsWithAuth(["admin", "user"]);
