@@ -16,7 +16,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import EditIcon from "@mui/icons-material/Edit";
 import { format } from "date-fns";
-import UpdateForm from "./updateForm";
 import {
 	ClientOption,
 	JobOption,
@@ -26,6 +25,7 @@ import {
 import {
 	deleteTimeEntry,
 	getAllTimesheetRowsV2,
+	updateTimeEntry,
 } from "@pages/api/timesheetRows";
 
 export interface TimesheetType {
@@ -37,7 +37,6 @@ export interface TimesheetType {
 	id: number | 0;
 	notes: string | null;
 }
-
 export const DayDialog = ({
 	showForm,
 	setShowForm,
@@ -86,7 +85,10 @@ export const DayDialog = ({
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
+
 	const [editableRow, setEditableRow] = useState<TimesheetType | null>(null);
+	const [editedTime, setEditedTime] = useState<number | null>(null);
+	const [editedNotes, setEditedNotes] = useState<string | null>(null);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -137,14 +139,35 @@ export const DayDialog = ({
 	const handleEditRow = (id: number) => {
 		const editableRowData = rows.find((row) => row.id === id);
 		setEditableRow(editableRowData ?? null);
+		setEditedTime(editableRowData?.time ?? null);
+		setEditedNotes(editableRowData?.notes ?? null);
 	};
 
-	// Callback function to update the row in the state
-	const handleUpdateRow = (updatedData: TimesheetType) => {
-		const updatedRows = rows.map((row) =>
-			row.id === updatedData.id ? updatedData : row
-		);
-		setRows(updatedRows);
+	const handleSaveEdit = async () => {
+		if (editableRow) {
+			// Update the database with the edited data
+			await updateTimeEntry(editableRow.id, editedTime, editedNotes);
+
+			// Update the local state to reflect the changes immediately
+			const updatedRows = rows.map((row) =>
+				row.id === editableRow.id
+					? { ...row, time: editedTime, notes: editedNotes }
+					: row
+			);
+			setRows(updatedRows);
+
+			if (onUpdateTimesheet) {
+				await onUpdateTimesheet();
+			}
+
+			// Close the edit form
+			setEditableRow(null);
+		}
+	};
+
+	const handleCloseFormEdit = () => {
+		// Reset state when closing the form
+		setEditableRow(null);
 	};
 
 	return (
@@ -399,15 +422,112 @@ export const DayDialog = ({
 				</Grid>
 			</DialogContent>
 			{editableRow && (
-				<UpdateForm
-					rowData={editableRow}
-					onUpdate={(updatedData) => {
-						handleUpdateRow(updatedData);
-						onUpdateTimesheet(); // You may need to adjust this call based on your logic
-						setEditableRow(null);
+				<Dialog
+					fullScreen
+					maxWidth="lg"
+					onClose={handleCloseFormEdit}
+					style={{
+						marginLeft: "65%",
 					}}
-					onClose={() => setEditableRow(null)}
-				/>
+					open={true}
+				>
+					<DialogContent>
+						<Typography
+							variant="h6"
+							style={{
+								width: "100%",
+								marginBottom: "20px",
+								textAlign: "left",
+								fontWeight: "bold",
+							}}
+						>
+							Edit Entry:
+						</Typography>
+						<form>
+							<TextField
+								label="Client"
+								value={editableRow.client_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Project"
+								value={editableRow.project_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Job"
+								value={editableRow.job_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Task"
+								value={editableRow.task_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Time Spent (in hours)"
+								type="number"
+								value={editedTime === null ? "" : editedTime}
+								onChange={(event) => setEditedTime(Number(event.target.value))}
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Notes"
+								value={editedNotes === null ? "" : editedNotes}
+								onChange={(event) => setEditedNotes(event.target.value)}
+								multiline
+								rows={4}
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<Button
+								variant="contained"
+								color="primary"
+								style={{ padding: "10px" }}
+								onClick={handleSaveEdit}
+							>
+								Save Edit
+							</Button>
+						</form>
+					</DialogContent>
+				</Dialog>
 			)}
 		</Dialog>
 	);
