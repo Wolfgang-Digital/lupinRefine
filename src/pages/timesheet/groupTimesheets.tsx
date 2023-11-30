@@ -33,11 +33,11 @@ export const groupMonthlyTimesheets = (
 ) => {
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
-			(entry: Client) => entry.client_id == curr.client_id
+			(entry: Client) => entry.client_id === curr.client_id
 		);
 		if (existingClientEntry) {
 			const existingProjectEntry = existingClientEntry.projects.find(
-				(project: Project) => (project.project_id = curr.project_id)
+				(project: Project) => project.project_id === curr.project_id
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
