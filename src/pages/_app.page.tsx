@@ -26,10 +26,10 @@ import { ThemedTitleV2 } from "src/components";
 //icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
+//import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import SecurityIcon from "@mui/icons-material/Security";
+//import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
 
 import "src/pages/app.css";
