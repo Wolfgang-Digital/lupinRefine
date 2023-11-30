@@ -357,9 +357,6 @@ const Timesheet = () => {
 		const response = await PostTimeEntry(dataToPostTSE);
 
 		console.log(`PostTimeEntry ${response}`);
-
-		// console.log({ dataToPostTSE });
-		// console.log({ dataToPostAHE });
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedTask("");
