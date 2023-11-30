@@ -447,6 +447,12 @@ export const DayDialog = ({
 						>
 							Edit Entry:
 						</Typography>
+						<IconButton
+							style={{ position: "absolute", right: "10px", top: "10px" }}
+							onClick={handleCloseFormEdit} // You need to define this function to handle the close action
+						>
+							<CloseIcon />
+						</IconButton>
 						<form>
 							<TextField
 								label="Client"
