@@ -140,23 +140,39 @@ const Timesheet = () => {
 	//const sbCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
+	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+	const [isHovered, setIsHovered] = useState<boolean>(false);
 
-	const handleDayClick = (index: number) => {
-		setSelectedClient("");
-		setSelectedProject("");
-		setSelectedJob("");
-		setSelectedTask("");
-		setTimeSpent("");
-		setNotes("");
-		if (selectedDay === index) {
-			// If the clicked day is already selected, deselect it
-			setSelectedDay(null);
-			setShowForm(false); // Optionally, you can hide the form when deselecting
-		} else {
-			setSelectedDay(index);
-			setShowForm(true); // Show the form when a day is clicked
-			setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
-		}
+	// const handleDayClick = (index: number) => {
+	// 	setSelectedClient("");
+	// 	setSelectedProject("");
+	// 	setSelectedJob("");
+	// 	setSelectedTask("");
+	// 	setTimeSpent("");
+	// 	setNotes("");
+	// 	if (selectedDay === index) {
+	// 		// If the clicked day is already selected, deselect it
+	// 		setSelectedDay(null);
+	// 		setShowForm(false); // Optionally, you can hide the form when deselecting
+	// 	} else {
+	// 		setSelectedDay(index);
+	// 		setShowForm(true); // Show the form when a day is clicked
+	// 		setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
+	// 	}
+	// };
+
+	const handleSetSelectedDate = (index: number) => {
+		setSelectedDate(format(weekDays[index], "yyyy-MM-dd"));
+		setSelectedDay(index);
+	};
+
+	const handleMouseEnter = (index: number) => {
+		setHoveredDay(index);
+		setIsHovered(true);
+	};
+
+	const handleMouseLeave = () => {
+		setHoveredDay(null);
 	};
 
 	// Initialize notes and timeSpent states
@@ -564,7 +580,7 @@ const Timesheet = () => {
 								margin: "20px 0px",
 								display: "flex",
 								alignItems: "center",
-								paddingBottom: "10px",
+								paddingBottom: "25px",
 							}}
 						>
 							<Button
@@ -598,35 +614,96 @@ const Timesheet = () => {
 								Next Month
 							</Button>
 						</div>
+						<div style={{ position: "relative" }}>
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									paddingBottom: "10px",
+								}}
+							>
+								{weekDays.map((day, index) => (
+									<div key={day.toISOString()} style={{ position: "relative" }}>
+										<button
+											style={{
+												border: "1px solid #ccc",
+												borderRadius: "5px",
+												textAlign: "center",
+												cursor: "pointer",
+												backgroundColor:
+													selectedDay === index && isHovered ? "#3A2462" : "white",
+												color: selectedDay === index && isHovered ? "white" : "black",
+												width: "60px",
+												position: "relative",
+												zIndex: 0,
+											}}
+											onMouseEnter={() => handleMouseEnter(index)}
+											onMouseLeave={handleMouseLeave}
+										>
+											<Typography>
+												{format(day, "EEE")}
+												<br />
+												{format(day, "d")}
+											</Typography>
+										</button>
 
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								paddingBottom: "10px",
-							}}
-						>
-							{weekDays.map((day, index) => (
-								<button
-									key={day.toISOString()}
-									style={{
-										border: "1px solid #ccc",
-										borderRadius: "5px",
-										textAlign: "center",
-										cursor: "pointer",
-										backgroundColor: selectedDay === index ? "#3A2462" : "white",
-										color: selectedDay === index ? "white" : "black",
-										width: "60px",
-									}}
-									onClick={() => handleDayClick(index)}
-								>
-									<Typography>
-										{format(day, "EEE")}
-										<br />
-										{format(day, "d")}
-									</Typography>
-								</button>
-							))}
+										{hoveredDay === index && (
+											<div
+												style={{
+													position: "absolute",
+													top: "-73%",
+													left: "-50%",
+													backgroundColor: "#fff",
+													boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+													padding: "5px",
+													border: "1px solid #ccc",
+													borderRadius: "5px",
+													display: "flex",
+													flexDirection: "row",
+													alignItems: "center",
+													visibility: "visible",
+													zIndex: 1,
+												}}
+												onMouseEnter={() => handleMouseEnter(index)}
+												onMouseLeave={handleMouseLeave}
+											>
+												<button
+													onClick={() => handleSetSelectedDate(index)}
+													style={{
+														padding: "5px",
+														marginRight: "5px",
+														border: "none",
+														borderRadius: "4px",
+														backgroundColor: "#3A2462",
+														color: "white",
+														cursor: "pointer",
+														fontSize: "14px",
+													}}
+												>
+													Select
+												</button>
+												<button
+													onClick={() => {
+														handleSetSelectedDate(index); // Set the selected day before opening the form
+														setShowForm(true);
+													}}
+													style={{
+														padding: "5px",
+														border: "none",
+														borderRadius: "4px",
+														backgroundColor: "#02786D",
+														color: "white",
+														cursor: "pointer",
+														fontSize: "14px",
+													}}
+												>
+													Overview
+												</button>
+											</div>
+										)}
+									</div>
+								))}
+							</div>
 						</div>
 						<TableContainer component={Paper} variant="outlined">
 							<Table className={classes.table}>
@@ -847,7 +924,6 @@ const Timesheet = () => {
 								</TableBody>
 							</Table>
 						</TableContainer>
-
 						{/* Add TablePagination component for pagination */}
 						<TablePagination
 							rowsPerPageOptions={[2, 5, 10]}
