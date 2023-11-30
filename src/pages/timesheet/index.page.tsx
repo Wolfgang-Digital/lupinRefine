@@ -143,27 +143,30 @@ const Timesheet = () => {
 	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 	const [isHovered, setIsHovered] = useState<boolean>(false);
 
-	// const handleDayClick = (index: number) => {
-	// 	setSelectedClient("");
-	// 	setSelectedProject("");
-	// 	setSelectedJob("");
-	// 	setSelectedTask("");
-	// 	setTimeSpent("");
-	// 	setNotes("");
-	// 	if (selectedDay === index) {
-	// 		// If the clicked day is already selected, deselect it
-	// 		setSelectedDay(null);
-	// 		setShowForm(false); // Optionally, you can hide the form when deselecting
-	// 	} else {
-	// 		setSelectedDay(index);
-	// 		setShowForm(true); // Show the form when a day is clicked
-	// 		setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
-	// 	}
-	// };
+	const handleDayClick = (index: number) => {
+		if (selectedDay === index) {
+			// If the clicked day is already selected, deselect it
+			setSelectedDay(null);
+			setShowForm(false); // Optionally, you can hide the form when deselecting
+		} else {
+			setSelectedDay(index);
+			setShowForm(true); // Show the form when a day is clicked
+			setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
+
+			// Clear form fields
+			setSelectedClient("");
+			setSelectedProject("");
+			setSelectedJob("");
+			setSelectedTask("");
+			setTimeSpent("");
+			setNotes("");
+		}
+	};
 
 	const handleSetSelectedDate = (index: number) => {
 		setSelectedDate(format(weekDays[index], "yyyy-MM-dd"));
 		setSelectedDay(index);
+		setShowForm(false); // Clear the form when setting the selected date
 	};
 
 	const handleMouseEnter = (index: number) => {
@@ -173,6 +176,7 @@ const Timesheet = () => {
 
 	const handleMouseLeave = () => {
 		setHoveredDay(null);
+		setIsHovered(false);
 	};
 
 	// Initialize notes and timeSpent states
@@ -614,7 +618,7 @@ const Timesheet = () => {
 								Next Month
 							</Button>
 						</div>
-						<div style={{ position: "relative" }}>
+						<div style={{ display: "flex", flexDirection: "column" }}>
 							<div
 								style={{
 									display: "flex",
@@ -623,7 +627,10 @@ const Timesheet = () => {
 								}}
 							>
 								{weekDays.map((day, index) => (
-									<div key={day.toISOString()} style={{ position: "relative" }}>
+									<div
+										key={day.toISOString()}
+										style={{ position: "relative", flex: "1" }}
+									>
 										<button
 											style={{
 												border: "1px solid #ccc",
@@ -631,9 +638,14 @@ const Timesheet = () => {
 												textAlign: "center",
 												cursor: "pointer",
 												backgroundColor:
-													selectedDay === index && isHovered ? "#3A2462" : "white",
-												color: selectedDay === index && isHovered ? "white" : "black",
-												width: "60px",
+													(selectedDay === index && isHovered) || selectedDay === index
+														? "#3A2462"
+														: "white",
+												color:
+													(selectedDay === index && isHovered) || selectedDay === index
+														? "white"
+														: "black",
+												width: "50px",
 												position: "relative",
 												zIndex: 0,
 											}}
@@ -652,7 +664,8 @@ const Timesheet = () => {
 												style={{
 													position: "absolute",
 													top: "-73%",
-													left: "-50%",
+													left: "50%",
+													transform: "translateX(-50%)",
 													backgroundColor: "#fff",
 													boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
 													padding: "5px",
@@ -684,8 +697,8 @@ const Timesheet = () => {
 												</button>
 												<button
 													onClick={() => {
-														handleSetSelectedDate(index); // Set the selected day before opening the form
-														setShowForm(true);
+														handleSetSelectedDate(index);
+														handleDayClick(index); // Use the updated function here
 													}}
 													style={{
 														padding: "5px",
