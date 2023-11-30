@@ -17,6 +17,7 @@ import {
 	CssBaseline,
 	Paper,
 	TextField,
+	Grid,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getAllClients, ClientData } from "@api/client";
@@ -25,14 +26,18 @@ import { ButtonContainer, ClientsContainer } from "@styled-components/clients";
 
 const ClientOverview: React.FC = () => {
 	const [clients, setClients] = useState<ClientData[]>([]);
+	const [displayedClients, setDisplayedClients] = useState<ClientData[]>([]);
+
 	const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
 	const [openAddClientDialog, setOpenAddClientDialog] = useState(false);
+	const [searchText, setSearchText] = useState(""); // State for search text
 
 	useEffect(() => {
 		const fetchClients = async () => {
 			const clientsResponse = await getAllClients();
 			if (clientsResponse) {
 				setClients(clientsResponse);
+				setDisplayedClients(clientsResponse); // Initially, displayed clients are all clients
 			}
 		};
 		fetchClients();
@@ -52,6 +57,20 @@ const ClientOverview: React.FC = () => {
 
 	const handleCloseAddClientDialog = () => {
 		setOpenAddClientDialog(false);
+	};
+
+	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const newSearchText = event.target.value;
+		setSearchText(newSearchText);
+
+		const filteredClients = clients.filter((client) => {
+			return (
+				client.name &&
+				client.name.toLowerCase().includes(newSearchText.toLowerCase())
+			);
+		});
+
+		setDisplayedClients(filteredClients); // Update displayed clients based on search
 	};
 
 	const HoverableCell = styled("div")({
@@ -99,16 +118,29 @@ const ClientOverview: React.FC = () => {
 				<Typography gutterBottom variant="h5" component="div">
 					Client Overview
 				</Typography>
-				<ButtonContainer>
-					{/* Use a button to open the AddClientDialog */}
-					<Button size="small" variant="contained" onClick={handleAddClientClick}>
-						Add New Client
-					</Button>
-					{/* ... Other buttons and filters */}
-				</ButtonContainer>
+				<Grid container alignItems="center" spacing={1}>
+					<Grid item>
+						<TextField
+							id="outlined-basic"
+							label="Search Clients"
+							variant="outlined"
+							size="small"
+							value={searchText}
+							onChange={handleSearchChange}
+							style={{ paddingBottom: "20px" }}
+						/>
+					</Grid>
+					<Grid item>
+						<ButtonContainer>
+							<Button size="medium" variant="contained" onClick={handleAddClientClick}>
+								Add New Client
+							</Button>
+						</ButtonContainer>
+					</Grid>
+				</Grid>
 
 				<DataGrid
-					rows={clients}
+					rows={displayedClients}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
 					getRowId={(row) => row.id || 0}

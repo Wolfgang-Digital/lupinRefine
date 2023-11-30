@@ -157,8 +157,11 @@ const Timesheet = () => {
 		number | null
 	>(null);
 
+	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+
 	const handleDayClick = (index: number) => {
 		setTimerIconSelected(false);
+		setSelectedDayForSelectButton(index);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -608,23 +611,30 @@ const Timesheet = () => {
 							style={{
 								display: "flex",
 								justifyContent: "space-between",
-								paddingBottom: "10px",
+								paddingBottom: "30px", // Dynamic padding
 							}}
 						>
 							{weekDays.map((day, index) => (
-								<div key={day.toISOString()} className="day-button-container">
+								<div
+									key={day.toISOString()}
+									className="day-button-container"
+									onMouseEnter={() => setHoveredDay(index)}
+									onMouseLeave={() => setHoveredDay(null)}
+									style={{ position: "relative" }} // Container style
+								>
 									<button
 										style={{
-											border: "1px solid #ccc",
+											border:
+												selectedDayForSelectButton === index
+													? "1px solid black"
+													: "1px solid #ccc",
 											borderRadius: "5px",
 											textAlign: "center",
-											cursor: "pointer",
 											backgroundColor:
-												selectedDayForSelectButton === index ? "#3a2462" : "white", // Use a purple color when selected
+												selectedDayForSelectButton === index ? "#02786D" : "white",
 											color: selectedDayForSelectButton === index ? "white" : "black",
-											width: "60px",
+											width: "50px",
 										}}
-										//onClick={() => handleDayClick(index)}
 									>
 										<Typography>
 											{format(day, "EEE")}
@@ -632,20 +642,50 @@ const Timesheet = () => {
 											{format(day, "d")}
 										</Typography>
 									</button>
-									<div className="hover-buttons">
-										<button
-											className="select-button"
-											onClick={() => handleSelectClick(index)}
+									{hoveredDay === index && (
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												position: "absolute",
+												top: "100%", // Adjust to position the container correctly relative to the day button
+												left: "-30%",
+												backgroundColor: "#fff",
+												border: "1px solid #e8e8e8",
+												borderRadius: "5px",
+												boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+											}}
 										>
-											Select
-										</button>
-										<button
-											className="overview-button"
-											onClick={() => handleDayClick(index)}
-										>
-											Overview
-										</button>
-									</div>
+											<button
+												style={{
+													backgroundColor: "#02786D",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleSelectClick(index)}
+											>
+												Select
+											</button>
+											<button
+												style={{
+													backgroundColor: "#3a2462",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleDayClick(index)}
+											>
+												Overview
+											</button>
+										</div>
+									)}
 								</div>
 							))}
 						</div>
