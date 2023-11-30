@@ -153,6 +153,10 @@ const Timesheet = () => {
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
 	const [timerIconSelected, setTimerIconSelected] = useState(false);
 
+	const [selectedDayForSelectButton, setSelectedDayForSelectButton] = useState<
+		number | null
+	>(null);
+
 	const handleDayClick = (index: number) => {
 		setTimerIconSelected(false);
 		setSelectedClient("");
@@ -170,6 +174,21 @@ const Timesheet = () => {
 			setShowForm(true); // Show the form when a day is clicked
 			setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
 		}
+	};
+
+	const handleSelectClick = (index: number) => {
+		const newSelectedDate = format(weekDays[index], "yyyy-MM-dd");
+		setSelectedDate(newSelectedDate);
+		setSelectedDayForSelectButton(index);
+		// Reset form fields
+		setSelectedClient("");
+		setSelectedProject("");
+		setSelectedJob("");
+		setSelectedTask("");
+		setTimeSpent("");
+		setNotes("");
+		// Do not show the form
+		setShowForm(false);
 	};
 
 	// Initialize notes and timeSpent states
@@ -593,25 +612,41 @@ const Timesheet = () => {
 							}}
 						>
 							{weekDays.map((day, index) => (
-								<button
-									key={day.toISOString()}
-									style={{
-										border: "1px solid #ccc",
-										borderRadius: "5px",
-										textAlign: "center",
-										cursor: "pointer",
-										backgroundColor: selectedDay === index ? "#3A2462" : "white",
-										color: selectedDay === index ? "white" : "black",
-										width: "60px",
-									}}
-									onClick={() => handleDayClick(index)}
-								>
-									<Typography>
-										{format(day, "EEE")}
-										<br />
-										{format(day, "d")}
-									</Typography>
-								</button>
+								<div key={day.toISOString()} className="day-button-container">
+									<button
+										style={{
+											border: "1px solid #ccc",
+											borderRadius: "5px",
+											textAlign: "center",
+											cursor: "pointer",
+											backgroundColor:
+												selectedDayForSelectButton === index ? "#3a2462" : "white", // Use a purple color when selected
+											color: selectedDayForSelectButton === index ? "white" : "black",
+											width: "60px",
+										}}
+										//onClick={() => handleDayClick(index)}
+									>
+										<Typography>
+											{format(day, "EEE")}
+											<br />
+											{format(day, "d")}
+										</Typography>
+									</button>
+									<div className="hover-buttons">
+										<button
+											className="select-button"
+											onClick={() => handleSelectClick(index)}
+										>
+											Select
+										</button>
+										<button
+											className="overview-button"
+											onClick={() => handleDayClick(index)}
+										>
+											Overview
+										</button>
+									</div>
+								</div>
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
