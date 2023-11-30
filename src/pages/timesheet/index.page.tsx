@@ -26,12 +26,16 @@ import {
 	Button,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
+import { getMonthlyTimesheetRows } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import {
+	groupMonthlyTimesheets,
+	GroupedTimesheets,
+	MonthlyGroupedTimesheets,
+} from "./groupTimesheets";
 import { DayDialog } from "./DayDialog";
 import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
 import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
@@ -183,35 +187,35 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRowsV2();
 			const clientsWithJobsResponse = await clientsWithJobsDropdown();
 
-			let filteredResponse: typeof timesheetsResponse = [];
-			if (!timesheetsResponse) {
-				throw new Error("Error fetching data");
+			const month = selectedWeekStart.getMonth() + 1;
+			const year = selectedWeekStart.getFullYear();
+			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
+			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse = [];
+
+			if (!monthlyFilteredResponse) {
+				throw new Error("Error fetching monthly data");
 			}
 			if (filterOption === "Wolfgang Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(entry) => entry.name === "Wolfgang Digital"
-				);
+				monthlyFilteredResponse =
+					monthlyTimesheetsResponse?.filter(
+						(entry) => entry.name === "Wolfgang Digital"
+					) || undefined;
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(entry) => entry.name != "Wolfgang Digital"
-				);
+				monthlyFilteredResponse =
+					monthlyTimesheetsResponse?.filter(
+						(entry) => entry.name != "Wolfgang Digital"
+					) || undefined;
 			} else if (filterOption === "All Tasks") {
-				filteredResponse = timesheetsResponse;
+				monthlyFilteredResponse = monthlyTimesheetsResponse || undefined;
 			}
-			filteredResponse = filteredResponse.filter(({ date }) => {
-				const dateObj = new Date(date || new Date());
-				return (
-					dateObj.getMonth() === selectedWeekStart.getMonth() &&
-					dateObj.getFullYear() === selectedWeekStart.getFullYear()
-				);
-			});
+			if (monthlyFilteredResponse) {
+				const monthlyGroupedTimesheets: MonthlyGroupedTimesheets =
+					groupMonthlyTimesheets(monthlyFilteredResponse);
+				setFilteredTimesheets(monthlyGroupedTimesheets);
+			}
 
-			const groupedTimesheets: GroupedTimesheets =
-				groupTimesheets(filteredResponse);
-			setFilteredTimesheets(groupedTimesheets);
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
 
@@ -256,7 +260,7 @@ const Timesheet = () => {
 			client_id: number;
 			client_name: string;
 			projects: {
-				project_id: number;
+				project_id: number | null;
 				project_name: string;
 				jobs: {
 					job_id: number;
@@ -273,7 +277,7 @@ const Timesheet = () => {
 			}[];
 		},
 		project: {
-			project_id: number;
+			project_id: number | null;
 			project_name: string;
 			jobs: {
 				job_id: number;
@@ -312,7 +316,10 @@ const Timesheet = () => {
 		setTimeSpent("");
 		setNotes("");
 		const selectedClientId = entry.client_id.toString();
-		const selectedProjectId = project.project_id.toString();
+		let selectedProjectId: string = "";
+		if (project.project_id) {
+			selectedProjectId = project?.project_id.toString();
+		}
 		const selectedJobId = job.jobs_id.toString();
 		const selectedJobsId = job.jobs_id.toString();
 		const selectedTaskId = task.task_id.toString();
