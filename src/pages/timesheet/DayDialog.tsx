@@ -21,7 +21,6 @@ import {
 import { useEffect, useState } from "react";
 import {
 	deleteTimeEntry,
-	// getAllTimesheetRowsV2,
 	getMonthlyTimesheetRows,
 } from "@pages/api/timesheetRows";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -95,7 +94,6 @@ export const DayDialog = ({
 		async function fetchData() {
 			try {
 				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
-				// console.log(timesheetsResponse);
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate
