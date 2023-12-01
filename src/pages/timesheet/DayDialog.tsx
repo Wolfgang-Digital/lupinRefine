@@ -21,7 +21,8 @@ import {
 import { useEffect, useState } from "react";
 import {
 	deleteTimeEntry,
-	getAllTimesheetRowsV2,
+	// getAllTimesheetRowsV2,
+	getMonthlyTimesheetRows,
 } from "@pages/api/timesheetRows";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { format } from "date-fns";
@@ -88,11 +89,13 @@ export const DayDialog = ({
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
+	const year = new Date(selectedDate).getFullYear();
+	const month = new Date(selectedDate).getMonth() + 1;
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				const timesheetsResponse = await getAllTimesheetRowsV2();
-
+				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
+				// console.log(timesheetsResponse);
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate
