@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
 	Grid,
 	Button,
@@ -10,32 +11,32 @@ import {
 	Toolbar,
 	IconButton,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close"; // Step 1: Import the CloseIcon
+import CloseIcon from "@mui/icons-material/Close";
 import { DataGrid } from "@mui/x-data-grid";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import EditIcon from "@mui/icons-material/Edit";
+import { format } from "date-fns";
 import {
 	ClientOption,
-	TaskOption,
 	JobOption,
 	ProjectOption,
+	TaskOption,
 } from "./index.page";
-import { useEffect, useState } from "react";
 import {
 	deleteTimeEntry,
 	getMonthlyTimesheetRows,
+	updateTimeEntry,
 } from "@pages/api/timesheetRows";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { format } from "date-fns";
 
-interface TimesheetType {
+export interface TimesheetType {
 	client_name: string | null;
 	project_name: string | null;
 	job_name: string | null;
 	task_name: string | null;
 	time: number | null;
 	id: number | 0;
-	//time_left: number | null;
+	notes: string | null;
 }
-
 export const DayDialog = ({
 	showForm,
 	setShowForm,
@@ -63,7 +64,6 @@ export const DayDialog = ({
 	showForm: boolean;
 	setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: string;
-
 	selectedClient: string;
 	handleClientSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	clients: ClientOption[];
@@ -89,6 +89,10 @@ export const DayDialog = ({
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
 	const year = new Date(selectedDate).getFullYear();
 	const month = new Date(selectedDate).getMonth() + 1;
+	const [editableRow, setEditableRow] = useState<TimesheetType | null>(null);
+	const [editedTime, setEditedTime] = useState<number | null>(null);
+	const [editedNotes, setEditedNotes] = useState<string | null>(null);
+
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -105,6 +109,7 @@ export const DayDialog = ({
 						task_name: timesheet.task_name,
 						time: timesheet.time,
 						id: timesheet.id as number,
+						notes: timesheet.notes,
 					}));
 
 					setRows(newRows);
@@ -131,6 +136,40 @@ export const DayDialog = ({
 		} catch (error) {
 			console.error("Error deleting time entry:", error);
 		}
+	};
+
+	const handleEditRow = (id: number) => {
+		const editableRowData = rows.find((row) => row.id === id);
+		setEditableRow(editableRowData ?? null);
+		setEditedTime(editableRowData?.time ?? null);
+		setEditedNotes(editableRowData?.notes ?? null);
+	};
+
+	const handleSaveEdit = async () => {
+		if (editableRow) {
+			// Update the database with the edited data
+			await updateTimeEntry(editableRow.id, editedTime, editedNotes);
+
+			// Update the local state to reflect the changes immediately
+			const updatedRows = rows.map((row) =>
+				row.id === editableRow.id
+					? { ...row, time: editedTime, notes: editedNotes }
+					: row
+			);
+			setRows(updatedRows);
+
+			if (onUpdateTimesheet) {
+				await onUpdateTimesheet();
+			}
+
+			// Close the edit form
+			setEditableRow(null);
+		}
+	};
+
+	const handleCloseFormEdit = () => {
+		// Reset state when closing the form
+		setEditableRow(null);
 	};
 
 	return (
@@ -189,7 +228,19 @@ export const DayDialog = ({
 									rows={rows.filter((row) => row.time && row.time > 0)}
 									getRowId={(timesheet) => timesheet.id}
 									columns={[
-										{ field: "id", headerName: "ID", width: 50 },
+										{
+											field: "edit",
+											headerName: "Edit",
+											width: 50,
+											renderCell: (params) => (
+												<IconButton
+													color="secondary"
+													onClick={() => handleEditRow(params.row.id)}
+												>
+													<EditIcon />
+												</IconButton>
+											),
+										},
 										{ field: "client_name", headerName: "Client", width: 100 },
 										{ field: "project_name", headerName: "Project", width: 120 },
 										{ field: "job_name", headerName: "Job", width: 140 },
@@ -373,6 +424,114 @@ export const DayDialog = ({
 					</Grid>
 				</Grid>
 			</DialogContent>
+			{editableRow && (
+				<Dialog
+					fullScreen
+					maxWidth="lg"
+					onClose={handleCloseFormEdit}
+					style={{
+						marginLeft: "65%",
+					}}
+					open={true}
+				>
+					<DialogContent>
+						<Typography
+							variant="h6"
+							style={{
+								width: "100%",
+								marginBottom: "20px",
+								textAlign: "left",
+								fontWeight: "bold",
+							}}
+						>
+							Edit Entry:
+						</Typography>
+						<form>
+							<TextField
+								label="Client"
+								value={editableRow.client_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Project"
+								value={editableRow.project_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Job"
+								value={editableRow.job_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Task"
+								value={editableRow.task_name ?? ""}
+								InputProps={{ readOnly: true }}
+								disabled
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Time Spent (in hours)"
+								type="number"
+								value={editedTime === null ? "" : editedTime}
+								onChange={(event) => setEditedTime(Number(event.target.value))}
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<TextField
+								label="Notes"
+								value={editedNotes === null ? "" : editedNotes}
+								onChange={(event) => setEditedNotes(event.target.value)}
+								multiline
+								rows={4}
+								style={{
+									width: "100%",
+									marginBottom: "20px",
+									textAlign: "left",
+								}}
+								required
+							/>
+							<Button
+								variant="contained"
+								color="primary"
+								style={{ padding: "10px" }}
+								onClick={handleSaveEdit}
+							>
+								Save Edit
+							</Button>
+						</form>
+					</DialogContent>
+				</Dialog>
+			)}
 		</Dialog>
 	);
 };
