@@ -25,7 +25,6 @@ import {
 } from "@pages/api/timesheetRows";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { format } from "date-fns";
-//import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 interface TimesheetType {
 	client_name: string | null;
