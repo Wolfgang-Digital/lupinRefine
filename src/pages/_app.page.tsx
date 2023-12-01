@@ -51,7 +51,7 @@ const overridedLightTheme = createTheme({
 			main: "#02786D",
 		},
 		secondary: {
-			main: "#red",
+			main: "#02786D",
 		},
 	},
 });
