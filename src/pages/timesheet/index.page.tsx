@@ -344,6 +344,8 @@ const Timesheet = () => {
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 0,
+			month: Number(currentDate.getMonth() + 1),
+			year: Number(currentDate.getFullYear()),
 		};
 		let dataToPostAHE: DataToPostAHE;
 		if (!timerIconSelected) {
