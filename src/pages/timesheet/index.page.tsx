@@ -39,6 +39,7 @@ import {
 import { DayDialog } from "./DayDialog";
 import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
 import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
+import { getJobAllocatedHoursPerMonthPerUser } from "../api/allocateHoursView";
 
 const useStyles = makeStyles({
 	table: {
@@ -155,10 +156,10 @@ const Timesheet = () => {
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
-	const [timerIconSelected, setTimerIconSelected] = useState(false);
+	// const [timerIconSelected, setTimerIconSelected] = useState(false);
 
 	const handleDayClick = (index: number) => {
-		setTimerIconSelected(false);
+		// setTimerIconSelected(false);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -188,7 +189,6 @@ const Timesheet = () => {
 	async function fetchTasksAndJobsWithFilter() {
 		try {
 			const clientsWithJobsResponse = await clientsWithJobsDropdown();
-
 			const month = selectedWeekStart.getMonth() + 1;
 			const year = selectedWeekStart.getFullYear();
 			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
@@ -329,11 +329,40 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
 		setSelectedJobs(selectedJobsId);
-		setTimerIconSelected(true);
+		// setTimerIconSelected(true);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	async function saveTimeEntry() {
+		const splitDate = selectedDate.split("-");
+		console.log(splitDate);
+		const monthTest = Number(splitDate[1]);
+		const yearTest = Number(splitDate[0]);
+		const userId = localStorage.getItem("user_id") || "";
+		const jobsId = Number(selectedJob);
+		const taskId = Number(selectedTask);
+		const allocatedHoursLogged =
+			(await getJobAllocatedHoursPerMonthPerUser(
+				yearTest,
+				monthTest,
+				userId,
+				jobsId,
+				taskId
+			)) || [];
+		if (allocatedHoursLogged.length == 0) {
+			const dataToPostAHE = {
+				jobTaskId: 10,
+				month: Number(splitDate[1]),
+				year: Number(splitDate[0]),
+				userId: localStorage.getItem("user_id") || "",
+				jobId: Number(selectedJob),
+				taskId: Number(selectedTask),
+				hours: 0,
+				rate: 0,
+			};
+			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
+			console.log(`PostAllocateHoursEntry ${response2}`);
+		}
 		const dataToPostTSE = {
 			staffId: localStorage.getItem("user_id") || "",
 			notes,
@@ -344,27 +373,10 @@ const Timesheet = () => {
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 0,
-			month: Number(currentDate.getMonth() + 1),
-			year: Number(currentDate.getFullYear()),
+			month: Number(splitDate[1]),
+			year: Number(splitDate[0]),
 		};
-		let dataToPostAHE: DataToPostAHE;
-		if (!timerIconSelected) {
-			dataToPostAHE = {
-				jobTaskId: 10,
-				month: currentDate.getMonth() + 1,
-				year: Number(currentDate.getFullYear()),
-				userId: localStorage.getItem("user_id") || "",
-				jobId: Number(selectedJob),
-				taskId: Number(selectedTask),
-				hours: 0,
-				rate: 0,
-			};
-			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
-			console.log(`PostAllocateHoursEntry ${response2}`);
-		}
-
 		const response = await PostTimeEntry(dataToPostTSE);
-
 		console.log(`PostTimeEntry ${response}`);
 		setSelectedClient("");
 		setSelectedProject("");
@@ -375,6 +387,8 @@ const Timesheet = () => {
 		setShowForm(false);
 		fetchTasksAndJobsWithFilter();
 	}
+
+	// }
 
 	// Update the TimeEntries based on the current page and rows per page
 	const displayedTimeEntries = filteredTimesheets.slice(
