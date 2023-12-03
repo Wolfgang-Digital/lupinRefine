@@ -3,14 +3,9 @@ import {
 	Button,
 	Grid,
 	MenuItem,
-	// Accordion,
-	// AccordionDetails,
-	// AccordionSummary,
 	Paper,
 	TextField,
 	Typography,
-	// Toolbar,
-	// Typography,
 } from "@mui/material";
 // import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -20,11 +15,7 @@ import {
 } from "@mui/x-data-grid";
 import { getAllTasks, PostJobTaskEntry } from "@pages/api/jobTasksView";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
-import {
-	// JobTasksView,
-	// GetAllJobsWithProjects,
-	ProjectJobTasksView,
-} from "types";
+import { ProjectJobTasksView } from "types";
 
 type RowData = ProjectJobTasksView;
 
@@ -63,7 +54,6 @@ function CollapsibleTasksGrid({
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			// const jobTasksTable = await getAllJobTasks(jobId || 0);
 			const getTasks = await getAllTasks();
 
 			const getProjectJobTasks = await getAllProjectJobTasks(

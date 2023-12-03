@@ -88,8 +88,6 @@ function CollapsibleHoursGrid({
 				clientId || 0
 				// currentMonth || 0
 			);
-			// console.log({ allocateHoursTable });
-			// const getTasks = await getAllJobTasks(jobId || 0);
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,
 				jobNameId || 0
