@@ -165,8 +165,7 @@ const Timesheet = () => {
 	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
 	const handleDayClick = (index: number) => {
-
-		setTimerIconSelected(false);
+		//setTimerIconSelected(false);
 		setSelectedDayForSelectButton(index);
 		// setTimerIconSelected(false);
 
