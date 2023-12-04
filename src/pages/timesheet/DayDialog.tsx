@@ -24,7 +24,7 @@ import {
 } from "./index.page";
 import {
 	deleteTimeEntry,
-	getAllTimesheetRowsV2,
+	getMonthlyTimesheetRows,
 	updateTimeEntry,
 } from "@pages/api/timesheetRows";
 
@@ -88,6 +88,9 @@ export const DayDialog = ({
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
 
+	const year = new Date(selectedDate).getFullYear();
+	const month = new Date(selectedDate).getMonth() + 1;
+
 	const [editableRow, setEditableRow] = useState<TimesheetType | null>(null);
 	const [editedTime, setEditedTime] = useState<number | null>(null);
 	const [editedNotes, setEditedNotes] = useState<string | null>(null);
@@ -95,7 +98,7 @@ export const DayDialog = ({
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				const timesheetsResponse = await getAllTimesheetRowsV2();
+				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
 
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
