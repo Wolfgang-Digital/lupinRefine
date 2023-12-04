@@ -63,7 +63,6 @@ function CollapsibleTasksGrid({
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			// const jobTasksTable = await getAllJobTasks(jobId || 0);
 			const getTasks = await getAllTasks();
 
 			const getProjectJobTasks = await getAllProjectJobTasks(
