@@ -27,7 +27,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { getMonthlyTimesheetRows } from "@pages/api/timesheetRows";
-import { getTaskByJobId } from "@pages/api/tasks";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
@@ -40,6 +39,7 @@ import { DayDialog } from "./DayDialog";
 import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
 import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 import { getJobAllocatedHoursPerMonthPerUser } from "../api/allocateHoursView";
+import { getProjectJobTaskForDayDialog } from "@pages/api/projectJobTasksView";
 
 const useStyles = makeStyles({
 	table: {
@@ -139,6 +139,7 @@ const Timesheet = () => {
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [selectedJobs, setSelectedJobs] = useState("");
+	const [selectedJobName, setSelectedJobName] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
 
 	const [filteredTimesheets, setFilteredTimesheets] =
@@ -156,10 +157,8 @@ const Timesheet = () => {
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
-	// const [timerIconSelected, setTimerIconSelected] = useState(false);
 
 	const handleDayClick = (index: number) => {
-		// setTimerIconSelected(false);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -322,6 +321,7 @@ const Timesheet = () => {
 		}
 		const selectedJobId = job.jobs_id.toString();
 		const selectedJobsId = job.jobs_id.toString();
+		const selectedJobNameId = job.job_name_id.toString();
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
 		setSelectedClient(selectedClientId);
@@ -329,13 +329,12 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
 		setSelectedJobs(selectedJobsId);
-		// setTimerIconSelected(true);
+		setSelectedJobName(selectedJobNameId);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	async function saveTimeEntry() {
 		const splitDate = selectedDate.split("-");
-		console.log(splitDate);
 		const monthTest = Number(splitDate[1]);
 		const yearTest = Number(splitDate[0]);
 		const userId = localStorage.getItem("user_id") || "";
@@ -480,15 +479,19 @@ const Timesheet = () => {
 	useEffect(() => {
 		async function fetchTasks() {
 			if (selectedJob) {
-				const response = await getTaskByJobId(selectedJob);
+				const response = await getProjectJobTaskForDayDialog(
+					Number(selectedProject) || 0,
+					Number(selectedJobName) || 0
+				);
 				if (response) {
 					setTasks(
 						response?.map((task) => ({
-							value: task.task_id.toString(),
+							value: task.task_id?.toString() || "",
 							label: task.task_name || "",
 							completed: false,
 						}))
 					);
+					console.log({ tasks });
 				}
 			}
 		}
