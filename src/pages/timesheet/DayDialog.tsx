@@ -442,7 +442,6 @@ export const DayDialog = ({
 								width: "100%",
 								marginBottom: "20px",
 								textAlign: "left",
-								fontWeight: "bold",
 							}}
 						>
 							Edit Entry:
