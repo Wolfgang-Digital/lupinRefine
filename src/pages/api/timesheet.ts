@@ -25,6 +25,8 @@ export const PostTimeEntry = async ({
 	taskId: task_id,
 	selectedDate: selectedDate,
 	rate,
+	month,
+	year,
 }: {
 	staffId: string;
 	timeSpent: number;
@@ -35,6 +37,8 @@ export const PostTimeEntry = async ({
 	taskId: number;
 	selectedDate: string;
 	rate: number;
+	month: number;
+	year: number;
 }) => {
 	try {
 		const { data, error } = await supabase.from("timesheet_rows").insert([
@@ -48,6 +52,8 @@ export const PostTimeEntry = async ({
 				date: selectedDate,
 				rate,
 				project_id,
+				month,
+				year,
 			},
 		]);
 		if (error) {
