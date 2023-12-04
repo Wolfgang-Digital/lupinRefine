@@ -24,7 +24,7 @@ import {
 } from "./index.page";
 import {
 	deleteTimeEntry,
-	getAllTimesheetRowsV2,
+	getMonthlyTimesheetRows,
 	updateTimeEntry,
 } from "@pages/api/timesheetRows";
 
@@ -87,7 +87,8 @@ export const DayDialog = ({
 	const [rows, setRows] = useState<TimesheetType[]>([]);
 	const formattedDate = format(new Date(selectedDate), "yyyy-MM-dd");
 	const displayDate = format(new Date(selectedDate), "dd-MM-yyy");
-
+	const year = new Date(selectedDate).getFullYear();
+	const month = new Date(selectedDate).getMonth() + 1;
 	const [editableRow, setEditableRow] = useState<TimesheetType | null>(null);
 	const [editedTime, setEditedTime] = useState<number | null>(null);
 	const [editedNotes, setEditedNotes] = useState<string | null>(null);
@@ -95,8 +96,7 @@ export const DayDialog = ({
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				const timesheetsResponse = await getAllTimesheetRowsV2();
-
+				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate
@@ -210,7 +210,7 @@ export const DayDialog = ({
 					spacing={2}
 					style={{ paddingTop: "10px", paddingBottom: "90px" }}
 				>
-					<Grid item xs={7}>
+					<Grid item xs={8}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -246,6 +246,7 @@ export const DayDialog = ({
 										{ field: "job_name", headerName: "Job", width: 140 },
 										{ field: "task_name", headerName: "Task", width: 100 },
 										{ field: "time", headerName: "Logged", width: 80 },
+										{ field: "notes", headerName: "Notes", width: 100 },
 										{
 											field: "delete",
 											headerName: "Delete",
@@ -278,7 +279,7 @@ export const DayDialog = ({
 							)}
 						</div>
 					</Grid>
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<Typography
 							style={{
 								paddingBottom: "20px",
@@ -446,6 +447,12 @@ export const DayDialog = ({
 						>
 							Edit Entry:
 						</Typography>
+						<IconButton
+							style={{ position: "absolute", right: "10px", top: "10px" }}
+							onClick={handleCloseFormEdit} // You need to define this function to handle the close action
+						>
+							<CloseIcon />
+						</IconButton>
 						<form>
 							<TextField
 								label="Client"

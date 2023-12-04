@@ -24,6 +24,7 @@ import { PostJobEntry } from "@pages/api/jobs";
 
 interface AddJobProps {
 	onAddJob: () => void;
+	size?: "small" | "medium" | "large"; // Add size as an optional prop
 }
 
 type ClientOptions = {
@@ -41,7 +42,7 @@ type JobOptions = {
 	value: number;
 };
 
-const AddJob: React.FC<AddJobProps> = () => {
+const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 	const [open, setOpen] = useState(false);
 	const [tabValue, setTabValue] = useState(0);
 
@@ -59,6 +60,9 @@ const AddJob: React.FC<AddJobProps> = () => {
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
+
+	const buttonSize =
+		size === "small" ? "small" : size === "medium" ? "medium" : "large";
 
 	// const jobInfoFields = [
 	// 	{ label: "Job Name", field: "jobName" },
@@ -138,7 +142,7 @@ const AddJob: React.FC<AddJobProps> = () => {
 
 	return (
 		<>
-			<Button size="small" variant="contained" onClick={handleOpen}>
+			<Button size={buttonSize} variant="contained" onClick={handleOpen}>
 				Add New Job
 			</Button>
 

@@ -141,7 +141,7 @@ function CollapsibleHoursGrid({
 			rate: Number(rate),
 		};
 		const dataToPostTSE = {
-			staffId: localStorage.getItem("user_id") || "",
+			staffId: selectedUser,
 			notes: "Zero hours for allocate hours",
 			timeSpent: 0,
 			projectId: Number(projectId),
@@ -150,6 +150,8 @@ function CollapsibleHoursGrid({
 			taskId: Number(selectedTask),
 			selectedDate: formattedDate,
 			rate: Number(rate),
+			month: Number(monthNumber),
+			year: Number(currentDate.getFullYear()),
 		};
 		const response = await PostAllocateHoursEntry(dataToPostAHE);
 		const response2 = await PostTimeEntry(dataToPostTSE);

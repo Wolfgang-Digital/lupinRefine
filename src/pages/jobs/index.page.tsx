@@ -6,7 +6,7 @@ import {
 	GridRenderCellParams,
 	GridToolbar,
 } from "@mui/x-data-grid";
-import { Typography, styled } from "@mui/material";
+import { Typography, styled, TextField } from "@mui/material";
 import {
 	// getAllJobs,
 	// JobsData,
@@ -20,6 +20,9 @@ import AddJob from "./AddJob";
 
 const JobList: React.FC = () => {
 	const [jobs, setJobs] = useState<JobsDataWithProjects[]>([]);
+	const [displayedJobs, setDisplayedJobs] = useState<JobsDataWithProjects[]>([]);
+	const [searchText, setSearchText] = useState("");
+
 	const [selectedJob, setSelectedJob] = useState<JobsDataWithProjects | null>(
 		null
 	);
@@ -29,10 +32,26 @@ const JobList: React.FC = () => {
 			const jobsResponse = await getAllJobsWithProjectsQuery();
 			if (jobsResponse) {
 				setJobs(jobsResponse);
+				setDisplayedJobs(jobsResponse);
 			}
 		};
 		fetchJobs();
 	}, []);
+
+	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const newSearchText = event.target.value;
+		setSearchText(newSearchText);
+
+		const filteredJobs = jobs.filter((job) => {
+			// Adjust this logic to search in the desired fields
+			return (
+				job.client_name &&
+				job.client_name.toLowerCase().includes(newSearchText.toLowerCase())
+			);
+		});
+
+		setDisplayedJobs(filteredJobs);
+	};
 
 	const handleJobClick = (params: GridCellParams) => {
 		setSelectedJob(params.row);
@@ -71,31 +90,40 @@ const JobList: React.FC = () => {
 		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
 
-	const rows = jobs.map((job) => ({
-		id: job.id,
-		job_id: job.job_id,
-		client_name: job.client_name,
-		project_name: job.project_name,
-		project_id: job.project_id,
-		job_name_name: job.job_name_name,
-		job_name_id: job.job_name_id,
-		// job_name: job.job_name,
-		job_type_name: job.job_type_name,
-		tier_name: job.tier_name,
-		currency_symbol: job.currency_symbol,
-		status: job.status_code_name,
-		department: job.department_name,
-	}));
+	//const rows = displayedJobs.map((job) => ({
+	//	id: job.id,
+	//	job_id: job.job_id,
+	//	client_name: job.client_name,
+	//	project_name: job.project_name,
+	//	project_id: job.project_id,
+	//	job_name_name: job.job_name_name,
+	//	job_name_id: job.job_name_id,
+	//	// job_name: job.job_name,
+	//	job_type_name: job.job_type_name,
+	//	tier_name: job.tier_name,
+	//	currency_symbol: job.currency_symbol,
+	//	status: job.status_code_name,
+	//	department: job.department_name,
+	//}));
 
 	return (
 		<>
-			<JobsContainer>
+			<JobsContainer style={{ height: "100vh", paddingBottom: "100px" }}>
 				<Typography gutterBottom variant="h5" component="div">
 					Job List
 				</Typography>
-				<ButtonContainer>
-					{/* Use the AddJob component to add a new job */}
+				<ButtonContainer style={{ paddingBottom: "20px" }}>
+					<TextField
+						label="Search Jobs"
+						variant="outlined"
+						value={searchText}
+						onChange={handleSearchChange}
+						style={{ marginRight: "20px" }} // Adjust styling as needed
+						size="small"
+					/>
+
 					<AddJob
+						size="small"
 						onAddJob={function (): void {
 							throw new Error("Function not implemented.");
 						}}
@@ -103,7 +131,21 @@ const JobList: React.FC = () => {
 				</ButtonContainer>
 
 				<DataGrid
-					rows={rows}
+					style={{ height: "100%" }}
+					rows={displayedJobs.map((job) => ({
+						id: job.id,
+						job_id: job.job_id,
+						client_name: job.client_name,
+						project_name: job.project_name,
+						project_id: job.project_id,
+						job_name_name: job.job_name_name,
+						job_name_id: job.job_name_id,
+						job_type_name: job.job_type_name,
+						tier_name: job.tier_name,
+						currency_symbol: job.currency_symbol,
+						status: job.status_code_name,
+						department: job.department_name,
+					}))}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
 					getRowId={(row) => row.id}

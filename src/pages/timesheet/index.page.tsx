@@ -26,15 +26,20 @@ import {
 	Button,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
+import { getMonthlyTimesheetRows } from "@pages/api/timesheetRows";
 import { getTaskByJobId } from "@pages/api/tasks";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import { getProjectbyClientId } from "@pages/api/projects";
 import { getJobByProjectId } from "@pages/api/jobs";
-import { groupTimesheets, GroupedTimesheets } from "./groupTimesheets";
+import {
+	groupMonthlyTimesheets,
+	GroupedTimesheets,
+	MonthlyGroupedTimesheets,
+} from "./groupTimesheets";
 import { DayDialog } from "./DayDialog";
 import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
 import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
+import { getJobAllocatedHoursPerMonthPerUser } from "../api/allocateHoursView";
 
 const useStyles = makeStyles({
 	table: {
@@ -151,10 +156,20 @@ const Timesheet = () => {
 	const formattedCurrentDate = format(currentDate, "yyyy-MM-dd");
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
-	const [timerIconSelected, setTimerIconSelected] = useState(false);
+	// const [timerIconSelected, setTimerIconSelected] = useState(false);
+
+	const [selectedDayForSelectButton, setSelectedDayForSelectButton] = useState<
+		number | null
+	>(null);
+
+	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
 	const handleDayClick = (index: number) => {
+
 		setTimerIconSelected(false);
+		setSelectedDayForSelectButton(index);
+		// setTimerIconSelected(false);
+
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -172,6 +187,21 @@ const Timesheet = () => {
 		}
 	};
 
+	const handleSelectClick = (index: number) => {
+		const newSelectedDate = format(weekDays[index], "yyyy-MM-dd");
+		setSelectedDate(newSelectedDate);
+		setSelectedDayForSelectButton(index);
+		// Reset form fields
+		setSelectedClient("");
+		setSelectedProject("");
+		setSelectedJob("");
+		setSelectedTask("");
+		setTimeSpent("");
+		setNotes("");
+		// Do not show the form
+		setShowForm(false);
+	};
+
 	// Initialize notes and timeSpent states
 	const [notes, setNotes] = useState("");
 	const [timeSpent, setTimeSpent] = useState("");
@@ -183,35 +213,34 @@ const Timesheet = () => {
 	// Fetch tasks and jobs data
 	async function fetchTasksAndJobsWithFilter() {
 		try {
-			const timesheetsResponse = await getAllTimesheetRowsV2();
 			const clientsWithJobsResponse = await clientsWithJobsDropdown();
+			const month = selectedWeekStart.getMonth() + 1;
+			const year = selectedWeekStart.getFullYear();
+			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
+			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse = [];
 
-			let filteredResponse: typeof timesheetsResponse = [];
-			if (!timesheetsResponse) {
-				throw new Error("Error fetching data");
+			if (!monthlyFilteredResponse) {
+				throw new Error("Error fetching monthly data");
 			}
 			if (filterOption === "Wolfgang Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(entry) => entry.name === "Wolfgang Digital"
-				);
+				monthlyFilteredResponse =
+					monthlyTimesheetsResponse?.filter(
+						(entry) => entry.name === "Wolfgang Digital"
+					) || undefined;
 			} else if (filterOption === "Allocated Tasks") {
-				filteredResponse = timesheetsResponse.filter(
-					(entry) => entry.name != "Wolfgang Digital"
-				);
+				monthlyFilteredResponse =
+					monthlyTimesheetsResponse?.filter(
+						(entry) => entry.name != "Wolfgang Digital"
+					) || undefined;
 			} else if (filterOption === "All Tasks") {
-				filteredResponse = timesheetsResponse;
+				monthlyFilteredResponse = monthlyTimesheetsResponse || undefined;
 			}
-			filteredResponse = filteredResponse.filter(({ date }) => {
-				const dateObj = new Date(date || new Date());
-				return (
-					dateObj.getMonth() === selectedWeekStart.getMonth() &&
-					dateObj.getFullYear() === selectedWeekStart.getFullYear()
-				);
-			});
+			if (monthlyFilteredResponse) {
+				const monthlyGroupedTimesheets: MonthlyGroupedTimesheets =
+					groupMonthlyTimesheets(monthlyFilteredResponse);
+				setFilteredTimesheets(monthlyGroupedTimesheets);
+			}
 
-			const groupedTimesheets: GroupedTimesheets =
-				groupTimesheets(filteredResponse);
-			setFilteredTimesheets(groupedTimesheets);
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
 			const clientOptions: ClientOption[] = [];
 
@@ -256,7 +285,7 @@ const Timesheet = () => {
 			client_id: number;
 			client_name: string;
 			projects: {
-				project_id: number;
+				project_id: number | null;
 				project_name: string;
 				jobs: {
 					job_id: number;
@@ -273,7 +302,7 @@ const Timesheet = () => {
 			}[];
 		},
 		project: {
-			project_id: number;
+			project_id: number | null;
 			project_name: string;
 			jobs: {
 				job_id: number;
@@ -312,7 +341,10 @@ const Timesheet = () => {
 		setTimeSpent("");
 		setNotes("");
 		const selectedClientId = entry.client_id.toString();
-		const selectedProjectId = project.project_id.toString();
+		let selectedProjectId: string = "";
+		if (project.project_id) {
+			selectedProjectId = project?.project_id.toString();
+		}
 		const selectedJobId = job.jobs_id.toString();
 		const selectedJobsId = job.jobs_id.toString();
 		const selectedTaskId = task.task_id.toString();
@@ -322,11 +354,40 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
 		setSelectedJobs(selectedJobsId);
-		setTimerIconSelected(true);
+		// setTimerIconSelected(true);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	async function saveTimeEntry() {
+		const splitDate = selectedDate.split("-");
+		console.log(splitDate);
+		const monthTest = Number(splitDate[1]);
+		const yearTest = Number(splitDate[0]);
+		const userId = localStorage.getItem("user_id") || "";
+		const jobsId = Number(selectedJob);
+		const taskId = Number(selectedTask);
+		const allocatedHoursLogged =
+			(await getJobAllocatedHoursPerMonthPerUser(
+				yearTest,
+				monthTest,
+				userId,
+				jobsId,
+				taskId
+			)) || [];
+		if (allocatedHoursLogged.length == 0) {
+			const dataToPostAHE = {
+				jobTaskId: 10,
+				month: Number(splitDate[1]),
+				year: Number(splitDate[0]),
+				userId: localStorage.getItem("user_id") || "",
+				jobId: Number(selectedJob),
+				taskId: Number(selectedTask),
+				hours: 0,
+				rate: 0,
+			};
+			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
+			console.log(`PostAllocateHoursEntry ${response2}`);
+		}
 		const dataToPostTSE = {
 			staffId: localStorage.getItem("user_id") || "",
 			notes,
@@ -337,25 +398,10 @@ const Timesheet = () => {
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 0,
+			month: Number(splitDate[1]),
+			year: Number(splitDate[0]),
 		};
-		let dataToPostAHE: DataToPostAHE;
-		if (!timerIconSelected) {
-			dataToPostAHE = {
-				jobTaskId: 10,
-				month: currentDate.getMonth() + 1,
-				year: Number(currentDate.getFullYear()),
-				userId: localStorage.getItem("user_id") || "",
-				jobId: Number(selectedJob),
-				taskId: Number(selectedTask),
-				hours: 0,
-				rate: 0,
-			};
-			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
-			console.log(`PostAllocateHoursEntry ${response2}`);
-		}
-
 		const response = await PostTimeEntry(dataToPostTSE);
-
 		console.log(`PostTimeEntry ${response}`);
 		setSelectedClient("");
 		setSelectedProject("");
@@ -366,6 +412,8 @@ const Timesheet = () => {
 		setShowForm(false);
 		fetchTasksAndJobsWithFilter();
 	}
+
+	// }
 
 	// Update the TimeEntries based on the current page and rows per page
 	const displayedTimeEntries = filteredTimesheets.slice(
@@ -586,29 +634,82 @@ const Timesheet = () => {
 							style={{
 								display: "flex",
 								justifyContent: "space-between",
-								paddingBottom: "10px",
+								paddingBottom: "30px", // Dynamic padding
 							}}
 						>
 							{weekDays.map((day, index) => (
-								<button
+								<div
 									key={day.toISOString()}
-									style={{
-										border: "1px solid #ccc",
-										borderRadius: "5px",
-										textAlign: "center",
-										cursor: "pointer",
-										backgroundColor: selectedDay === index ? "#3A2462" : "white",
-										color: selectedDay === index ? "white" : "black",
-										width: "60px",
-									}}
-									onClick={() => handleDayClick(index)}
+									className="day-button-container"
+									onMouseEnter={() => setHoveredDay(index)}
+									onMouseLeave={() => setHoveredDay(null)}
+									style={{ position: "relative" }} // Container style
 								>
-									<Typography>
-										{format(day, "EEE")}
-										<br />
-										{format(day, "d")}
-									</Typography>
-								</button>
+									<button
+										style={{
+											border:
+												selectedDayForSelectButton === index
+													? "1px solid black"
+													: "1px solid #ccc",
+											borderRadius: "5px",
+											textAlign: "center",
+											backgroundColor:
+												selectedDayForSelectButton === index ? "#02786D" : "white",
+											color: selectedDayForSelectButton === index ? "white" : "black",
+											width: "50px",
+										}}
+									>
+										<Typography>
+											{format(day, "EEE")}
+											<br />
+											{format(day, "d")}
+										</Typography>
+									</button>
+									{hoveredDay === index && (
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												position: "absolute",
+												top: "100%", // Adjust to position the container correctly relative to the day button
+												left: "-30%",
+												backgroundColor: "#fff",
+												border: "1px solid #e8e8e8",
+												borderRadius: "5px",
+												boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+											}}
+										>
+											<button
+												style={{
+													backgroundColor: "#02786D",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleSelectClick(index)}
+											>
+												Select
+											</button>
+											<button
+												style={{
+													backgroundColor: "#3a2462",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleDayClick(index)}
+											>
+												Overview
+											</button>
+										</div>
+									)}
+								</div>
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
