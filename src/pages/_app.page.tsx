@@ -26,10 +26,10 @@ import { ThemedTitleV2 } from "src/components";
 //icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
+//import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import SecurityIcon from "@mui/icons-material/Security";
+//import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
 
 import "src/pages/app.css";
@@ -147,12 +147,12 @@ const App = (props: React.PropsWithChildren) => {
 				options: { label: "Timesheet" },
 				icon: <MoreTimeIcon />,
 			},
-			{
-				name: "Reports",
-				list: "/reports",
-				options: { label: "Reports" },
-				icon: <ContentPasteSearchIcon />,
-			},
+			//{
+			//	name: "Reports",
+			//	list: "/reports",
+			//	options: { label: "Reports" },
+			//	icon: <ContentPasteSearchIcon />,
+			//},
 			{
 				name: "Users",
 				list: "/wolfgangers",
@@ -171,12 +171,12 @@ const App = (props: React.PropsWithChildren) => {
 				options: { label: "Job List" },
 				icon: <RecentActorsIcon />,
 			},
-			{
-				name: "Admin",
-				list: "/admin",
-				options: { label: "Admin" },
-				icon: <SecurityIcon />,
-			},
+			//{
+			//	name: "Admin",
+			//	list: "/admin",
+			//	options: { label: "Admin" },
+			//	icon: <SecurityIcon />,
+			//},
 		];
 		const resourceRoleMapper: Record<string, string[]> = {
 			admin: [

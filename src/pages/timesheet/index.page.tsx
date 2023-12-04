@@ -158,7 +158,14 @@ const Timesheet = () => {
 
 	const [selectedDate, setSelectedDate] = useState<string>(formattedCurrentDate);
 
+	const [selectedDayForSelectButton, setSelectedDayForSelectButton] = useState<
+		number | null
+	>(null);
+
+	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+
 	const handleDayClick = (index: number) => {
+		setSelectedDayForSelectButton(index);
 		setSelectedClient("");
 		setSelectedProject("");
 		setSelectedJob("");
@@ -174,6 +181,21 @@ const Timesheet = () => {
 			setShowForm(true); // Show the form when a day is clicked
 			setSelectedDate(format(weekDays[index], "yyyy-MM-dd")); // Update selectedDate
 		}
+	};
+
+	const handleSelectClick = (index: number) => {
+		const newSelectedDate = format(weekDays[index], "yyyy-MM-dd");
+		setSelectedDate(newSelectedDate);
+		setSelectedDayForSelectButton(index);
+		// Reset form fields
+		setSelectedClient("");
+		setSelectedProject("");
+		setSelectedJob("");
+		setSelectedTask("");
+		setTimeSpent("");
+		setNotes("");
+		// Do not show the form
+		setShowForm(false);
 	};
 
 	// Initialize notes and timeSpent states
@@ -612,29 +634,82 @@ const Timesheet = () => {
 							style={{
 								display: "flex",
 								justifyContent: "space-between",
-								paddingBottom: "10px",
+								paddingBottom: "30px", // Dynamic padding
 							}}
 						>
 							{weekDays.map((day, index) => (
-								<button
+								<div
 									key={day.toISOString()}
-									style={{
-										border: "1px solid #ccc",
-										borderRadius: "5px",
-										textAlign: "center",
-										cursor: "pointer",
-										backgroundColor: selectedDay === index ? "#3A2462" : "white",
-										color: selectedDay === index ? "white" : "black",
-										width: "60px",
-									}}
-									onClick={() => handleDayClick(index)}
+									className="day-button-container"
+									onMouseEnter={() => setHoveredDay(index)}
+									onMouseLeave={() => setHoveredDay(null)}
+									style={{ position: "relative" }} // Container style
 								>
-									<Typography>
-										{format(day, "EEE")}
-										<br />
-										{format(day, "d")}
-									</Typography>
-								</button>
+									<button
+										style={{
+											border:
+												selectedDayForSelectButton === index
+													? "1px solid black"
+													: "1px solid #ccc",
+											borderRadius: "5px",
+											textAlign: "center",
+											backgroundColor:
+												selectedDayForSelectButton === index ? "#02786D" : "white",
+											color: selectedDayForSelectButton === index ? "white" : "black",
+											width: "50px",
+										}}
+									>
+										<Typography>
+											{format(day, "EEE")}
+											<br />
+											{format(day, "d")}
+										</Typography>
+									</button>
+									{hoveredDay === index && (
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												position: "absolute",
+												top: "100%", // Adjust to position the container correctly relative to the day button
+												left: "-30%",
+												backgroundColor: "#fff",
+												border: "1px solid #e8e8e8",
+												borderRadius: "5px",
+												boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+											}}
+										>
+											<button
+												style={{
+													backgroundColor: "#02786D",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleSelectClick(index)}
+											>
+												Select
+											</button>
+											<button
+												style={{
+													backgroundColor: "#3a2462",
+													color: "#fff",
+													border: "none",
+													borderRadius: "5px",
+													padding: "5px 10px",
+													margin: "5px",
+													cursor: "pointer",
+												}}
+												onClick={() => handleDayClick(index)}
+											>
+												Overview
+											</button>
+										</div>
+									)}
+								</div>
 							))}
 						</div>
 						<TableContainer component={Paper} variant="outlined">
