@@ -42,3 +42,67 @@ export const PostAllocateHoursEntry = async ({
 		console.error("Error posting allocate hours entry: ", error);
 	}
 };
+
+export const markAllocationAsCompleted = async ({
+	job_id,
+	task_id,
+	user_id,
+}: {
+	job_id: number;
+	task_id: number;
+	user_id: string;
+}) => {
+	// Update the completed field in the allocate_hours table
+	// for the record that matches the job_id, task_id, and user_id
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours")
+			.update({ completed: true })
+			.match({
+				job_id,
+				task_id,
+				user_id,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+			});
+		if (error) {
+			console.error("Error marking allocation as completed: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error marking allocation as completed: ", error);
+	}
+};
+
+export const markAllocationAsUncompleted = async ({
+	job_id,
+	task_id,
+	user_id,
+}: {
+	job_id: number;
+	task_id: number;
+	user_id: string;
+}) => {
+	// Update the completed field in the allocate_hours table
+	// for the record that matches the job_id, task_id, and user_id
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours")
+			.update({ completed: false })
+			.match({
+				job_id,
+				task_id,
+				user_id,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+			});
+		if (error) {
+			console.error("Error marking allocation as completed: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error marking allocation as completed: ", error);
+	}
+};
