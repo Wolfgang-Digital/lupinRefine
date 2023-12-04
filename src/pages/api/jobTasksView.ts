@@ -14,22 +14,22 @@ export const getAllTasks = async () => {
 	}
 };
 
-export const getAllJobTasks = async (jobId: number) => {
-	try {
-		const { data, error } = await supabase
-			.from("job_tasks_view")
-			.select("*")
-			.order("job_id", { ascending: true })
-			.eq("job_id", jobId);
-		if (error) {
-			console.error("Error fetching all Job Tasks: ", error);
-			return;
-		}
-		return data;
-	} catch (error) {
-		console.error("Error fetching all Job Tasks: ", error);
-	}
-};
+// export const getAllJobTasks = async (jobId: number) => {
+// 	try {
+// 		const { data, error } = await supabase
+// 			.from("job_tasks_view")
+// 			.select("*")
+// 			.order("job_id", { ascending: true })
+// 			.eq("job_id", jobId);
+// 		if (error) {
+// 			console.error("Error fetching all Job Tasks: ", error);
+// 			return;
+// 		}
+// 		return data;
+// 	} catch (error) {
+// 		console.error("Error fetching all Job Tasks: ", error);
+// 	}
+// };
 
 export const PostJobTaskEntry = async ({
 	jobId: job_id,
