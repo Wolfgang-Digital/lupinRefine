@@ -45,8 +45,8 @@ const JobList: React.FC = () => {
 		const filteredJobs = jobs.filter((job) => {
 			// Adjust this logic to search in the desired fields
 			return (
-				job.job_name_name &&
-				job.job_name_name.toLowerCase().includes(newSearchText.toLowerCase())
+				job.client_name &&
+				job.client_name.toLowerCase().includes(newSearchText.toLowerCase())
 			);
 		});
 
@@ -108,7 +108,7 @@ const JobList: React.FC = () => {
 
 	return (
 		<>
-			<JobsContainer>
+			<JobsContainer style={{ height: "100vh", paddingBottom: "100px" }}>
 				<Typography gutterBottom variant="h5" component="div">
 					Job List
 				</Typography>
@@ -131,6 +131,7 @@ const JobList: React.FC = () => {
 				</ButtonContainer>
 
 				<DataGrid
+					style={{ height: "100%" }}
 					rows={displayedJobs.map((job) => ({
 						id: job.id,
 						job_id: job.job_id,
