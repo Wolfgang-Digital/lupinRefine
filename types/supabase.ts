@@ -144,6 +144,13 @@ export interface Database {
             foreignKeyName: "allocate_hours_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
+            referencedRelation: "allocate_hours_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "allocate_hours_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
             referencedRelation: "tasks"
             referencedColumns: ["task_id"]
           },
@@ -939,6 +946,13 @@ export interface Database {
             foreignKeyName: "job_tasks_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
+            referencedRelation: "allocate_hours_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "job_tasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
             referencedRelation: "tasks"
             referencedColumns: ["task_id"]
           },
@@ -1516,6 +1530,13 @@ export interface Database {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "project_job_task_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "allocate_hours_view"
             referencedColumns: ["task_id"]
           },
           {
@@ -2337,6 +2358,13 @@ export interface Database {
             foreignKeyName: "timesheet_rows_2_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
+            referencedRelation: "allocate_hours_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "timesheet_rows_2_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
             referencedRelation: "tasks"
             referencedColumns: ["task_id"]
           },
@@ -2612,6 +2640,7 @@ export interface Database {
           project_id: number | null
           project_name: string | null
           rate: number | null
+          task_id: number | null
           task_name: string | null
           user_id: string | null
           user_name: string | null
@@ -2941,6 +2970,13 @@ export interface Database {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "all_timesheet_rows_view"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "project_job_task_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "allocate_hours_view"
             referencedColumns: ["task_id"]
           },
           {
