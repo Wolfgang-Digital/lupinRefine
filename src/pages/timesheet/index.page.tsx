@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import {
 	format,
@@ -37,9 +38,15 @@ import {
 } from "./groupTimesheets";
 import { DayDialog } from "./DayDialog";
 import { clientsWithJobsDropdown } from "@pages/api/jobdropdown";
-import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
+import {
+	PostAllocateHoursEntry,
+	markAllocationAsCompleted,
+	markAllocationAsUncompleted,
+} from "@pages/api/allocateHours";
 import { getJobAllocatedHoursPerMonthPerUser } from "../api/allocateHoursView";
+import { CompleteDialog } from "./CompleteDialog";
 import { getProjectJobTaskForDayDialog } from "@pages/api/projectJobTasksView";
+
 
 const useStyles = makeStyles({
 	table: {
@@ -76,10 +83,6 @@ const useStyles = makeStyles({
 	},
 	// Add other styles as needed
 });
-
-interface TaskState {
-	[taskId: number]: boolean;
-}
 
 export type TimeEntry = {
 	task: string;
@@ -150,7 +153,11 @@ const Timesheet = () => {
 	const [jobs, setJobs] = useState<JobOption[]>([]);
 	const [tasks, setTasks] = useState<TaskOption[]>([]); // Store all tasks
 	const [filterOption, setFilterOption] = useState("All Tasks");
-
+	const [completeDialog, setCompleteDialog] = useState({
+		open: false,
+		taskId: 0,
+		jobId: 0,
+	});
 	// Create a selected day state
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 	const currentDate = new Date();
@@ -163,6 +170,9 @@ const Timesheet = () => {
 	>(null);
 
 	const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+
+	const { data: session } = useSession();
+	const user_id = session?.user?.id || "";
 
 	const handleDayClick = (index: number) => {
 		setSelectedDayForSelectButton(index);
@@ -213,11 +223,14 @@ const Timesheet = () => {
 			const month = selectedWeekStart.getMonth() + 1;
 			const year = selectedWeekStart.getFullYear();
 			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
-			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse = [];
+			console.log({ monthlyTimesheetsResponse });
+			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse =
+				monthlyTimesheetsResponse;
 
 			if (!monthlyFilteredResponse) {
 				throw new Error("Error fetching monthly data");
 			}
+
 			if (filterOption === "Wolfgang Tasks") {
 				monthlyFilteredResponse =
 					monthlyTimesheetsResponse?.filter(
@@ -228,8 +241,16 @@ const Timesheet = () => {
 					monthlyTimesheetsResponse?.filter(
 						(entry) => entry.name != "Wolfgang Digital"
 					) || undefined;
-			} else if (filterOption === "All Tasks") {
-				monthlyFilteredResponse = monthlyTimesheetsResponse || undefined;
+			}
+			if (filterOption !== "Completed Tasks") {
+				monthlyFilteredResponse = monthlyFilteredResponse?.filter(
+					(entry) => !entry.completed
+				);
+			}
+			if (filterOption === "Completed Tasks") {
+				monthlyFilteredResponse = monthlyFilteredResponse?.filter(
+					(entry) => entry.completed
+				);
 			}
 			if (monthlyFilteredResponse) {
 				const monthlyGroupedTimesheets: MonthlyGroupedTimesheets =
@@ -257,6 +278,7 @@ const Timesheet = () => {
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, []);
+
 	useEffect(() => {
 		fetchTasksAndJobsWithFilter();
 	}, [filterOption, selectedWeekStart]);
@@ -385,7 +407,7 @@ const Timesheet = () => {
 			console.log(`PostAllocateHoursEntry ${response2}`);
 		}
 		const dataToPostTSE = {
-			staffId: localStorage.getItem("user_id") || "",
+			staffId: user_id || "",
 			notes,
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),
@@ -538,15 +560,27 @@ const Timesheet = () => {
 		return daysDifference;
 	}
 
-	const [taskStates, setTaskStates] = useState<TaskState>({});
-
-	const handleCheckboxChange = (taskId: number) => {
-		setTaskStates((prevState) => ({
-			...prevState,
-			[taskId]: !prevState[taskId] || false,
-		}));
+	const handleCompleteClick = async (isUncompleting: boolean) => {
+		try {
+			if (isUncompleting) {
+				await markAllocationAsUncompleted({
+					job_id: completeDialog.jobId,
+					task_id: completeDialog.taskId,
+					user_id,
+				});
+			} else {
+				await markAllocationAsCompleted({
+					job_id: completeDialog.jobId,
+					task_id: completeDialog.taskId,
+					user_id,
+				});
+			}
+			setCompleteDialog({ open: false, taskId: 0, jobId: 0 });
+			await fetchTasksAndJobsWithFilter(); // Refresh the data
+		} catch (error) {
+			console.error("Error updating timesheet data:", error);
+		}
 	};
-
 	const updateTimesheet = async () => {
 		try {
 			// If you have a loading state, set it to true
@@ -727,7 +761,9 @@ const Timesheet = () => {
 											Overall Hrs Remaining
 										</TableCell>
 										<TableCell className={classes.tableHeaderCell}>Days Left</TableCell>
-										<TableCell className={classes.tableHeaderCell}>Completed</TableCell>
+										<TableCell className={classes.tableHeaderCell}>
+											{filterOption === "Completed Tasks" ? "Uncomplete" : "Complete"}
+										</TableCell>
 										<TableCell className={classes.tableHeaderCell}>Timer</TableCell>
 									</TableRow>
 								</TableHead>
@@ -851,10 +887,8 @@ const Timesheet = () => {
 																							style={{
 																								whiteSpace: "nowrap",
 																								padding: "2px",
-																								textDecoration: taskStates[task.task_id]
-																									? "line-through"
-																									: "none",
-																								color: taskStates[task.task_id] ? "grey" : "black",
+
+																								color: "black",
 																							}}
 																							key={task.task_id}
 																						>
@@ -868,16 +902,8 @@ const Timesheet = () => {
 																							style={{
 																								whiteSpace: "nowrap",
 																								padding: "2px",
-																								textDecoration: taskStates[task.task_id]
-																									? "line-through"
-																									: "none",
-																								color:
-																									(task.hours || 0) < task.time &&
-																									!taskStates[task.task_id]
-																										? "red"
-																										: !taskStates[task.task_id]
-																										? "green"
-																										: "grey",
+
+																								color: (task.hours || 0) < task.time ? "red" : "green",
 																							}}
 																							key={task.task_id}
 																						>
@@ -892,12 +918,28 @@ const Timesheet = () => {
 																				<TableCell className={classes.tableRowCell}>
 																					{job.tasks.map((task) => (
 																						<div key={task.task_id} style={{ padding: "2px" }}>
-																							<input
-																								style={{ cursor: "pointer" }}
-																								type="checkbox"
-																								onChange={() => handleCheckboxChange(task.task_id)}
-																								checked={taskStates[task.task_id] || false}
-																							/>
+																							<Button
+																								variant="contained"
+																								onClick={() => {
+																									if (filterOption !== "Completed Tasks") {
+																										setCompleteDialog({
+																											open: true,
+																											taskId: task.task_id,
+																											jobId: job.jobs_id,
+																										});
+																									} else {
+																										setCompleteDialog({
+																											open: true,
+																											taskId: task.task_id,
+																											jobId: job.jobs_id,
+																										});
+																									}
+																								}}
+																							>
+																								{filterOption === "Completed Tasks"
+																									? "Uncomplete"
+																									: "Complete"}
+																							</Button>
 																						</div>
 																					))}
 																				</TableCell>
@@ -974,6 +1016,14 @@ const Timesheet = () => {
 						setNotes={setNotes}
 						saveTimeEntry={saveTimeEntry}
 						onUpdateTimesheet={updateTimesheet}
+					/>
+					<CompleteDialog
+						inUncompleting={filterOption === "Completed Tasks"}
+						open={completeDialog.open}
+						handleClose={() =>
+							setCompleteDialog((prev) => ({ ...prev, open: false }))
+						}
+						handleConfirm={handleCompleteClick}
 					/>
 				</Grid>
 			</div>

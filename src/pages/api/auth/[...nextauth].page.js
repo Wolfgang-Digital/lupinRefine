@@ -54,7 +54,7 @@ export const authOptions = {
 		async session({ session, token }) {
 			const { data, error } = await supabase
 				.from("users")
-				.select("user_role")
+				.select("user_role, user_id")
 				.eq("user_email", token.email)
 				.single();
 
@@ -63,6 +63,7 @@ export const authOptions = {
 				throw new Error("Error fetching user role");
 			}
 			session.user.role = data.user_role;
+			session.user.id = data.user_id;
 			// Send properties to the client, like an access_token from a provider.
 			session.id_token = token.id_token;
 			return session;

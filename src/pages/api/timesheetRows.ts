@@ -28,7 +28,7 @@ export const getAllTimesheetRowsV2 = async (): Promise<
 > => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v2")
+			.from("timesheet_rows_view_v4")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("jobs_id", { ascending: true })) as unknown as {
@@ -52,7 +52,7 @@ export const getMonthlyTimesheetRows = async (
 ): Promise<MonthlyTimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v3")
+			.from("monthly_timesheet_rows_view")
 			.select("*")
 			.eq("year", year)
 			.eq("month", month)
