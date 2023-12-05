@@ -5,6 +5,7 @@ import {
 	AccordionSummary,
 	Button,
 	Grid,
+	IconButton,
 	MenuItem,
 	Paper,
 	TextField,
@@ -24,6 +25,8 @@ import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import { PostTimeEntry } from "@pages/api/timesheet";
 import { format } from "date-fns";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import EditIcon from "@mui/icons-material/Edit";
 
 type RowData = AllocateHoursView;
 
@@ -36,12 +39,6 @@ type UserOption = {
 	label: string;
 	value: string;
 };
-
-const columns = [
-	{ field: "task_name", headerName: "Task", width: 300 },
-	{ field: "user_name", headerName: "Wolfganger", width: 150 },
-	{ field: "hours", headerName: "Hours Allocated", width: 150 },
-];
 
 function CustomToolbar() {
 	return (
@@ -222,6 +219,14 @@ function CollapsibleHoursGrid({
 		event.preventDefault();
 	};
 
+	const handleDeleteRow = async (id: number) => {
+		console.log(id);
+	};
+
+	const handleEditRow = (id: number) => {
+		console.log(id);
+	};
+
 	return (
 		<div
 			style={{
@@ -247,10 +252,41 @@ function CollapsibleHoursGrid({
 								<Paper style={{ width: "100%" }}>
 									<DataGrid
 										rows={groupedRows[month]}
-										columns={columns.map((col) => ({
-											...col,
-											editable: true,
-										}))}
+										columns={[
+											{
+												field: "edit",
+												headerName: "Edit",
+												width: 50,
+												renderCell: (params) => (
+													<IconButton
+														color="secondary"
+														onClick={() => handleEditRow(params.row.id || 0)}
+													>
+														<EditIcon />
+													</IconButton>
+												),
+											},
+											{ field: "task_name", headerName: "Task", width: 200 },
+											{ field: "user_name", headerName: "Wolfganger", width: 150 },
+											{ field: "hours", headerName: "Hours Allocated", width: 150 },
+											{
+												field: "delete",
+												headerName: "Delete",
+												width: 80,
+												renderCell: (params) => (
+													<IconButton
+														color="secondary"
+														onClick={() => handleDeleteRow(params.row.id || 0)}
+													>
+														<HighlightOffIcon />
+													</IconButton>
+												),
+											},
+										]}
+										style={{
+											display: "flex",
+											justifyContent: "center",
+										}}
 										components={{
 											Toolbar: CustomToolbar,
 										}}
