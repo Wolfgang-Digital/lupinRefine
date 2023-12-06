@@ -36,7 +36,7 @@ export const groupFinancialTableData = (
 export const getFinancialTable = async (clientId: number) => {
 	try {
 		const { data, error } = await supabase
-			.from("timesheet_rows_view")
+			.from("all_timesheet_rows_view")
 			.select("*")
 			// .eq("client_name", "*Wolfgang Digital")
 			.order("id", { ascending: true })
@@ -45,6 +45,7 @@ export const getFinancialTable = async (clientId: number) => {
 			console.error("Error fetching clients:", error);
 			return;
 		}
+		console.log(data);
 		return data;
 	} catch (error) {
 		console.error("Error fetching clients:", error);
