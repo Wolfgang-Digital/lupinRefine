@@ -47,7 +47,6 @@ import { getJobAllocatedHoursPerMonthPerUser } from "../api/allocateHoursView";
 import { CompleteDialog } from "./CompleteDialog";
 import { getProjectJobTaskForDayDialog } from "@pages/api/projectJobTasksView";
 
-
 const useStyles = makeStyles({
 	table: {
 		minWidth: 650,
@@ -919,6 +918,7 @@ const Timesheet = () => {
 																					{job.tasks.map((task) => (
 																						<div key={task.task_id} style={{ padding: "2px" }}>
 																							<Button
+																								size="small"
 																								variant="contained"
 																								onClick={() => {
 																									if (filterOption !== "Completed Tasks") {

@@ -20,14 +20,23 @@ export const CompleteDialog = ({
 			<DialogTitle>
 				Are you sure you want to {inUncompleting && "un"}complete the task?
 			</DialogTitle>
-			<Button variant="contained" onClick={() => handleConfirm(inUncompleting)}>
+			<Button
+				size="medium"
+				variant="contained"
+				onClick={() => handleConfirm(inUncompleting)}
+				style={{ width: "50%", left: "25%", marginTop: "15px" }}
+			>
 				Confirm
 			</Button>
 			<Button
+				size="medium"
 				variant="contained"
 				onClick={handleClose}
 				style={{
-					marginTop: "10px",
+					marginTop: "20px",
+					width: "50%",
+					left: "25%",
+					marginBottom: "40px",
 				}}
 			>
 				Cancel
