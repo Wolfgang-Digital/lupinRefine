@@ -146,6 +146,7 @@ export const DayDialog = ({
 		setEditableRow(editableRowData ?? null);
 		setEditedTime(editableRowData?.time ?? null);
 		setEditedNotes(editableRowData?.notes ?? null);
+		console.log(rows);
 	};
 
 	const handleSaveEdit = async () => {
