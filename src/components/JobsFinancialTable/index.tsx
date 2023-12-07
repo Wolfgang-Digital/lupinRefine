@@ -5,11 +5,15 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
+// import EditIcon from "@mui/icons-material/Edit";
+import PersonAddAlt1 from "@mui/icons-material/PersonAddAlt1";
+import PostAdd from "@mui/icons-material/PostAdd";
+import AddCircle from "@mui/icons-material/AddCircle";
 import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Table } from "@mui/material";
+import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsView, TimesheetRowsView } from "types";
@@ -163,6 +167,7 @@ type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
 function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
+	// console.log({ dataArray });
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -353,6 +358,83 @@ function JobsFinancialTable({
 		fetchData();
 	}, []);
 
+	// const renderAdditionalRows = (key: string) => {
+	// 	if (Number.isInteger(parseInt(key))) {
+	// 		return (
+	// 			<>
+	// 				<React.Fragment key={key}>
+	// 					<TableRow
+	// 						style={{
+	// 							verticalAlign: "middle",
+	// 							textAlign: "center",
+	// 							marginTop: "7px",
+	// 							marginLeft: "10px",
+	// 							borderBottom: "0.8px solid black",
+	// 						}}
+	// 					>
+	// 						{CreateEmptyCells(1)}
+	// 						<ShortTableCell
+	// 							style={{
+	// 								textDecoration: "underline",
+	// 								fontWeight: "bold",
+	// 							}}
+	// 						>
+	// 							- Add new staff to task
+	// 						</ShortTableCell>
+	// 						{CreateEmptyCells(1)}
+	// 						<ShortTableCell>
+	// 							<IconButton color="secondary" style={{ padding: "0px" }}>
+	// 								<PersonAddAlt1 style={{ fontSize: "22px" }} />
+	// 							</IconButton>
+	// 						</ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 					</TableRow>
+	// 				</React.Fragment>
+	// 				<React.Fragment key={key}>
+	// 					<TableRow
+	// 						style={{
+	// 							verticalAlign: "middle",
+	// 							textAlign: "center",
+	// 							marginTop: "7px",
+	// 							marginLeft: "10px",
+	// 							borderBottom: "0.8px solid black",
+	// 						}}
+	// 					>
+	// 						{CreateEmptyCells(1)}
+	// 						<ShortTableCell
+	// 							style={{
+	// 								textDecoration: "underline",
+	// 								fontWeight: "bold",
+	// 							}}
+	// 						>
+	// 							- Add new task to job
+	// 						</ShortTableCell>
+	// 						{CreateEmptyCells(1)}
+	// 						<ShortTableCell>
+	// 							<IconButton color="secondary" style={{ padding: "0px" }}>
+	// 								<PostAdd style={{ fontSize: "22px" }} />
+	// 							</IconButton>
+	// 						</ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 						<ShortTableCell style={{ border: "0.8px solid black" }}></ShortTableCell>
+	// 					</TableRow>
+	// 				</React.Fragment>
+	// 			</>
+	// 		);
+	// 	} else {
+	// 		return null;
+	// 	}
+	// };
+
 	return (
 		<div>
 			<div
@@ -447,6 +529,7 @@ function JobsFinancialTable({
 					<TableBody>
 						{monthData.map((data: Accumulator, monthIndex: number) => {
 							const jobs = Object.values(data);
+							console.log({ jobs });
 							if (monthIndex !== selectedMonthIndex)
 								return (
 									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
@@ -457,7 +540,7 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "#1E7F74", color: "white !important" }}
+										style={{ background: "#1E7F74", color: "white" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
@@ -476,7 +559,16 @@ function JobsFinancialTable({
 														<ShortTableCell>
 															{(job as Job)?.job_name as string}
 														</ShortTableCell>
-														{CreateEmptyCells(2)}
+														{CreateEmptyCells(1)}
+														<ShortTableCell>
+															<IconButton
+																title="Add new Task to Job"
+																color="secondary"
+																style={{ padding: "0px" }}
+															>
+																<PostAdd style={{ fontSize: "22px" }} />
+															</IconButton>
+														</ShortTableCell>
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).hours || 0}
 														</TaskEntryCell>
@@ -502,20 +594,28 @@ function JobsFinancialTable({
 																	<ShortTableCell>
 																		{(task as TaskEntry)?.task_name as string}
 																	</ShortTableCell>
-																	{CreateEmptyCells(1)}
+																	<ShortTableCell>
+																		<IconButton
+																			title="Add New User to Task"
+																			color="secondary"
+																			style={{ padding: "0px" }}
+																		>
+																			<PersonAddAlt1 style={{ fontSize: "22px" }} />
+																		</IconButton>
+																	</ShortTableCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).hours || 0}
+																		{/* {((task as TaskEntry)?.total as Total).hours || 0} */}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).allocatedValue || 0}
+																		{/* {((task as TaskEntry)?.total as Total).allocatedValue || 0} */}
 																	</TaskEntryCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).time || 0}
+																		{/* {((task as TaskEntry)?.total as Total).time || 0} */}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).actualValue || 0}
+																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
 																	</TaskEntryCell>
 																</TableRow>
 															)}
@@ -523,73 +623,118 @@ function JobsFinancialTable({
 																Object.values(task).map(({ time, hours, user_name, rate }) => {
 																	return (
 																		user_name && (
-																			<TableRow
-																				style={{
-																					verticalAlign: "middle",
-																					textAlign: "center",
-																					marginTop: "7px",
-																					marginLeft: "10px",
-																					borderBottom: "0.8px solid black",
-																				}}
-																			>
-																				{CreateEmptyCells(3)}
-																				<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
-																				<>
-																					{user_name && (
-																						<>
-																							<TaskEntryCell
-																								style={{
-																									border: "0.8px solid black",
-																									backgroundColor: "#C3DDBC",
-																								}}
-																							>
-																								{hours}
-																							</TaskEntryCell>
-																							<TaskEntryCell
-																								style={{
-																									border: "0.8px solid black",
-																									backgroundColor: "#C3DDBC",
-																								}}
-																							>
-																								{rate}
-																							</TaskEntryCell>
-																							<TaskEntryCell
-																								style={{
-																									border: "0.8px solid black",
-																									backgroundColor: "#C3DDBC",
-																								}}
-																							>
-																								{hours * rate}
-																							</TaskEntryCell>
-																							<TaskEntryCell>{time}</TaskEntryCell>
-																							<TaskEntryCell
-																								style={{
-																									border: "0.8px solid black",
-																									backgroundColor: "#BEB3D4",
-																								}}
-																							>
-																								{rate}
-																							</TaskEntryCell>
-																							<TaskEntryCell
-																								style={{
-																									border: "0.8px solid black",
-																									backgroundColor: "#BEB3D4",
-																								}}
-																							>
-																								{time * rate}
-																							</TaskEntryCell>
-																						</>
-																					)}
-																				</>
-																			</TableRow>
+																			<>
+																				<TableRow
+																					style={{
+																						verticalAlign: "middle",
+																						textAlign: "center",
+																						marginTop: "7px",
+																						marginLeft: "10px",
+																						borderBottom: "0.8px solid black",
+																					}}
+																				>
+																					{CreateEmptyCells(2)}
+																					<ShortTaskEntryCell></ShortTaskEntryCell>
+																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
+																					<>
+																						{user_name && (
+																							<>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																										paddingLeft: "10px",
+																									}}
+																								>
+																									<a href="#">{hours}</a>
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#C3DDBC",
+																									}}
+																								>
+																									<a href="#">{rate}</a>
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										fontWeight: "bold",
+																									}}
+																								>
+																									{hours * rate}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										fontWeight: "bold",
+																									}}
+																								>
+																									{time}
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									<a href="#">{rate}</a>
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									<a href="#">{time * rate}</a>
+																								</TaskEntryCell>
+																							</>
+																						)}
+																					</>
+																				</TableRow>
+																			</>
 																		)
 																	);
 																})}
+															{/* {renderAdditionalRows(key)} */}
 														</>
 													);
 												})}
 											</>
 										))}
+									<TableRow
+										style={{
+											borderBottom: "0.8px solid black",
+											backgroundColor: "#E5E5E8",
+										}}
+									>
+										{CreateEmptyCells(17)}
+									</TableRow>
+									<TableRow
+										style={{
+											verticalAlign: "middle",
+											textAlign: "center",
+											marginTop: "7px",
+											marginLeft: "10px",
+											borderBottom: "0.8px solid black",
+										}}
+									>
+										<ShortTableCell>
+											<IconButton
+												color="secondary"
+												style={{ padding: "0px" }}
+												title="Add new Job"
+												// onClick={() => handleEditRow(params.row.id)}
+											>
+												<AddCircle style={{ fontSize: "22px" }} />
+											</IconButton>
+										</ShortTableCell>
+										{/* <ShortTableCell
+											style={{ textDecoration: "underline", fontWeight: "bold" }}
+										>
+											- Add new job
+										</ShortTableCell> */}
+									</TableRow>
 								</>
 							);
 						})}
