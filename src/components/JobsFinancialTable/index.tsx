@@ -5,7 +5,7 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-// import EditIcon from "@mui/icons-material/Edit";
+import EditIcon from "@mui/icons-material/Edit";
 import PersonAddAlt1 from "@mui/icons-material/PersonAddAlt1";
 import PostAdd from "@mui/icons-material/PostAdd";
 import AddCircle from "@mui/icons-material/AddCircle";
@@ -616,7 +616,12 @@ function JobsFinancialTable({
 																						borderBottom: "0.8px solid black",
 																					}}
 																				>
-																					{CreateEmptyCells(3)}
+																					{CreateEmptyCells(2)}
+																					<ShortTaskEntryCell>
+																						<IconButton color="secondary" style={{ padding: "0px" }}>
+																							<EditIcon style={{ fontSize: "16px" }} />
+																						</IconButton>
+																					</ShortTaskEntryCell>
 																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
 																					<>
 																						{user_name && (
