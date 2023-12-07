@@ -400,7 +400,7 @@ const Timesheet = () => {
 				jobId: Number(selectedJob),
 				taskId: Number(selectedTask),
 				hours: 0,
-				rate: 0,
+				rate: 150,
 			};
 			const response2 = await PostAllocateHoursEntry(dataToPostAHE);
 			console.log(`PostAllocateHoursEntry ${response2}`);

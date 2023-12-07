@@ -38,14 +38,12 @@ export const getFinancialTable = async (clientId: number) => {
 		const { data, error } = await supabase
 			.from("all_timesheet_rows_view")
 			.select("*")
-			// .eq("client_name", "*Wolfgang Digital")
 			.order("id", { ascending: true })
 			.eq("client_id", clientId);
 		if (error) {
 			console.error("Error fetching clients:", error);
 			return;
 		}
-		console.log(data);
 		return data;
 	} catch (error) {
 		console.error("Error fetching clients:", error);
