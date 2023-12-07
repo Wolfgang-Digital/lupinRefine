@@ -234,7 +234,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 							<CloseIcon />
 						</IconButton>
 						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-							{selectedProject?.project_name} - Financials
+							{selectedProject?.name} : {selectedProject?.project_name} - Financials
 						</Typography>
 						<Button autoFocus color="inherit">
 							Save
