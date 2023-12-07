@@ -520,73 +520,71 @@ function JobsFinancialTable({
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
-																Object.entries(task).map(
-																	([taskKey, { time, hours, user_name, rate }]) => {
-																		return (
-																			Number.isInteger(parseInt(taskKey)) && (
-																				<TableRow
-																					style={{
-																						verticalAlign: "middle",
-																						textAlign: "center",
-																						marginTop: "7px",
-																						marginLeft: "10px",
-																						borderBottom: "0.8px solid black",
-																					}}
-																				>
-																					{CreateEmptyCells(3)}
-																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
-																					<>
-																						{Number.isInteger(parseInt(taskKey)) && (
-																							<>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																									}}
-																								>
-																									{hours}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																									}}
-																								>
-																									{rate}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																									}}
-																								>
-																									{hours * rate}
-																								</TaskEntryCell>
-																								<TaskEntryCell>{time}</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									{rate}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									{time * rate}
-																								</TaskEntryCell>
-																							</>
-																						)}
-																					</>
-																				</TableRow>
-																			)
-																		);
-																	}
-																)}
+																Object.values(task).map(({ time, hours, user_name, rate }) => {
+																	return (
+																		user_name && (
+																			<TableRow
+																				style={{
+																					verticalAlign: "middle",
+																					textAlign: "center",
+																					marginTop: "7px",
+																					marginLeft: "10px",
+																					borderBottom: "0.8px solid black",
+																				}}
+																			>
+																				{CreateEmptyCells(3)}
+																				<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
+																				<>
+																					{user_name && (
+																						<>
+																							<TaskEntryCell
+																								style={{
+																									border: "0.8px solid black",
+																									backgroundColor: "#C3DDBC",
+																								}}
+																							>
+																								{hours}
+																							</TaskEntryCell>
+																							<TaskEntryCell
+																								style={{
+																									border: "0.8px solid black",
+																									backgroundColor: "#C3DDBC",
+																								}}
+																							>
+																								{rate}
+																							</TaskEntryCell>
+																							<TaskEntryCell
+																								style={{
+																									border: "0.8px solid black",
+																									backgroundColor: "#C3DDBC",
+																								}}
+																							>
+																								{hours * rate}
+																							</TaskEntryCell>
+																							<TaskEntryCell>{time}</TaskEntryCell>
+																							<TaskEntryCell
+																								style={{
+																									border: "0.8px solid black",
+																									backgroundColor: "#BEB3D4",
+																								}}
+																							>
+																								{rate}
+																							</TaskEntryCell>
+																							<TaskEntryCell
+																								style={{
+																									border: "0.8px solid black",
+																									backgroundColor: "#BEB3D4",
+																								}}
+																							>
+																								{time * rate}
+																							</TaskEntryCell>
+																						</>
+																					)}
+																				</>
+																			</TableRow>
+																		)
+																	);
+																})}
 														</>
 													);
 												})}
