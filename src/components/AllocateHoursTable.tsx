@@ -173,7 +173,8 @@ function CollapsibleHoursGrid({
 				taskId: Number(selectedTask),
 				month: Number(monthNumber),
 				hours: Number(allocatedHours),
-				rate: Number(rate),
+				allocatedRate: Number(rate),
+				effectiveRate: Number(rate),
 			};
 			const response = await updateAllocateHoursEntry(dataToUpdateAHE);
 			console.log(`Update allocate hours row ${response}`);
@@ -186,8 +187,8 @@ function CollapsibleHoursGrid({
 				jobId: Number(jobId),
 				taskId: Number(selectedTask),
 				hours: Number(allocatedHours),
-			  allocatedRate: Number(rate),
-			  effectiveRate: Number(rate),
+				allocatedRate: Number(rate),
+				effectiveRate: Number(rate),
 			};
 			const dataToPostTSE = {
 				staffId: selectedUser,

@@ -84,14 +84,16 @@ export const updateAllocateHoursEntry = async ({
 	taskId: task_id,
 	month: month,
 	hours: hours,
-	rate: rate,
+	allocatedRate: allocated_rate,
+	effectiveRate: effective_rate,
 }: {
 	id: number;
 	userId: string;
 	taskId: number;
 	month: number;
 	hours: number;
-	rate: number;
+	allocatedRate: number;
+	effectiveRate: number;
 }) => {
 	try {
 		const { data, error } = await supabase
@@ -101,7 +103,8 @@ export const updateAllocateHoursEntry = async ({
 				task_id,
 				month,
 				hours,
-				rate,
+				allocated_rate,
+				effective_rate,
 			})
 			.eq("id", id);
 
