@@ -135,7 +135,8 @@ function CollapsibleHoursGrid({
 			jobId: Number(jobId),
 			taskId: Number(selectedTask),
 			hours: Number(allocatedHours),
-			rate: Number(rate),
+			allocatedRate: Number(rate),
+			effectiveRate: Number(rate),
 		};
 		const dataToPostTSE = {
 			staffId: selectedUser,

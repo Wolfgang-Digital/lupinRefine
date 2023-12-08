@@ -14,7 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsView, TimesheetRowsView } from "types";
 
 const columns = [
@@ -318,8 +318,19 @@ function JobsFinancialTable({
 		async function fetchData() {
 			try {
 				// do something for 12 times
-				const unfilteredResponse: AllTimesheetRowsView[] =
-					(await getAllTimesheetRows()) as unknown as AllTimesheetRowsView[];
+				const october: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					10
+				)) as unknown as AllTimesheetRowsView[];
+				const november: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					11
+				)) as unknown as AllTimesheetRowsView[];
+				const december: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					12
+				)) as unknown as AllTimesheetRowsView[];
+				const unfilteredResponse = october.concat(november, december);
 				let filteredResponse: AllTimesheetRowsView[] = [];
 				if (unfilteredResponse) {
 					filteredResponse = unfilteredResponse.filter(
