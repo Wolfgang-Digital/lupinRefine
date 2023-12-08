@@ -12,7 +12,8 @@ export type ClientOverview = Views["client_overview"]["Row"];
 // export type JobsOverview = Views["jobs_overview"]["Row"];
 export type UsersOverview = Views["user_dept_join"]["Row"];
 export type TimesheetRowsView = Views["timesheet_rows_view_v2"]["Row"];
-export type MonthlyTimesheetRowsView = Views["timesheet_rows_view_v3"]["Row"];
+export type MonthlyTimesheetRowsView =
+	Views["monthly_timesheet_rows_view"]["Row"];
 export type AllTimesheetRowsView = Views["all_timesheet_rows_view"]["Row"];
 export type JobTask = Tables["job_tasks"]["Row"];
 // export type AllTasksDemo = Views["all_tasks_demo"]["Row"];

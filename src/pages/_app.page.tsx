@@ -2,7 +2,7 @@
 	src="https://apis.google.com/js/api.js"
 	type="text/javascript"
 ></script>;
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthBindings, Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
@@ -17,6 +17,7 @@ import routerProvider, {
 import type { NextPage } from "next";
 import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
 import { AppProps } from "next/app";
+import { useRouter } from "next/router";
 
 import { ThemedLayoutV2 } from "src/components";
 import { ThemedHeaderV2 } from "src/components";
@@ -31,7 +32,7 @@ import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 //import SecurityIcon from "@mui/icons-material/Security";
 import supabase from "@config/supaBaseClient";
-
+import CircularProgress from "@mui/material/CircularProgress";
 import "src/pages/app.css";
 import "src/components/components.css";
 require("../../dotenv.config");
@@ -66,13 +67,21 @@ type AppPropsWithLayout = AppProps & {
 
 const App = (props: React.PropsWithChildren) => {
 	const { data: session, status } = useSession();
+	const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
 	useEffect(() => {
+		if (router.asPath === "/login") {
+			setIsLoading(false);
+			return;
+		}
+		setIsLoading(true);
 		async function signInWithGoogleToSupabase() {
 			if (session?.id_token) {
 				const { data: myData, error } = await supabase.auth.signInWithIdToken({
 					provider: "google",
 					token: session?.id_token,
 				});
+				setIsLoading(false);
 				localStorage.setItem("user_id", myData?.user?.id || "");
 				if (error) {
 					return;
@@ -81,7 +90,7 @@ const App = (props: React.PropsWithChildren) => {
 		}
 
 		signInWithGoogleToSupabase();
-	}, [status]);
+	}, [status, router.asPath]);
 
 	const authProvider: AuthBindings = {
 		login: async () => {
@@ -202,26 +211,40 @@ const App = (props: React.PropsWithChildren) => {
 				<RefineKbarProvider>
 					<CssBaseline />
 					<GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
-					<RefineSnackbarProvider>
-						<Refine
-							routerProvider={routerProvider}
-							dataProvider={dataProvider(API_URL)}
-							notificationProvider={notificationProvider}
-							authProvider={authProvider}
-							resources={getResources()}
-							options={{
-								syncWithLocation: true,
-								warnWhenUnsavedChanges: true,
+					{!isLoading && (
+						<RefineSnackbarProvider>
+							<Refine
+								routerProvider={routerProvider}
+								dataProvider={dataProvider(API_URL)}
+								notificationProvider={notificationProvider}
+								authProvider={authProvider}
+								resources={getResources()}
+								options={{
+									syncWithLocation: true,
+									warnWhenUnsavedChanges: true,
+								}}
+							>
+								{props.children}
+								<RefineKbar />
+								<UnsavedChangesNotifier />
+							</Refine>
+						</RefineSnackbarProvider>
+					)}
+					{isLoading && (
+						<div
+							style={{
+								width: "100%",
+								height: "100vh",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
 							}}
 						>
-							{props.children}
-							<RefineKbar />
-							<UnsavedChangesNotifier />
-						</Refine>
-					</RefineSnackbarProvider>
+							<CircularProgress />
+						</div>
+					)}
 				</RefineKbarProvider>
 			</ThemeProvider>
-			)
 		</>
 	);
 };

@@ -9,7 +9,8 @@ export const PostAllocateHoursEntry = async ({
 	jobId: job_id,
 	taskId: task_id,
 	hours: hours,
-	rate: rate,
+	allocatedRate: allocated_rate,
+	effectiveRate: effective_rate,
 }: {
 	jobTaskId: number;
 	month: number;
@@ -18,7 +19,8 @@ export const PostAllocateHoursEntry = async ({
 	jobId: number;
 	taskId: number;
 	hours: number;
-	rate: number;
+	allocatedRate: number;
+	effectiveRate: number;
 }) => {
 	try {
 		const { data, error } = await supabase.from("allocate_hours").insert([
@@ -30,7 +32,8 @@ export const PostAllocateHoursEntry = async ({
 				job_id,
 				task_id,
 				hours,
-				rate,
+				allocated_rate,
+				effective_rate,
 			},
 		]);
 		if (error) {
@@ -43,56 +46,66 @@ export const PostAllocateHoursEntry = async ({
 	}
 };
 
-export const deleteAllocateHoursEntry = async (id: number) => {
+export const markAllocationAsCompleted = async ({
+	job_id,
+	task_id,
+	user_id,
+}: {
+	job_id: number;
+	task_id: number;
+	user_id: string;
+}) => {
+	// Update the completed field in the allocate_hours table
+	// for the record that matches the job_id, task_id, and user_id
 	try {
-		console.log("Deleting Allocate Hours entry with ID: ", id);
 		const { data, error } = await supabase
 			.from("allocate_hours")
-			.delete()
-			.eq("id", id);
+			.update({ completed: true })
+			.match({
+				job_id,
+				task_id,
+				user_id,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+			});
 		if (error) {
-			console.error("Error deleting Allocate Hours entry: ", error);
-		} else {
-			console.log("Allocate Hours entry deleted sucessfully: ", id, data);
+			console.error("Error marking allocation as completed: ", error);
+			return;
 		}
+		return data;
 	} catch (error) {
-		console.error("Error deleting Allocate Hours entry: ", error);
+		console.error("Error marking allocation as completed: ", error);
 	}
 };
 
-export const updateAllocateHoursEntry = async ({
-	id: id,
-	userId: user_id,
-	taskId: task_id,
-	month: month,
-	hours: hours,
-	rate: rate,
+export const markAllocationAsUncompleted = async ({
+	job_id,
+	task_id,
+	user_id,
 }: {
-	id: number;
-	userId: string;
-	taskId: number;
-	month: number;
-	hours: number;
-	rate: number;
+	job_id: number;
+	task_id: number;
+	user_id: string;
 }) => {
+	// Update the completed field in the allocate_hours table
+	// for the record that matches the job_id, task_id, and user_id
 	try {
 		const { data, error } = await supabase
 			.from("allocate_hours")
-			.update({
-				user_id,
+			.update({ completed: false })
+			.match({
+				job_id,
 				task_id,
-				month,
-				hours,
-				rate,
-			})
-			.eq("id", id);
-
+				user_id,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+			});
 		if (error) {
-			console.error("Error update Allocate Hours entry: ", error);
-		} else {
-			console.log("Allocate Hours entry updated successfully: ", data);
+			console.error("Error marking allocation as completed: ", error);
+			return;
 		}
+		return data;
 	} catch (error) {
-		console.error("Error updating Allocate Hours entry: ", error);
+		console.error("Error marking allocation as completed: ", error);
 	}
 };

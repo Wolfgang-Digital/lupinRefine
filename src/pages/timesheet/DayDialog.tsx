@@ -99,7 +99,6 @@ export const DayDialog = ({
 		async function fetchData() {
 			try {
 				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
-
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate

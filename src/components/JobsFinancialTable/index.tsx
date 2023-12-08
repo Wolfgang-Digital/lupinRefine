@@ -5,13 +5,16 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
+import PersonAddAlt1 from "@mui/icons-material/PersonAddAlt1";
+import PostAdd from "@mui/icons-material/PostAdd";
+import AddCircle from "@mui/icons-material/AddCircle";
 import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Table } from "@mui/material";
+import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsView, TimesheetRowsView } from "types";
 
 const columns = [
@@ -315,8 +318,19 @@ function JobsFinancialTable({
 		async function fetchData() {
 			try {
 				// do something for 12 times
-				const unfilteredResponse: AllTimesheetRowsView[] =
-					(await getAllTimesheetRows()) as unknown as AllTimesheetRowsView[];
+				const october: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					10
+				)) as unknown as AllTimesheetRowsView[];
+				const november: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					11
+				)) as unknown as AllTimesheetRowsView[];
+				const december: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+					2023,
+					12
+				)) as unknown as AllTimesheetRowsView[];
+				const unfilteredResponse = october.concat(november, december);
 				let filteredResponse: AllTimesheetRowsView[] = [];
 				if (unfilteredResponse) {
 					filteredResponse = unfilteredResponse.filter(
@@ -457,7 +471,7 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "#1E7F74", color: "white !important" }}
+										style={{ background: "#1E7F74", color: "white" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
@@ -476,7 +490,16 @@ function JobsFinancialTable({
 														<ShortTableCell>
 															{(job as Job)?.job_name as string}
 														</ShortTableCell>
-														{CreateEmptyCells(2)}
+														{CreateEmptyCells(1)}
+														<ShortTableCell>
+															<IconButton
+																title="Add new Task to Job"
+																color="secondary"
+																style={{ padding: "0px" }}
+															>
+																<PostAdd style={{ fontSize: "22px" }} />
+															</IconButton>
+														</ShortTableCell>
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).hours || 0}
 														</TaskEntryCell>
@@ -489,7 +512,9 @@ function JobsFinancialTable({
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
-															{((job as Job)?.total as Total).actualValue || 0}
+															<a href="#" title="Edit Actuals Value">
+																{((job as Job)?.total as Total).actualValue || 0}
+															</a>
 														</TaskEntryCell>
 													</TableRow>
 												</>
@@ -502,28 +527,36 @@ function JobsFinancialTable({
 																	<ShortTableCell>
 																		{(task as TaskEntry)?.task_name as string}
 																	</ShortTableCell>
-																	{CreateEmptyCells(1)}
+																	<ShortTableCell>
+																		<IconButton
+																			title="Add New User to Task"
+																			color="secondary"
+																			style={{ padding: "0px" }}
+																		>
+																			<PersonAddAlt1 style={{ fontSize: "22px" }} />
+																		</IconButton>
+																	</ShortTableCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).hours || 0}
+																		{/* {((task as TaskEntry)?.total as Total).hours || 0} */}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).allocatedValue || 0}
+																		{/* {((task as TaskEntry)?.total as Total).allocatedValue || 0} */}
 																	</TaskEntryCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).time || 0}
+																		{/* {((task as TaskEntry)?.total as Total).time || 0} */}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).actualValue || 0}
+																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
 																	</TaskEntryCell>
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
-																Object.entries(task).map(
-																	([taskKey, { time, hours, user_name, rate }]) => {
-																		return (
-																			Number.isInteger(parseInt(taskKey)) && (
+																Object.values(task).map(({ time, hours, user_name, rate }) => {
+																	return (
+																		user_name && (
+																			<>
 																				<TableRow
 																					style={{
 																						verticalAlign: "middle",
@@ -533,18 +566,22 @@ function JobsFinancialTable({
 																						borderBottom: "0.8px solid black",
 																					}}
 																				>
-																					{CreateEmptyCells(3)}
+																					{CreateEmptyCells(2)}
+																					<ShortTaskEntryCell></ShortTaskEntryCell>
 																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
 																					<>
-																						{Number.isInteger(parseInt(taskKey)) && (
+																						{user_name && (
 																							<>
 																								<TaskEntryCell
 																									style={{
 																										border: "0.8px solid black",
 																										backgroundColor: "#C3DDBC",
+																										paddingLeft: "10px",
 																									}}
 																								>
-																									{hours}
+																									<a href="#" title="Edit Hours">
+																										{hours}
+																									</a>
 																								</TaskEntryCell>
 																								<TaskEntryCell
 																									style={{
@@ -552,24 +589,25 @@ function JobsFinancialTable({
 																										backgroundColor: "#C3DDBC",
 																									}}
 																								>
-																									{rate}
+																									<a href="#" title="Edit Rate">
+																										{rate}
+																									</a>
 																								</TaskEntryCell>
 																								<TaskEntryCell
 																									style={{
 																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
+																										fontWeight: "bold",
 																									}}
 																								>
 																									{hours * rate}
 																								</TaskEntryCell>
-																								<TaskEntryCell>{time}</TaskEntryCell>
 																								<TaskEntryCell
 																									style={{
 																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
+																										fontWeight: "bold",
 																									}}
 																								>
-																									{rate}
+																									{time}
 																								</TaskEntryCell>
 																								<TaskEntryCell
 																									style={{
@@ -577,21 +615,61 @@ function JobsFinancialTable({
 																										backgroundColor: "#BEB3D4",
 																									}}
 																								>
-																									{time * rate}
+																									<a href="#" title="Edit Rate">
+																										{rate}
+																									</a>
+																								</TaskEntryCell>
+																								<TaskEntryCell
+																									style={{
+																										border: "0.8px solid black",
+																										backgroundColor: "#BEB3D4",
+																									}}
+																								>
+																									<a href="#" title="Edit Value">
+																										{time * rate}
+																									</a>
 																								</TaskEntryCell>
 																							</>
 																						)}
 																					</>
 																				</TableRow>
-																			)
-																		);
-																	}
-																)}
+																			</>
+																		)
+																	);
+																})}
 														</>
 													);
 												})}
 											</>
 										))}
+									<TableRow
+										style={{
+											borderBottom: "0.8px solid black",
+											backgroundColor: "#E5E5E8",
+										}}
+									>
+										{CreateEmptyCells(17)}
+									</TableRow>
+									<TableRow
+										style={{
+											verticalAlign: "middle",
+											textAlign: "center",
+											marginTop: "7px",
+											marginLeft: "10px",
+											borderBottom: "0.8px solid black",
+										}}
+									>
+										<ShortTableCell>
+											<IconButton
+												color="secondary"
+												style={{ padding: "0px" }}
+												title="Add new Job"
+												// onClick={() => handleEditRow(params.row.id)}
+											>
+												<AddCircle style={{ fontSize: "22px" }} />
+											</IconButton>
+										</ShortTableCell>
+									</TableRow>
 								</>
 							);
 						})}
