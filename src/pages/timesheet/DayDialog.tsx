@@ -99,7 +99,6 @@ export const DayDialog = ({
 		async function fetchData() {
 			try {
 				const timesheetsResponse = await getMonthlyTimesheetRows(year, month);
-
 				if (timesheetsResponse) {
 					const filteredTimesheets = timesheetsResponse.filter(
 						(timesheet) => timesheet.date === formattedDate
@@ -146,6 +145,7 @@ export const DayDialog = ({
 		setEditableRow(editableRowData ?? null);
 		setEditedTime(editableRowData?.time ?? null);
 		setEditedNotes(editableRowData?.notes ?? null);
+		console.log(rows);
 	};
 
 	const handleSaveEdit = async () => {

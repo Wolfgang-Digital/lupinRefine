@@ -17,10 +17,17 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
+import {
+	getJobAllocatedHoursPerMonth,
+	// getJobAllocatedHoursPerMonthPerUser,
+} from "@pages/api/allocateHoursView";
 import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
-import { PostAllocateHoursEntry } from "@pages/api/allocateHours";
+import {
+	PostAllocateHoursEntry,
+	// deleteAllocateHoursEntry,
+	updateAllocateHoursEntry,
+} from "@pages/api/allocateHours";
 
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
 import { PostTimeEntry } from "@pages/api/timesheet";
@@ -61,16 +68,20 @@ function CollapsibleHoursGrid({
 }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
+	const [edit, setEdit] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
 	const taskOptions: TaskOption[] = [];
 	const [users, setUsers] = useState<UserOption[]>([]);
 	const userOptions: UserOption[] = [];
+	const [selectedId, setSelectedId] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
 	const [selectedUser, setSelectedUser] = useState("");
 	const [allocatedMonth, setAllocatedMonth] = useState("");
 	const [allocatedHours, setAllocatedHours] = useState("");
 	const [rate, setRate] = useState("");
 	const [postData, setPostData] = useState(false);
+
+	const [rows, setRows] = useState<RowData[]>([]);
 
 	// Fetch data from Supabase and update the fetchedRows state
 	const fetchData = async () => {
@@ -119,6 +130,29 @@ function CollapsibleHoursGrid({
 				})
 			);
 			setFetchedRows(mappedData);
+
+			const newRows: RowData[] = allocateHoursTable.map((allocation) => ({
+				...allocation,
+				hours: allocation.hours,
+				id: allocation.id,
+				month: allocation.month,
+				rate: allocation.rate,
+				task_id: allocation.task_id,
+				user_id: allocation.user_id,
+				// client_id: allocation.client_id,
+				// job_id: allocation.job_id,
+				// job_name: allocation.job_name,
+				// job_name_id: allocation.job_name_id,
+				// job_name_name: allocation.job_name_name,
+				// jobs_id: allocation.jobs_id,
+				// name: allocation.name,
+				// project_id: allocation.project_id,
+				// project_name: allocation.project_name,
+				// task_name: allocation.task_name,
+				// user_name: allocation.user_name,
+				// year: allocation.year,
+			}));
+			setRows(newRows);
 		}
 	};
 
@@ -127,33 +161,52 @@ function CollapsibleHoursGrid({
 		const monthNumber = monthNameToNumber(allocatedMonth);
 		const currentDate = new Date();
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
-		const dataToPostAHE = {
-			jobTaskId: 10,
-			month: Number(monthNumber),
-			year: Number(currentDate.getFullYear()),
-			userId: selectedUser,
-			jobId: Number(jobId),
-			taskId: Number(selectedTask),
-			hours: Number(allocatedHours),
-			rate: Number(rate),
-		};
-		const dataToPostTSE = {
-			staffId: selectedUser,
-			notes: "Zero hours for allocate hours",
-			timeSpent: 0,
-			projectId: Number(projectId),
-			jobId: Number(jobsId),
-			jobsId: Number(jobId),
-			taskId: Number(selectedTask),
-			selectedDate: formattedDate,
-			rate: Number(rate),
-			month: Number(monthNumber),
-			year: Number(currentDate.getFullYear()),
-		};
-		const response = await PostAllocateHoursEntry(dataToPostAHE);
-		const response2 = await PostTimeEntry(dataToPostTSE);
-		console.log(`PostAllocateHoursEntry ${response}`);
-		console.log(`PostTimeEntry ${response2}`);
+		if (edit) {
+			// const allocateHoursLogged = (await getJobAllocatedHoursPerMonthPerUser(
+			// 	Number(monthNumber),
+			// 	selectedUser,
+
+			// )) || [];
+			const dataToUpdateAHE = {
+				id: Number(selectedId),
+				userId: selectedUser,
+				taskId: Number(selectedTask),
+				month: Number(monthNumber),
+				hours: Number(allocatedHours),
+				rate: Number(rate),
+			};
+			const response = await updateAllocateHoursEntry(dataToUpdateAHE);
+			console.log(`Update allocate hours row ${response}`);
+		} else {
+			const dataToPostAHE = {
+				jobTaskId: 10,
+				month: Number(monthNumber),
+				year: Number(currentDate.getFullYear()),
+				userId: selectedUser,
+				jobId: Number(jobId),
+				taskId: Number(selectedTask),
+				hours: Number(allocatedHours),
+			  allocatedRate: Number(rate),
+			  effectiveRate: Number(rate),
+			};
+			const dataToPostTSE = {
+				staffId: selectedUser,
+				notes: "Zero hours for allocate hours",
+				timeSpent: 0,
+				projectId: Number(projectId),
+				jobId: Number(jobsId),
+				jobsId: Number(jobId),
+				taskId: Number(selectedTask),
+				selectedDate: formattedDate,
+				rate: Number(rate),
+				month: Number(monthNumber),
+				year: Number(currentDate.getFullYear()),
+			};
+			const response = await PostAllocateHoursEntry(dataToPostAHE);
+			const response2 = await PostTimeEntry(dataToPostTSE);
+			console.log(`PostAllocateHoursEntry ${response}`);
+			console.log(`PostTimeEntry ${response2}`);
+		}
 		setSelectedTask("");
 		setSelectedUser("");
 		setAllocatedMonth("");
@@ -165,11 +218,12 @@ function CollapsibleHoursGrid({
 	useEffect(() => {
 		setTasks([]);
 		fetchData();
-	}, [postData]);
+	}, [postData, showForm]);
 
 	const handleAllocateHoursClick = () => {
 		setPostData(false);
 		setShowForm(true);
+		setEdit(false);
 	};
 	const groupedRows: { [key: string]: RowData[] } = {};
 	// Group the fetched rows by month
@@ -224,7 +278,15 @@ function CollapsibleHoursGrid({
 	};
 
 	const handleEditRow = (id: number) => {
-		console.log(id);
+		setShowForm(true);
+		setEdit(true);
+		const editableRowData = rows.find((row) => row.id === id);
+		setSelectedId(editableRowData?.id?.toString() || "");
+		setSelectedUser(editableRowData?.user_id?.toString() || "");
+		setSelectedTask(editableRowData?.task_id?.toString() || "");
+		setAllocatedMonth(monthNames[(editableRowData?.month || 0) - 1]);
+		setAllocatedHours(editableRowData?.hours?.toString() || "");
+		setRate(editableRowData?.rate?.toString() || "");
 	};
 
 	return (

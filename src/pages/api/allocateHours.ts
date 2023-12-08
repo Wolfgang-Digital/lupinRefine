@@ -9,7 +9,8 @@ export const PostAllocateHoursEntry = async ({
 	jobId: job_id,
 	taskId: task_id,
 	hours: hours,
-	rate: rate,
+	allocatedRate: allocated_rate,
+	effectiveRate: effective_rate,
 }: {
 	jobTaskId: number;
 	month: number;
@@ -18,7 +19,8 @@ export const PostAllocateHoursEntry = async ({
 	jobId: number;
 	taskId: number;
 	hours: number;
-	rate: number;
+	allocatedRate: number;
+	effectiveRate: number;
 }) => {
 	try {
 		const { data, error } = await supabase.from("allocate_hours").insert([
@@ -30,7 +32,8 @@ export const PostAllocateHoursEntry = async ({
 				job_id,
 				task_id,
 				hours,
-				rate,
+				allocated_rate,
+				effective_rate,
 			},
 		]);
 		if (error) {
@@ -72,6 +75,43 @@ export const markAllocationAsCompleted = async ({
 		return data;
 	} catch (error) {
 		console.error("Error marking allocation as completed: ", error);
+	}
+};
+
+export const updateAllocateHoursEntry = async ({
+	id: id,
+	userId: user_id,
+	taskId: task_id,
+	month: month,
+	hours: hours,
+	rate: rate,
+}: {
+	id: number;
+	userId: string;
+	taskId: number;
+	month: number;
+	hours: number;
+	rate: number;
+}) => {
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours")
+			.update({
+				user_id,
+				task_id,
+				month,
+				hours,
+				rate,
+			})
+			.eq("id", id);
+
+		if (error) {
+			console.error("Error update Allocate Hours entry: ", error);
+		} else {
+			console.log("Allocate Hours entry updated successfully: ", data);
+		}
+	} catch (error) {
+		console.error("Error updating Allocate Hours entry: ", error);
 	}
 };
 
