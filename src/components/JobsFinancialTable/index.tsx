@@ -14,8 +14,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { AllTimesheetRowsView, TimesheetRowsView } from "types";
+import {
+	// getAllTimesheetRowsV2,
+	getAllTimesheetRowsV3,
+} from "@pages/api/timesheetRows";
+import {
+	// AllTimesheetRowsView,
+	// TimesheetRowsView,
+	AllTimesheetRowsViewV5,
+} from "types";
 
 const columns = [
 	"Month",
@@ -47,13 +54,13 @@ const columns = [
 		},
 	},
 	{
-		text: "Base Rate",
+		text: "Allocated Rate",
 		style: {
 			backgroundColor: "#BEB3D4",
 		},
 	},
 	{
-		text: "Effetive Rate",
+		text: "Effective Rate",
 		style: {
 			backgroundColor: "#BEB3D4",
 		},
@@ -151,7 +158,8 @@ const CreateRowOfTableCells = (
 
 type Total = {
 	time: number;
-	rate: number;
+	baseRate: number;
+	effectiveRate: number;
 	count: number;
 	hours: number;
 	allocatedValue?: number;
@@ -160,7 +168,8 @@ type Total = {
 
 type UserEntry = {
 	time: number;
-	rate: number;
+	baseRate: number;
+	effectiveRate: number;
 	count: number;
 	user_name: string;
 	hours: number;
@@ -171,7 +180,7 @@ type Task = Record<string, TaskEntry | Total | string>;
 type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
-function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
+function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -185,7 +194,8 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 				job_name: current.job_name || "",
 				total: {
 					time: 0,
-					rate: 0,
+					baseRate: 0,
+					effectiveRate: 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
@@ -196,7 +206,8 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			const job = accumulator[jobKey];
 			const total = job.total as Total;
 			total.time += 0;
-			total.rate += current.rate || 0;
+			total.baseRate += current.rate || 0;
+			total.effectiveRate = current.rate || 0;
 			total.count += 1;
 		}
 
@@ -205,7 +216,8 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			accumulator[jobKey][taskKey] = {
 				total: {
 					time: current.time || 0,
-					rate: current.rate || 0,
+					baseRate: current.rate || 0,
+					effectiveRate: current.rate || 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
@@ -219,7 +231,8 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			const task = (accumulator[jobKey] as Task)[taskKey] as User;
 			const total = task.total as Total;
 			total.time += current.time || 0;
-			total.rate += current.rate || 0;
+			total.baseRate += current.rate || 0;
+			total.effectiveRate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
 				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
@@ -236,7 +249,8 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 		) {
 			((accumulator[jobKey] as Task)[taskKey] as User)[userKey] = {
 				time: current.time || 0,
-				rate: current.rate || 0,
+				baseRate: current.allocated_rate || 0,
+				effectiveRate: (current.effective_rate || 0) + 50,
 				count: 1,
 				user_name: current.user_name || "",
 				hours: current.hours || 0,
@@ -253,7 +267,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			(userEntry as UserEntry).time += current?.time || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
-		console.log({ accumulator });
+		// console.log({ accumulator });
 		return accumulator;
 	}, {} as Accumulator);
 
@@ -297,7 +311,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			const taskEntry = (result[jobKey] as Task)[taskKey] as TaskEntry;
 			const total = taskEntry.total as Total;
 			if (total && total.count !== 0) {
-				total.rate /= total.count;
+				total.baseRate /= total.count;
 			}
 		}
 	}
@@ -324,20 +338,20 @@ function JobsFinancialTable({
 		async function fetchData() {
 			try {
 				// do something for 12 times
-				const october: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+				const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
 					2023,
 					10
-				)) as unknown as AllTimesheetRowsView[];
-				const november: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+				)) as unknown as AllTimesheetRowsViewV5[];
+				const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
 					2023,
 					11
-				)) as unknown as AllTimesheetRowsView[];
-				const december: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
+				)) as unknown as AllTimesheetRowsViewV5[];
+				const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
 					2023,
 					12
-				)) as unknown as AllTimesheetRowsView[];
+				)) as unknown as AllTimesheetRowsViewV5[];
 				const unfilteredResponse = october.concat(november, december);
-				let filteredResponse: AllTimesheetRowsView[] = [];
+				let filteredResponse: AllTimesheetRowsViewV5[] = [];
 				if (unfilteredResponse) {
 					filteredResponse = unfilteredResponse.filter(
 						({ client_id, project_id }) => {
@@ -347,7 +361,7 @@ function JobsFinancialTable({
 				}
 
 				// create empty array with 12 elements, each element is an empty array
-				const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
+				const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
 					() => []
 				);
 				// loop through each timesheet row
@@ -516,6 +530,9 @@ function JobsFinancialTable({
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).time || 0}
 														</TaskEntryCell>
+														<TaskEntryCell
+															style={{ border: "0.8px solid black" }}
+														></TaskEntryCell>
 														{CreateEmptyCells(1)}
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															<a href="#" title="Edit Actuals Value">
@@ -545,6 +562,9 @@ function JobsFinancialTable({
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{/* {((task as TaskEntry)?.total as Total).hours || 0} */}
 																	</TaskEntryCell>
+																	<TaskEntryCell
+																		style={{ border: "0.8px solid black" }}
+																	></TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{/* {((task as TaskEntry)?.total as Total).allocatedValue || 0} */}
@@ -559,90 +579,99 @@ function JobsFinancialTable({
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
-																Object.values(task).map(({ time, hours, user_name, rate }) => {
-																	return (
-																		user_name && (
-																			<>
-																				<TableRow
-																					style={{
-																						verticalAlign: "middle",
-																						textAlign: "center",
-																						marginTop: "7px",
-																						marginLeft: "10px",
-																						borderBottom: "0.8px solid black",
-																					}}
-																				>
-																					{CreateEmptyCells(2)}
-																					<ShortTaskEntryCell></ShortTaskEntryCell>
-																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
-																					<>
-																						{user_name && (
-																							<>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																										paddingLeft: "10px",
-																									}}
-																								>
-																									<a href="#" title="Edit Hours">
-																										{hours}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																									}}
-																								>
-																									<a href="#" title="Edit Rate">
-																										{rate}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										fontWeight: "bold",
-																									}}
-																								>
-																									{hours * rate}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										fontWeight: "bold",
-																									}}
-																								>
-																									{time}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									<a href="#" title="Edit Rate">
-																										{rate}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									<a href="#" title="Edit Value">
-																										{time * rate}
-																									</a>
-																								</TaskEntryCell>
-																							</>
-																						)}
-																					</>
-																				</TableRow>
-																			</>
-																		)
-																	);
-																})}
+																Object.values(task).map(
+																	({ time, hours, user_name, baseRate, effectiveRate }) => {
+																		return (
+																			user_name && (
+																				<>
+																					<TableRow
+																						style={{
+																							verticalAlign: "middle",
+																							textAlign: "center",
+																							marginTop: "7px",
+																							marginLeft: "10px",
+																							borderBottom: "0.8px solid black",
+																						}}
+																					>
+																						{CreateEmptyCells(2)}
+																						<ShortTaskEntryCell></ShortTaskEntryCell>
+																						<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
+																						<>
+																							{user_name && (
+																								<>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#C3DDBC",
+																											paddingLeft: "10px",
+																										}}
+																									>
+																										<a href="#" title="Edit Hours">
+																											{hours}
+																										</a>
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#C3DDBC",
+																										}}
+																									>
+																										<a href="#" title="Edit Rate">
+																											{baseRate}
+																										</a>
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											fontWeight: "bold",
+																										}}
+																									>
+																										{hours * baseRate}
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											fontWeight: "bold",
+																										}}
+																									>
+																										{time}
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																										}}
+																									>
+																										{baseRate}
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																										}}
+																									>
+																										<a href="#" title="Edit Effective Rate">
+																											{effectiveRate}
+																										</a>
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																										}}
+																									>
+																										<a href="#" title="Edit Value">
+																											{time * effectiveRate}
+																										</a>
+																									</TaskEntryCell>
+																								</>
+																							)}
+																						</>
+																					</TableRow>
+																				</>
+																			)
+																		);
+																	}
+																)}
 														</>
 													);
 												})}
