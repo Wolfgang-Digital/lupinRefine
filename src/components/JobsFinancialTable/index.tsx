@@ -47,7 +47,13 @@ const columns = [
 		},
 	},
 	{
-		text: "Rate",
+		text: "Base Rate",
+		style: {
+			backgroundColor: "#BEB3D4",
+		},
+	},
+	{
+		text: "Effetive Rate",
 		style: {
 			backgroundColor: "#BEB3D4",
 		},
@@ -204,7 +210,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 					count: 1,
 					allocatedValue: 0,
 					actualValue: (current.time || 0) * (current.rate || 0) || 0,
-					user_name: "",
+					// user_name: "",
 				} as unknown as Total,
 				task_name: current.task_name || "",
 			};
@@ -247,7 +253,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			(userEntry as UserEntry).time += current?.time || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
-
+		console.log({ accumulator });
 		return accumulator;
 	}, {} as Accumulator);
 
@@ -420,7 +426,7 @@ function JobsFinancialTable({
 								Allocated
 							</NoPadding>
 							<NoPadding
-								colSpan={3}
+								colSpan={4}
 								style={{
 									backgroundColor: "#BEB3D4",
 									paddingLeft: 0,
@@ -464,7 +470,7 @@ function JobsFinancialTable({
 							if (monthIndex !== selectedMonthIndex)
 								return (
 									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 18)}
 									</TableRow>
 								);
 							if (Object.keys(jobs).length === 0) return <>Empty</>;
@@ -474,7 +480,7 @@ function JobsFinancialTable({
 										style={{ background: "#1E7F74", color: "white" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 18)}
 									</TableRow>
 									{monthIndex === selectedMonthIndex &&
 										jobs.map((job) => (
