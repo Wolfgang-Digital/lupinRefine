@@ -9,10 +9,11 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Table } from "@mui/material";
+import { Box, Button, Modal, Table, TextField } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsView, TimesheetRowsView } from "types";
+import EditIcon from "@mui/icons-material/Edit";
 
 const columns = [
 	"Month",
@@ -124,6 +125,80 @@ const ShortTableCell = styled(TableCell)`
 	text-overflow: ellipsis;
 	max-width: 30ch; /* Limit text to 15 characters */
 `;
+
+type EditableCellProps = {
+	value: string; // Assuming value is a string, change the type if needed
+	onSave: (newValue: string | null, isEdit?: boolean) => void;
+	isEditable: boolean;
+};
+
+const style = {
+	position: "absolute",
+	top: "50%",
+	left: "50%",
+	transform: "translate(-50%, -50%)",
+	width: 300, // Adjust the width as needed
+	bgcolor: "background.paper",
+	border: "2px solid #000",
+	boxShadow: 24,
+	p: 4,
+};
+
+const EditableCell: React.FC<EditableCellProps> = ({
+	value,
+	onSave,
+	isEditable,
+}) => {
+	const [editValue, setEditValue] = useState<string>(value);
+	const [open, setOpen] = useState(false);
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
+	return (
+		<>
+			<div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+				<span style={{ flexGrow: 1 }} onClick={handleOpen}>
+					{value}
+				</span>
+				<EditIcon
+					onClick={handleOpen}
+					style={{
+						cursor: "pointer",
+						fontSize: "16px", // Adjust this value as needed
+					}}
+				/>
+			</div>
+			<Modal
+				open={isEditable && open}
+				onClose={handleClose}
+				aria-labelledby="editable-cell-modal"
+				aria-describedby="editable-cell-modal-description"
+			>
+				<Box sx={style}>
+					<TextField
+						id="editable-cell-input"
+						label="Edit Value"
+						variant="outlined"
+						fullWidth
+						value={editValue}
+						onChange={(e) => setEditValue(e.target.value)}
+					/>
+					<Button
+						variant="outlined"
+						onClick={() => {
+							onSave(editValue);
+							handleClose();
+						}}
+						style={{ marginTop: "10px" }}
+					>
+						Save
+					</Button>
+				</Box>
+			</Modal>
+		</>
+	);
+};
 
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
@@ -353,6 +428,34 @@ function JobsFinancialTable({
 		fetchData();
 	}, []);
 
+	type EditState = {
+		user_name: string | null;
+		field: "hours" | "rate" | null;
+	};
+
+	const [editState, setEditState] = useState<EditState>({
+		user_name: null,
+		field: null,
+	});
+
+	const handleEdit = (user_name: string, field: "hours" | "rate") => {
+		setEditState({ user_name, field });
+	};
+
+	const handleSave = (
+		newVal: string | null
+		//user_name: string,
+		//field: "hours" | "rate"
+	) => {
+		if (newVal !== null) {
+			// Update your data structure here with newVal for the specified user and task
+			// ...
+		}
+
+		// Reset edit state
+		setEditState({ user_name: null, field: null });
+	};
+
 	return (
 		<div>
 			<div
@@ -379,7 +482,7 @@ function JobsFinancialTable({
 			</div>
 
 			<TableContainer
-				style={{ maxHeight: "800px", overflowY: "scroll" }}
+				style={{ maxHeight: "500px", overflowY: "scroll" }}
 				component={Paper}
 			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
@@ -481,16 +584,32 @@ function JobsFinancialTable({
 															{((job as Job)?.total as Total).hours || 0}
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
-														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+														<TaskEntryCell
+															style={{
+																border: "0.8px solid black",
+															}}
+														>
 															{((job as Job)?.total as Total).allocatedValue || 0}
 														</TaskEntryCell>
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).time || 0}
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
-														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+														<TaskEntryCell
+															style={{
+																border: "0.8px solid black",
+																backgroundColor: "#BEB3D4",
+															}}
+														>
 															{((job as Job)?.total as Total).actualValue || 0}
 														</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
 													</TableRow>
 												</>
 												{Object.entries(job).map(([key, task]) => {
@@ -504,18 +623,18 @@ function JobsFinancialTable({
 																	</ShortTableCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).hours || 0}
+																		{/*{((task as TaskEntry)?.total as Total).hours || 0}*/}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).allocatedValue || 0}
+																		{/*{((task as TaskEntry)?.total as Total).allocatedValue || 0}*/}
 																	</TaskEntryCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).time || 0}
+																		{/*{((task as TaskEntry)?.total as Total).time || 0}*/}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{((task as TaskEntry)?.total as Total).actualValue || 0}
+																		{/*{((task as TaskEntry)?.total as Total).actualValue || 0}*/}
 																	</TaskEntryCell>
 																</TableRow>
 															)}
@@ -542,33 +661,65 @@ function JobsFinancialTable({
 																									border: "0.8px solid black",
 																									backgroundColor: "#C3DDBC",
 																								}}
+																								onDoubleClick={() => handleEdit(user_name, "hours")} // task.id is a number
 																							>
-																								{hours}
+																								<EditableCell
+																									value={hours}
+																									onSave={(newVal) =>
+																										handleSave(newVal, user_name, "hours")
+																									} // task.id is a number
+																									isEditable={
+																										editState.user_name === user_name &&
+																										editState.field === "hours"
+																									}
+																								/>
 																							</TaskEntryCell>
+
 																							<TaskEntryCell
 																								style={{
 																									border: "0.8px solid black",
 																									backgroundColor: "#C3DDBC",
 																								}}
+																								onDoubleClick={() => handleEdit(user_name, "rate")}
 																							>
-																								{rate}
+																								<EditableCell
+																									value={rate}
+																									onSave={(newVal) =>
+																										handleSave(newVal, user_name, "rate")
+																									}
+																									isEditable={
+																										editState.user_name === user_name &&
+																										editState.field === "rate"
+																									}
+																								/>
 																							</TaskEntryCell>
+
 																							<TaskEntryCell
 																								style={{
 																									border: "0.8px solid black",
-																									backgroundColor: "#C3DDBC",
 																								}}
 																							>
 																								{hours * rate}
 																							</TaskEntryCell>
 																							<TaskEntryCell>{time}</TaskEntryCell>
+
 																							<TaskEntryCell
 																								style={{
 																									border: "0.8px solid black",
 																									backgroundColor: "#BEB3D4",
 																								}}
+																								onDoubleClick={() => handleEdit(user_name, "rate")}
 																							>
-																								{rate}
+																								<EditableCell
+																									value={rate}
+																									onSave={(newVal) =>
+																										handleSave(newVal, user_name, "rate")
+																									}
+																									isEditable={
+																										editState.user_name === user_name &&
+																										editState.field === "rate"
+																									}
+																								/>
 																							</TaskEntryCell>
 																							<TaskEntryCell
 																								style={{
