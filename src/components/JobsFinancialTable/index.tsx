@@ -12,17 +12,28 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { IconButton, Table } from "@mui/material";
+import {
+	Box,
+	Button,
+	IconButton,
+	Modal,
+	Table,
+	TextField,
+} from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import {
 	// getAllTimesheetRowsV2,
 	getAllTimesheetRowsV3,
 } from "@pages/api/timesheetRows";
+
+import { updateAllocatedHoursAndRate } from "@pages/api/allocateHours";
 import {
 	// AllTimesheetRowsView,
 	// TimesheetRowsView,
 	AllTimesheetRowsViewV5,
 } from "types";
+
+import EditIcon from "@mui/icons-material/Edit";
 
 const columns = [
 	"Month",
@@ -140,6 +151,82 @@ const ShortTableCell = styled(TableCell)`
 	text-overflow: ellipsis;
 	max-width: 30ch; /* Limit text to 15 characters */
 `;
+
+type EditableCellProps = {
+	value: number;
+	onSave: (newValue: number, id: number) => void;
+	isEditable: boolean;
+	id: number;
+};
+
+const EditableCell: React.FC<EditableCellProps> = ({
+	value,
+	onSave,
+	isEditable,
+	id,
+}) => {
+	const [editValue, setEditValue] = useState<string>(value.toString());
+	const [open, setOpen] = useState(false);
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
+	return (
+		<>
+			<div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+				<span style={{ flexGrow: 1 }} onClick={handleOpen}>
+					{value}
+				</span>
+				{isEditable && (
+					<EditIcon
+						onClick={handleOpen}
+						style={{ cursor: "pointer", fontSize: "14px" }}
+					/>
+				)}
+			</div>
+			<Modal
+				open={open}
+				onClose={handleClose}
+				aria-labelledby="editable-cell-modal"
+				aria-describedby="editable-cell-modal-description"
+			>
+				<Box
+					sx={{
+						position: "absolute",
+						top: "50%",
+						left: "50%",
+						transform: "translate(-50%, -50%)",
+						width: 300,
+						bgcolor: "background.paper",
+						border: "2px solid #000",
+						boxShadow: 24,
+						p: 4,
+					}}
+				>
+					<TextField
+						id="editable-cell-input"
+						label="Edit Value"
+						variant="outlined"
+						fullWidth
+						value={editValue}
+						onChange={(e) => setEditValue(e.target.value)}
+					/>
+					<Button
+						variant="outlined"
+						onClick={() => {
+							const newValue = parseFloat(editValue);
+							onSave(newValue, id);
+							handleClose();
+						}}
+						style={{ marginTop: "10px" }}
+					>
+						Save
+					</Button>
+				</Box>
+			</Modal>
+		</>
+	);
+};
 
 const CreateEmptyCells = (total: number) => {
 	return [...Array(total)].map((_, i) => (
@@ -334,6 +421,7 @@ function JobsFinancialTable({
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
+
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -387,6 +475,65 @@ function JobsFinancialTable({
 		fetchData();
 	}, []);
 
+	type EditState = {
+		id: number | null;
+		user_name: string | null;
+		hours: number | null;
+		baseRate: number | null;
+		effectiveRate: number | null;
+	};
+
+	const [editState, setEditState] = useState<EditState>({
+		id: null,
+		user_name: null,
+		hours: null,
+		baseRate: null,
+		effectiveRate: null,
+	});
+
+	const handleEditHours = (id: number, user_name: string, hours: number) => {
+		setEditState({ id, user_name, hours, baseRate: null, effectiveRate: null });
+	};
+
+	const handleEditRate = (id: number, user_name: string, baseRate: number) => {
+		setEditState({ id, user_name, hours: null, baseRate, effectiveRate: null });
+	};
+
+	const handleEditEffectiveRate = (
+		id: number,
+		user_name: string,
+		effectiveRate: number
+	) => {
+		setEditState({ id, user_name, hours: null, baseRate: null, effectiveRate });
+	};
+
+	const handleSave = async (newVal: number | null) => {
+		if (editState.id !== null && newVal !== null) {
+			try {
+				if (editState.hours !== null) {
+					await updateAllocatedHoursAndRate(editState.id, newVal, undefined);
+				} else if (editState.baseRate !== null) {
+					await updateAllocatedHoursAndRate(editState.id, undefined, newVal);
+				}
+				// Add logic for effectiveRate if needed
+
+				// Refresh data after successful update
+				await fetchData();
+			} catch (error) {
+				console.error("Error updating data: ", error);
+			}
+		}
+
+		// Reset edit state
+		setEditState({
+			id: null,
+			user_name: null,
+			hours: null,
+			baseRate: null,
+			effectiveRate: null,
+		});
+	};
+
 	return (
 		<div>
 			<div
@@ -413,7 +560,7 @@ function JobsFinancialTable({
 			</div>
 
 			<TableContainer
-				style={{ maxHeight: "800px", overflowY: "scroll" }}
+				style={{ maxHeight: "650px", overflowY: "scroll" }}
 				component={Paper}
 			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
@@ -491,13 +638,17 @@ function JobsFinancialTable({
 							return (
 								<>
 									<TableRow
-										style={{ background: "#1E7F74", color: "white" }}
+										style={{
+											background: "#1E7F74",
+											color: "white!important",
+											fontWeight: "bold",
+										}}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 18)}
 									</TableRow>
 									{monthIndex === selectedMonthIndex &&
-										jobs.map((job) => (
+										jobs.map((job, jobIndex) => (
 											<>
 												<>
 													<TableRow
@@ -505,9 +656,10 @@ function JobsFinancialTable({
 															borderBottom: "0.8px solid black",
 															backgroundColor: "#E5E5E8",
 														}}
+														key={`job-${jobIndex}`}
 													>
 														{CreateEmptyCells(1)}
-														<ShortTableCell>
+														<ShortTableCell style={{ fontWeight: "bold" }}>
 															{(job as Job)?.job_name as string}
 														</ShortTableCell>
 														{CreateEmptyCells(1)}
@@ -534,11 +686,23 @@ function JobsFinancialTable({
 															style={{ border: "0.8px solid black" }}
 														></TaskEntryCell>
 														{CreateEmptyCells(1)}
-														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+														<TaskEntryCell
+															style={{
+																border: "0.8px solid black",
+																backgroundColor: "#BEB3D4",
+															}}
+														>
 															<a href="#" title="Edit Actuals Value">
 																{((job as Job)?.total as Total).actualValue || 0}
 															</a>
 														</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
+														<TaskEntryCell>-</TaskEntryCell>
 													</TableRow>
 												</>
 												{Object.entries(job).map(([key, task]) => {
@@ -547,7 +711,7 @@ function JobsFinancialTable({
 															{Number.isInteger(parseInt(key)) && (
 																<TableRow style={{ borderBottom: "0.8px solid black" }}>
 																	{CreateEmptyCells(2)}
-																	<ShortTableCell>
+																	<ShortTableCell style={{ fontWeight: "bold" }}>
 																		{(task as TaskEntry)?.task_name as string}
 																	</ShortTableCell>
 																	<ShortTableCell>
@@ -599,27 +763,46 @@ function JobsFinancialTable({
 																						<>
 																							{user_name && (
 																								<>
-																									<TaskEntryCell
-																										style={{
-																											border: "0.8px solid black",
-																											backgroundColor: "#C3DDBC",
-																											paddingLeft: "10px",
-																										}}
-																									>
-																										<a href="#" title="Edit Hours">
-																											{hours}
-																										</a>
-																									</TaskEntryCell>
+																									{/* Base Rate Editable Cell */}
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
 																											backgroundColor: "#C3DDBC",
 																										}}
+																										onClick={() =>
+																											handleEditHours(id, user_name, baseRate)
+																										}
 																									>
-																										<a href="#" title="Edit Rate">
-																											{baseRate}
-																										</a>
+																										<EditableCell
+																											value={baseRate.toString()}
+																											onSave={(newVal, id) => handleSave(newVal, id)}
+																											isEditable={
+																												(editState === editState.baseRate) !== null
+																											}
+																										/>
 																									</TaskEntryCell>
+
+																									{/* Effective Rate Editable Cell */}
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																										}}
+																										onClick={() =>
+																											handleEditRate(id, user_name, effectiveRate)
+																										}
+																									>
+																										<EditableCell
+																											value={effectiveRate.toString()}
+																											onSave={(newVal, id) => handleSave(newVal, id)}
+																											isEditable={
+																												editState.id === id &&
+																												editState.effectiveRate !== null
+																											}
+																											id={id}
+																										/>
+																									</TaskEntryCell>
+
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
@@ -639,6 +822,7 @@ function JobsFinancialTable({
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
+																											fontWeight: "bold",
 																										}}
 																									>
 																										{baseRate}
@@ -648,11 +832,21 @@ function JobsFinancialTable({
 																											border: "0.8px solid black",
 																											backgroundColor: "#BEB3D4",
 																										}}
+																										onClick={() =>
+																											handleEditEffectiveRate(id, user_name, effectiveRate)
+																										}
 																									>
-																										<a href="#" title="Edit Effective Rate">
-																											{effectiveRate}
-																										</a>
+																										<EditableCell
+																											value={effectiveRate.toString()}
+																											onSave={(newVal, id) => handleSave(newVal, id)}
+																											isEditable={
+																												editState.id === id &&
+																												editState.effectiveRate !== null
+																											}
+																											id={id}
+																										/>
 																									</TaskEntryCell>
+
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
