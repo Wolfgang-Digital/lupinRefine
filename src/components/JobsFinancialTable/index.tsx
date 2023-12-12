@@ -592,8 +592,8 @@ function JobsFinancialTable({
 																														updatedData: {
 																															// adjust the values here according to inputs
 																															// if there is no change in the field you simply don't pass it to the updatedData
-																															hours: 2, // new number
-																															allocated_rate: 2, // new number
+																															// hours: 2, // new number
+																															// allocated_rate: 2, // new number
 																														},
 																														user_id: user_id,
 																														task_id: Number(key),
