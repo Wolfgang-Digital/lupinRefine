@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { IconButton, Table, TextField } from "@mui/material";
+import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import {
 	// getAllTimesheetRowsV2,
@@ -236,7 +236,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			total.effectiveRate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
-				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
+				(total.actualValue || 0) + ((current.time || 0) * (current.rate || 0) || 0);
 			(((accumulator[jobKey] as Task)[taskKey] as User).total as Total) = total;
 		}
 
@@ -251,7 +251,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			((accumulator[jobKey] as Task)[taskKey] as User)[userKey] = {
 				time: current.time || 0,
 				baseRate: current.allocated_rate || 0,
-				effectiveRate: (current.effective_rate || 0) + 50,
+				effectiveRate: current.effective_rate || 0,
 				count: 1,
 				user_name: current.user_name || "",
 				hours: current.hours || 0,
@@ -335,7 +335,7 @@ function JobsFinancialTable({
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
-	const [addUserToTask, setAddUserToTask] = useState<boolean>(false);
+	/* const [addUserToTask, setAddUserToTask] = useState<boolean>(false); */
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -388,57 +388,25 @@ function JobsFinancialTable({
 
 		fetchData();
 	}, []);
+	const [isFormVisible, setFormVisibility] = useState(false);
+	const PopupForm = () => {
+		console.log("Hello World!");
 
-	const renderAdditionalRows = (taskId: string) => {
-		monthData.map((data: Accumulator) => {
-			const jobs = Object.values(data);
-			jobs.map((job) => {
-				Object.entries(job).map(([key, task]) => {
-					if (Number.isInteger(parseInt(key)) && key === taskId) {
-						console.log((task as TaskEntry)?.task_id as string);
-						console.log(key);
-						console.log({ addUserToTask });
-						renderRows();
-					}
-				});
-			});
-		});
-	};
-	const renderRows = () => {
+		// const toggleForm = () => {
+		// 	setFormVisibility(!isFormVisible);
+		// };
+		console.log(isFormVisible);
+		const formContent = (
+			<div>
+				<h2>Pop Up Form</h2>
+			</div>
+		);
+
 		return (
-			<TableRow>
-				{CreateEmptyCells(3)}
-				<ShortTaskEntryCell onClick={() => setAddUserToTask(false)}>
-					X
-				</ShortTaskEntryCell>
-				<TaskEntryCell
-					style={{
-						border: "0.8px solid black",
-						backgroundColor: "#C3DDBC",
-						paddingLeft: "10px",
-					}}
-				>
-					<TextField></TextField>
-				</TaskEntryCell>
-				<TaskEntryCell
-					style={{
-						border: "0.8px solid black",
-						backgroundColor: "#C3DDBC",
-						paddingLeft: "10px",
-					}}
-				>
-					<TextField></TextField>
-				</TaskEntryCell>
-				<TaskEntryCell
-					style={{
-						border: "0.8px solid black",
-						paddingLeft: "10px",
-					}}
-				>
-					<TextField></TextField>
-				</TaskEntryCell>
-				{CreateEmptyCells(4)}
-			</TableRow>
+			<div>
+				<button>Open Form</button>
+				{isFormVisible && formContent}
+			</div>
 		);
 	};
 
@@ -571,6 +539,10 @@ function JobsFinancialTable({
 																title="Add new Task to Job"
 																color="secondary"
 																style={{ padding: "0px" }}
+																onClick={() => {
+																	setFormVisibility(true);
+																	PopupForm();
+																}}
 															>
 																<PostAdd style={{ fontSize: "22px" }} />
 															</IconButton>
@@ -611,10 +583,10 @@ function JobsFinancialTable({
 																			color="secondary"
 																			style={{ padding: "0px" }}
 																			onClick={() => {
-																				setAddUserToTask(true);
+																				/* setAddUserToTask(true);
 																				renderAdditionalRows(
 																					(task as TaskEntry)?.task_id as string
-																				);
+																				); */
 																			}}
 																			key={key}
 																		>
@@ -730,7 +702,8 @@ function JobsFinancialTable({
 																							)}
 																						</>
 																					</TableRow>
-																					{addUserToTask && renderRows()}
+																					{/* {addUserToTask && renderRows()} */}
+																					{isFormVisible && PopupForm()}
 																				</>
 																			)
 																		);
