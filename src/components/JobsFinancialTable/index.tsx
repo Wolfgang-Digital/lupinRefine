@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { IconButton, Table } from "@mui/material";
+import { IconButton, Table, TextField } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import {
 	// getAllTimesheetRowsV2,
@@ -225,6 +225,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					// user_name: "",
 				} as unknown as Total,
 				task_name: current.task_name || "",
+				task_id: current.task_id?.toString() || "",
 			};
 			// If task exists, add the time and rate to the total
 		} else {
@@ -334,6 +335,7 @@ function JobsFinancialTable({
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
+	const [addUserToTask, setAddUserToTask] = useState<boolean>(false);
 	useEffect(() => {
 		async function fetchData() {
 			try {
@@ -386,6 +388,59 @@ function JobsFinancialTable({
 
 		fetchData();
 	}, []);
+
+	const renderAdditionalRows = (taskId: string) => {
+		monthData.map((data: Accumulator) => {
+			const jobs = Object.values(data);
+			jobs.map((job) => {
+				Object.entries(job).map(([key, task]) => {
+					if (Number.isInteger(parseInt(key)) && key === taskId) {
+						console.log((task as TaskEntry)?.task_id as string);
+						console.log(key);
+						console.log({ addUserToTask });
+						renderRows();
+					}
+				});
+			});
+		});
+	};
+	const renderRows = () => {
+		return (
+			<TableRow>
+				{CreateEmptyCells(3)}
+				<ShortTaskEntryCell onClick={() => setAddUserToTask(false)}>
+					X
+				</ShortTaskEntryCell>
+				<TaskEntryCell
+					style={{
+						border: "0.8px solid black",
+						backgroundColor: "#C3DDBC",
+						paddingLeft: "10px",
+					}}
+				>
+					<TextField></TextField>
+				</TaskEntryCell>
+				<TaskEntryCell
+					style={{
+						border: "0.8px solid black",
+						backgroundColor: "#C3DDBC",
+						paddingLeft: "10px",
+					}}
+				>
+					<TextField></TextField>
+				</TaskEntryCell>
+				<TaskEntryCell
+					style={{
+						border: "0.8px solid black",
+						paddingLeft: "10px",
+					}}
+				>
+					<TextField></TextField>
+				</TaskEntryCell>
+				{CreateEmptyCells(4)}
+			</TableRow>
+		);
+	};
 
 	return (
 		<div>
@@ -555,6 +610,13 @@ function JobsFinancialTable({
 																			title="Add New User to Task"
 																			color="secondary"
 																			style={{ padding: "0px" }}
+																			onClick={() => {
+																				setAddUserToTask(true);
+																				renderAdditionalRows(
+																					(task as TaskEntry)?.task_id as string
+																				);
+																			}}
+																			key={key}
 																		>
 																			<PersonAddAlt1 style={{ fontSize: "22px" }} />
 																		</IconButton>
@@ -592,6 +654,7 @@ function JobsFinancialTable({
 																							marginLeft: "10px",
 																							borderBottom: "0.8px solid black",
 																						}}
+																						key={(task as TaskEntry)?.task_id as string}
 																					>
 																						{CreateEmptyCells(2)}
 																						<ShortTaskEntryCell></ShortTaskEntryCell>
@@ -667,6 +730,7 @@ function JobsFinancialTable({
 																							)}
 																						</>
 																					</TableRow>
+																					{addUserToTask && renderRows()}
 																				</>
 																			)
 																		);
