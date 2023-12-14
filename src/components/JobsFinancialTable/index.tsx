@@ -14,8 +14,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { IconButton, Table } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRowsV2 } from "@pages/api/timesheetRows";
-import { AllTimesheetRowsView, TimesheetRowsView } from "types";
+import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
+import { AllTimesheetRowsViewV5 } from "types";
+import { changeAllocation } from "@pages/api/allocateHours";
+
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import EditIcon from "@mui/icons-material/Edit";
 
 const columns = [
 	"Month",
@@ -133,6 +139,7 @@ const CreateEmptyCells = (total: number) => {
 		<TaskEntryCell key={i + "empty"}></TaskEntryCell>
 	));
 };
+
 const CreateRowOfTableCells = (
 	content: React.ReactNode,
 	index: number,
@@ -146,6 +153,8 @@ const CreateRowOfTableCells = (
 type Total = {
 	time: number;
 	rate: number;
+	allocated_rate: number;
+	effective_rate: number;
 	count: number;
 	hours: number;
 	allocatedValue?: number;
@@ -155,8 +164,11 @@ type Total = {
 type UserEntry = {
 	time: number;
 	rate: number;
+	allocated_rate: number;
+	effective_rate: number;
 	count: number;
 	user_name: string;
+	user_id: string;
 	hours: number;
 };
 type User = Record<string, UserEntry | string>;
@@ -165,7 +177,7 @@ type Task = Record<string, TaskEntry | Total | string>;
 type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
-function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
+function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -177,9 +189,11 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 		if (!accumulator[jobKey]) {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
+				job_id: current?.jobs_id?.toString() || "",
 				total: {
 					time: 0,
 					rate: 0,
+					allocated_rate: 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
@@ -191,6 +205,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			const total = job.total as Total;
 			total.time += 0;
 			total.rate += current.rate || 0;
+			total.allocated_rate = current.rate || 0;
 			total.count += 1;
 		}
 
@@ -200,11 +215,11 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 				total: {
 					time: current.time || 0,
 					rate: current.rate || 0,
+					allocated_rate: current.rate || 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
 					actualValue: (current.time || 0) * (current.rate || 0) || 0,
-					user_name: "",
 				} as unknown as Total,
 				task_name: current.task_name || "",
 			};
@@ -214,6 +229,7 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			const total = task.total as Total;
 			total.time += current.time || 0;
 			total.rate += current.rate || 0;
+			total.allocated_rate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
 				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
@@ -231,7 +247,9 @@ function groupData(dataArray: AllTimesheetRowsView[]): Accumulator {
 			((accumulator[jobKey] as Task)[taskKey] as User)[userKey] = {
 				time: current.time || 0,
 				rate: current.rate || 0,
+				allocated_rate: current.allocated_rate || 0,
 				count: 1,
+				user_id: current.user_id || "",
 				user_name: current.user_name || "",
 				hours: current.hours || 0,
 			} as unknown as UserEntry;
@@ -314,58 +332,120 @@ function JobsFinancialTable({
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
 		new Date().getMonth()
 	);
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				// do something for 12 times
-				const october: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
-					2023,
-					10
-				)) as unknown as AllTimesheetRowsView[];
-				const november: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
-					2023,
-					11
-				)) as unknown as AllTimesheetRowsView[];
-				const december: AllTimesheetRowsView[] = (await getAllTimesheetRowsV2(
-					2023,
-					12
-				)) as unknown as AllTimesheetRowsView[];
-				const unfilteredResponse = october.concat(november, december);
-				let filteredResponse: AllTimesheetRowsView[] = [];
-				if (unfilteredResponse) {
-					filteredResponse = unfilteredResponse.filter(
-						({ client_id, project_id }) => {
-							return client_id === clientId && project_id === projectId;
-						}
-					);
-				}
-
-				// create empty array with 12 elements, each element is an empty array
-				const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
-					() => []
-				);
-				// loop through each timesheet row
-				filteredResponse?.forEach((row) => {
-					// get the month of the timesheet row
-					if (row.year === new Date().getFullYear()) {
-						ungroupedMonthData[(row.month || 0) - 1] = [
-							...ungroupedMonthData[(row.month || 0) - 1],
-							row,
-						];
+	async function fetchData() {
+		try {
+			// do something for 12 times
+			const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				10
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				11
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				12
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const unfilteredResponse = october.concat(november, december);
+			let filteredResponse: AllTimesheetRowsViewV5[] = [];
+			if (unfilteredResponse) {
+				filteredResponse = unfilteredResponse.filter(
+					({ client_id, project_id }) => {
+						return client_id === clientId && project_id === projectId;
 					}
-				});
-				const groupedData: Accumulator[] = [];
-				ungroupedMonthData.forEach((month, index) => {
-					groupedData[index] = groupData(month);
-				});
-				setMonthData(groupedData);
-			} catch (error) {
-				console.error(error);
+				);
 			}
-		}
 
+			// create empty array with 12 elements, each element is an empty array
+			const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
+				() => []
+			);
+			// loop through each timesheet row
+			filteredResponse?.forEach((row) => {
+				// get the month of the timesheet row
+				if (row.year === new Date().getFullYear()) {
+					ungroupedMonthData[(row.month || 0) - 1] = [
+						...ungroupedMonthData[(row.month || 0) - 1],
+						row,
+					];
+				}
+			});
+			const groupedData: Accumulator[] = [];
+			ungroupedMonthData.forEach((month, index) => {
+				groupedData[index] = groupData(month);
+			});
+			setMonthData(groupedData);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	useEffect(() => {
 		fetchData();
 	}, []);
+
+	// edit functionality
+
+	interface EditState {
+		isModalOpen: boolean;
+		editingValue: string;
+		user_id: string;
+		task_id: number;
+		job_id: number;
+		editType: "hours" | "allocated_rate";
+	}
+
+	const [editState, setEditState] = useState<EditState>({
+		isModalOpen: false,
+		editingValue: "",
+		user_id: "",
+		task_id: 0,
+		job_id: 0,
+		editType: "hours", // Default value
+	});
+
+	const openEditModal = (
+		user_id: string,
+		task_id: number,
+		job_id: number,
+		currentValue: string,
+		editType: "hours" | "allocated_rate"
+	) => {
+		setEditState({
+			isModalOpen: true,
+			editingValue: currentValue,
+			user_id,
+			task_id,
+			job_id,
+			editType,
+		});
+	};
+
+	const handleSave = async () => {
+		const { editingValue, user_id, task_id, job_id, editType } = editState;
+		const numericValue = parseFloat(editingValue);
+
+		if (isNaN(numericValue)) {
+			console.error("Invalid input: editingValue is not a number.");
+			return;
+		}
+
+		const updatedData =
+			editType === "hours"
+				? { hours: numericValue }
+				: { allocated_rate: numericValue }; // Ensure this line is correct
+
+		await changeAllocation({
+			updatedData,
+			user_id,
+			task_id,
+			job_id,
+		});
+
+		await fetchData(); // Ensure fetchData correctly re-fetches and updates state
+		setEditState({ ...editState, isModalOpen: false });
+	};
 
 	return (
 		<div>
@@ -393,7 +473,7 @@ function JobsFinancialTable({
 			</div>
 
 			<TableContainer
-				style={{ maxHeight: "800px", overflowY: "scroll" }}
+				style={{ maxHeight: "550px", overflowY: "scroll" }}
 				component={Paper}
 			>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
@@ -553,90 +633,127 @@ function JobsFinancialTable({
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
-																Object.values(task).map(({ time, hours, user_name, rate }) => {
-																	return (
-																		user_name && (
-																			<>
-																				<TableRow
-																					style={{
-																						verticalAlign: "middle",
-																						textAlign: "center",
-																						marginTop: "7px",
-																						marginLeft: "10px",
-																						borderBottom: "0.8px solid black",
-																					}}
-																				>
-																					{CreateEmptyCells(2)}
-																					<ShortTaskEntryCell></ShortTaskEntryCell>
-																					<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
-																					<>
-																						{user_name && (
-																							<>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																										paddingLeft: "10px",
-																									}}
-																								>
-																									<a href="#" title="Edit Hours">
+																Object.values(task).map(
+																	({
+																		time,
+																		hours,
+																		user_name,
+																		user_id,
+																		allocated_rate,
+																		effective_rate,
+																	}) => {
+																		return (
+																			user_name && (
+																				<>
+																					<TableRow
+																						style={{
+																							verticalAlign: "middle",
+																							textAlign: "center",
+																							marginTop: "7px",
+																							marginLeft: "10px",
+																							borderBottom: "0.8px solid black",
+																						}}
+																					>
+																						{CreateEmptyCells(2)}
+																						<ShortTaskEntryCell></ShortTaskEntryCell>
+																						<ShortTaskEntryCell>{user_name}</ShortTaskEntryCell>
+																						<>
+																							{user_name && (
+																								<>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#C3DDBC",
+																											paddingLeft: "10px",
+																										}}
+																									>
 																										{hours}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#C3DDBC",
-																									}}
-																								>
-																									<a href="#" title="Edit Rate">
-																										{rate}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										fontWeight: "bold",
-																									}}
-																								>
-																									{hours * rate}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										fontWeight: "bold",
-																									}}
-																								>
-																									{time}
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									<a href="#" title="Edit Rate">
-																										{rate}
-																									</a>
-																								</TaskEntryCell>
-																								<TaskEntryCell
-																									style={{
-																										border: "0.8px solid black",
-																										backgroundColor: "#BEB3D4",
-																									}}
-																								>
-																									<a href="#" title="Edit Value">
-																										{time * rate}
-																									</a>
-																								</TaskEntryCell>
-																							</>
-																						)}
-																					</>
-																				</TableRow>
-																			</>
-																		)
-																	);
-																})}
+																										<IconButton
+																											onClick={() =>
+																												openEditModal(
+																													user_id,
+																													Number(key),
+																													Number(job.job_id),
+																													hours.toString(),
+																													"hours"
+																												)
+																											}
+																											style={{ padding: 0, marginLeft: "10px" }}
+																										>
+																											<EditIcon style={{ fontSize: "16px" }} />
+																										</IconButton>
+																									</TaskEntryCell>
+
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#C3DDBC",
+																											paddingLeft: "10px",
+																										}}
+																									>
+																										{allocated_rate}
+																										<IconButton
+																											onClick={() =>
+																												openEditModal(
+																													user_id,
+																													Number(key),
+																													Number(job.job_id),
+																													allocated_rate.toString(),
+																													"allocated_rate"
+																												)
+																											}
+																											style={{ padding: 0, marginLeft: "10px" }}
+																										>
+																											<EditIcon style={{ fontSize: "16px" }} />
+																										</IconButton>
+																									</TaskEntryCell>
+
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											fontWeight: "bold",
+																										}}
+																									>
+																										{hours * allocated_rate}
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											fontWeight: "bold",
+																										}}
+																									>
+																										{time}
+																									</TaskEntryCell>
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																										}}
+																									>
+																										<a href="#" title="Edit Rate">
+																											{allocated_rate}
+																										</a>
+																									</TaskEntryCell>
+
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																										}}
+																									>
+																										<a href="#" title="Edit Value">
+																											{time * effective_rate}
+																										</a>
+																									</TaskEntryCell>
+																								</>
+																							)}
+																						</>
+																					</TableRow>
+																				</>
+																			)
+																		);
+																	}
+																)}
 														</>
 													);
 												})}
@@ -676,6 +793,58 @@ function JobsFinancialTable({
 					</TableBody>
 				</Table>
 			</TableContainer>
+
+			<Modal
+				open={editState.isModalOpen}
+				onClose={() => setEditState({ ...editState, isModalOpen: false })}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: "white",
+						padding: "20px",
+						borderRadius: "4px",
+						boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.2)",
+						outline: "none",
+						minWidth: "300px",
+					}}
+				>
+					<h2>Edit Value</h2>
+					<TextField
+						fullWidth
+						margin="normal"
+						label="New Value"
+						value={editState.editingValue}
+						onChange={(e) =>
+							setEditState({ ...editState, editingValue: e.target.value })
+						}
+					/>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-around",
+							marginTop: "20px",
+						}}
+					>
+						<Button
+							variant="outlined"
+							color="primary"
+							onClick={() => setEditState({ ...editState, isModalOpen: false })}
+						>
+							Cancel
+						</Button>
+						<Button variant="contained" color="primary" onClick={handleSave}>
+							Save
+						</Button>
+					</div>
+				</div>
+			</Modal>
 		</div>
 	);
 }
