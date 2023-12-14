@@ -385,7 +385,7 @@ function JobsFinancialTable({
 		fetchData();
 	}, []);
 
-	// edit functionality
+	// edit functionality for rows
 
 	interface EditState {
 		isModalOpen: boolean;
