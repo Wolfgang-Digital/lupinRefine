@@ -146,7 +146,7 @@ const JobList: React.FC = () => {
 						tier_name: job.tier_name,
 						currency_symbol: job.currency_symbol,
 						status: job.status_code_name,
-						department: job.department_name,
+						department_name: job.department_name,
 					}))}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}

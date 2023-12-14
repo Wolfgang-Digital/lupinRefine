@@ -54,7 +54,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 			// { label: "Job ID", field: "job_id" },
 			// { label: "Jobs ID", field: "id" },
 			{ label: "Client Name", field: "client_name" },
-			{ label: "Department", field: "department" },
+			{ label: "Department", field: "department_name" },
 			{ label: "Start Date", field: "job_start_date" },
 			{ label: "Project", field: "project_name" },
 			// { label: "Project ID", field: "job_name_id" },
