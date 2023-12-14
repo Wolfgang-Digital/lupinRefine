@@ -12,17 +12,22 @@ import { styled } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { IconButton, Table } from "@mui/material";
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	IconButton,
+	MenuItem,
+	Table,
+	TextField,
+} from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import {
-	// getAllTimesheetRowsV2,
-	getAllTimesheetRowsV3,
-} from "@pages/api/timesheetRows";
-import {
-	// AllTimesheetRowsView,
-	// TimesheetRowsView,
-	AllTimesheetRowsViewV5,
-} from "types";
+import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
+import { AllTimesheetRowsViewV5 } from "types";
+import { getAllUsers } from "@src/pages/api/users";
+import { format } from "date-fns";
+import { PostAllocateHoursEntry } from "@src/pages/api/allocateHours";
+import { PostTimeEntry } from "@src/pages/api/timesheet";
 
 const columns = [
 	"Month",
@@ -179,6 +184,10 @@ type TaskEntry = Record<string, User | Total | string>;
 type Task = Record<string, TaskEntry | Total | string>;
 type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
+type UserOption = {
+	label: string;
+	value: string;
+};
 
 function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
@@ -192,6 +201,8 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 		if (!accumulator[jobKey]) {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
+				job_id: current.job_id?.toString() || "",
+				jobs_id: current.jobs_id?.toString() || "",
 				total: {
 					time: 0,
 					baseRate: 0,
@@ -222,7 +233,6 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					count: 1,
 					allocatedValue: 0,
 					actualValue: (current.time || 0) * (current.rate || 0) || 0,
-					// user_name: "",
 				} as unknown as Total,
 				task_name: current.task_name || "",
 				task_id: current.task_id?.toString() || "",
@@ -268,7 +278,6 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			(userEntry as UserEntry).time += current?.time || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
-		// console.log({ accumulator });
 		return accumulator;
 	}, {} as Accumulator);
 
@@ -336,9 +345,20 @@ function JobsFinancialTable({
 		new Date().getMonth()
 	);
 	/* const [addUserToTask, setAddUserToTask] = useState<boolean>(false); */
+	const [postData, setPostData] = useState(false);
 	useEffect(() => {
 		async function fetchData() {
 			try {
+				const getUsers = await getAllUsers();
+				if (getUsers) {
+					getUsers.forEach((user) => {
+						userOptions.push({
+							label: user.user_name || "",
+							value: user.user_id?.toString() || "0",
+						});
+					});
+				}
+				setUsers(userOptions);
 				// do something for 12 times
 				const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
 					2023,
@@ -387,28 +407,63 @@ function JobsFinancialTable({
 		}
 
 		fetchData();
-	}, []);
-	const [isFormVisible, setFormVisibility] = useState(false);
-	const PopupForm = () => {
-		console.log("Hello World!");
+	}, [postData]);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [taskName, setTaskName] = useState("");
+	const [users, setUsers] = useState<UserOption[]>([]);
+	const userOptions: UserOption[] = [];
+	const [selectedUser, setSelectedUser] = useState("");
+	const [allocatedHours, setAllocatedHours] = useState("");
+	const [rate, setRate] = useState("");
+	const [taskId, setTaskId] = useState("");
+	const [jobId, setJobId] = useState("");
+	const [jobsId, setJobsId] = useState("");
 
-		// const toggleForm = () => {
-		// 	setFormVisibility(!isFormVisible);
-		// };
-		console.log(isFormVisible);
-		const formContent = (
-			<div>
-				<h2>Pop Up Form</h2>
-			</div>
-		);
-
-		return (
-			<div>
-				<button>Open Form</button>
-				{isFormVisible && formContent}
-			</div>
-		);
+	const closeModal = () => {
+		setIsModalOpen(false);
 	};
+	const handleFormSubmit = (event: React.FormEvent) => {
+		setIsModalOpen(false);
+		event.preventDefault();
+	};
+
+	async function saveAllocateHoursEntry() {
+		const currentDate = new Date();
+		const formattedDate = format(currentDate, "yyyy-MM-dd");
+		const dataToPostAHE = {
+			jobTaskId: 10,
+			month: Number(selectedMonthIndex + 1),
+			year: Number(currentDate.getFullYear()),
+			userId: selectedUser,
+			jobId: Number(jobsId),
+			taskId: Number(taskId),
+			hours: Number(allocatedHours),
+			allocatedRate: Number(rate),
+			effectiveRate: Number(rate),
+		};
+		const dataToPostTSE = {
+			staffId: selectedUser,
+			notes: "Zero hours for allocate hours",
+			timeSpent: 0,
+			projectId: Number(projectId),
+			jobId: Number(jobId),
+			jobsId: Number(jobsId),
+			taskId: Number(taskId),
+			selectedDate: formattedDate,
+			rate: Number(rate),
+			month: Number(selectedMonthIndex + 1),
+			year: Number(currentDate.getFullYear()),
+		};
+		const response = await PostAllocateHoursEntry(dataToPostAHE);
+		const response2 = await PostTimeEntry(dataToPostTSE);
+		console.log(`PostAllocateHoursEntry ${response}`);
+		console.log(`PostTimeEntry ${response2}`);
+		setTaskId("");
+		setSelectedUser("");
+		setAllocatedHours("");
+		setRate("");
+		setPostData(true);
+	}
 
 	return (
 		<div>
@@ -540,8 +595,10 @@ function JobsFinancialTable({
 																color="secondary"
 																style={{ padding: "0px" }}
 																onClick={() => {
-																	setFormVisibility(true);
-																	PopupForm();
+																	setJobId((job as Job)?.job_id as string);
+																	setJobsId((job as Job)?.jobs_id as string);
+																	setPostData(false);
+																	setIsModalOpen(true);
 																}}
 															>
 																<PostAdd style={{ fontSize: "22px" }} />
@@ -583,33 +640,35 @@ function JobsFinancialTable({
 																			color="secondary"
 																			style={{ padding: "0px" }}
 																			onClick={() => {
-																				/* setAddUserToTask(true);
-																				renderAdditionalRows(
-																					(task as TaskEntry)?.task_id as string
-																				); */
+																				setTaskName((task as TaskEntry)?.task_name as string);
+																				setTaskId((task as Task)?.task_id as string);
+																				setJobId((job as Job)?.job_id as string);
+																				setJobsId((job as Job)?.jobs_id as string);
+																				setPostData(false);
+																				setIsModalOpen(true);
 																			}}
 																			key={key}
 																		>
 																			<PersonAddAlt1 style={{ fontSize: "22px" }} />
 																		</IconButton>
 																	</ShortTableCell>
-																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{/* {((task as TaskEntry)?.total as Total).hours || 0} */}
-																	</TaskEntryCell>
+																	<TaskEntryCell
+																		style={{ border: "0.8px solid black" }}
+																	></TaskEntryCell>
 																	<TaskEntryCell
 																		style={{ border: "0.8px solid black" }}
 																	></TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{/* {((task as TaskEntry)?.total as Total).allocatedValue || 0} */}
-																	</TaskEntryCell>
-																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{/* {((task as TaskEntry)?.total as Total).time || 0} */}
-																	</TaskEntryCell>
+																	<TaskEntryCell
+																		style={{ border: "0.8px solid black" }}
+																	></TaskEntryCell>
+																	<TaskEntryCell
+																		style={{ border: "0.8px solid black" }}
+																	></TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
-																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
-																	</TaskEntryCell>
+																	<TaskEntryCell
+																		style={{ border: "0.8px solid black" }}
+																	></TaskEntryCell>
 																</TableRow>
 															)}
 															{Number.isInteger(parseInt(key)) &&
@@ -702,8 +761,80 @@ function JobsFinancialTable({
 																							)}
 																						</>
 																					</TableRow>
-																					{/* {addUserToTask && renderRows()} */}
-																					{isFormVisible && PopupForm()}
+																					<Dialog
+																						maxWidth="xs"
+																						open={isModalOpen}
+																						onClose={closeModal}
+																					>
+																						<DialogContent>
+																							<h2>Add user to task</h2>
+																							<form onSubmit={handleFormSubmit}>
+																								<TextField
+																									label="Selected Task"
+																									value={taskName}
+																									style={{
+																										width: "100%",
+																										marginBottom: "20px",
+																										textAlign: "left",
+																									}}
+																								></TextField>
+																								<TextField
+																									select
+																									value={selectedUser}
+																									label="Select User"
+																									onChange={(event) =>
+																										setSelectedUser(event.target.value)
+																									}
+																									style={{
+																										width: "100%",
+																										marginBottom: "20px",
+																										textAlign: "left",
+																									}}
+																								>
+																									{users.map((user) => (
+																										<MenuItem key={user.value} value={user.value}>
+																											{user.label}
+																										</MenuItem>
+																									))}
+																								</TextField>
+																								<TextField
+																									type="number"
+																									label="Select Hours"
+																									value={allocatedHours}
+																									onChange={(event) => {
+																										if (Number(event.target.value) >= 0) {
+																											setAllocatedHours(event.target.value);
+																										}
+																									}}
+																									style={{
+																										width: "100%",
+																										marginBottom: "20px",
+																										textAlign: "left",
+																									}}
+																								></TextField>
+																								<TextField
+																									type="text"
+																									label="Select Rate"
+																									value={rate}
+																									onChange={(event) => setRate(event.target.value)}
+																									style={{
+																										width: "100%",
+																										marginBottom: "20px",
+																										textAlign: "left",
+																									}}
+																								></TextField>
+																								<Button
+																									variant="contained"
+																									color="primary"
+																									type="submit"
+																									style={{ padding: "10px" }}
+																									onClick={saveAllocateHoursEntry}
+																								>
+																									Save Allocation
+																								</Button>
+																							</form>
+																						</DialogContent>
+																					</Dialog>
 																				</>
 																			)
 																		);
@@ -736,7 +867,6 @@ function JobsFinancialTable({
 												color="secondary"
 												style={{ padding: "0px" }}
 												title="Add new Job"
-												// onClick={() => handleEditRow(params.row.id)}
 											>
 												<AddCircle style={{ fontSize: "22px" }} />
 											</IconButton>
