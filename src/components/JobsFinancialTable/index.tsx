@@ -447,6 +447,10 @@ function JobsFinancialTable({
 		setEditState({ ...editState, isModalOpen: false });
 	};
 
+	const getCurrentMonth = () => {
+		return new Date().getMonth();
+	};
+
 	return (
 		<div>
 			<div
@@ -668,20 +672,22 @@ function JobsFinancialTable({
 																										}}
 																									>
 																										{hours}
-																										<IconButton
-																											onClick={() =>
-																												openEditModal(
-																													user_id,
-																													Number(key),
-																													Number(job.job_id),
-																													hours.toString(),
-																													"hours"
-																												)
-																											}
-																											style={{ padding: 0, marginLeft: "10px" }}
-																										>
-																											<EditIcon style={{ fontSize: "16px" }} />
-																										</IconButton>
+																										{selectedMonthIndex === getCurrentMonth() && (
+																											<IconButton
+																												onClick={() =>
+																													openEditModal(
+																														user_id,
+																														Number(key),
+																														Number(job.job_id),
+																														hours.toString(),
+																														"hours"
+																													)
+																												}
+																												style={{ padding: 0, marginLeft: "10px" }}
+																											>
+																												<EditIcon style={{ fontSize: "16px" }} />
+																											</IconButton>
+																										)}
 																									</TaskEntryCell>
 
 																									<TaskEntryCell
@@ -692,20 +698,22 @@ function JobsFinancialTable({
 																										}}
 																									>
 																										{allocated_rate}
-																										<IconButton
-																											onClick={() =>
-																												openEditModal(
-																													user_id,
-																													Number(key),
-																													Number(job.job_id),
-																													allocated_rate.toString(),
-																													"allocated_rate"
-																												)
-																											}
-																											style={{ padding: 0, marginLeft: "10px" }}
-																										>
-																											<EditIcon style={{ fontSize: "16px" }} />
-																										</IconButton>
+																										{selectedMonthIndex === getCurrentMonth() && (
+																											<IconButton
+																												onClick={() =>
+																													openEditModal(
+																														user_id,
+																														Number(key),
+																														Number(job.job_id),
+																														allocated_rate.toString(),
+																														"allocated_rate"
+																													)
+																												}
+																												style={{ padding: 0, marginLeft: "10px" }}
+																											>
+																												<EditIcon style={{ fontSize: "16px" }} />
+																											</IconButton>
+																										)}
 																									</TaskEntryCell>
 
 																									<TaskEntryCell
@@ -802,7 +810,8 @@ function JobsFinancialTable({
 				style={{
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "center",
+					justifyContent: "flex-start", // Align to the left
+					marginLeft: "10%", // Adjust this value as needed
 				}}
 			>
 				<div
