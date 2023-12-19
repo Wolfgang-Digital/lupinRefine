@@ -159,6 +159,7 @@ export const changeAllocation = async ({
 	updatedData: {
 		allocated_rate?: number;
 		hours?: number;
+		effective_rate?: number; // Add this line
 	};
 	job_id: number;
 	task_id: number;
