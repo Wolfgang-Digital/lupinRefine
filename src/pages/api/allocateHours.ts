@@ -150,6 +150,39 @@ export const markAllocationAsUncompleted = async ({
 	}
 };
 
+interface UpdateData {
+	hours?: number;
+	rate?: number;
+}
+
+export const updateAllocatedHoursAndRate = async (
+	id: number, // Unique identifier for the row you want to update
+	updatedHours?: number, // Optional parameter for hours
+	updatedRate?: number // Optional parameter for rate
+) => {
+	try {
+		const updateData: UpdateData = {};
+		if (updatedHours !== undefined) {
+			updateData.hours = updatedHours;
+		}
+		if (updatedRate !== undefined) {
+			updateData.rate = updatedRate;
+		}
+
+		const { data, error } = await supabase
+			.from("allocate_hours") // Replace with your actual table name
+			.update(updateData)
+			.eq("id", id); // Assuming 'id' is the primary key or unique identifier
+
+		if (error) {
+			console.error("Error updating allocated hours and rate: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error updating allocated hours and rate: ", error);
+	}
+};
 export const changeAllocation = async ({
 	updatedData,
 	job_id,

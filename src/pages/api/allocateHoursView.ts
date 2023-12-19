@@ -93,3 +93,27 @@ export const getJobAllocatedHoursPerMonthPerUser = async (
 		console.error("Error fetching job allocate hours per user: ", error);
 	}
 };
+
+export const getJobAllocatedHoursPerMonthPerJob = async (
+	year: number,
+	month: number,
+	jobsId: number,
+	taskId: number
+) => {
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours_view")
+			.select("*")
+			.eq("year", year)
+			.eq("month", month)
+			.eq("jobs_id", jobsId)
+			.eq("task_id", taskId);
+		if (error) {
+			console.error("Error fetching Job Allocated Hours Per Month: ", error);
+			return;
+		}
+		return data;
+	} catch (error) {
+		console.error("Error fetching Job Allocated Hours Per Month: ", error);
+	}
+};

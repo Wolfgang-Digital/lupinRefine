@@ -1,5 +1,6 @@
-import supabase from "@config/supaBaseClient";
-// import { JobTask } from "types";
+import supabase, { PostgrestError } from "@config/supaBaseClient";
+import { Tasks } from "types";
+export type TaskData = Tasks;
 
 export const getAllTasks = async () => {
 	try {
@@ -42,6 +43,28 @@ export const getTaskByJobId = async (jobId: string) => {
 		return taskData;
 	} catch (error) {
 		console.error("Error fetching tasks:", error);
+	}
+};
+
+export const getTaskName = async (
+	taskId: number
+): Promise<TaskData[] | undefined> => {
+	try {
+		const { data, error } = (await supabase
+			.from("tasks")
+			.select("task_name")
+			.eq("task_id", taskId)) as unknown as {
+			data: TaskData[];
+			error: PostgrestError;
+		};
+		if (error) {
+			console.error("Error fetching task name: ", error);
+			return;
+		}
+		// console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error fetching task name: ", error);
 	}
 };
 
