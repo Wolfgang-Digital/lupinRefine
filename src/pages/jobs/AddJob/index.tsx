@@ -21,6 +21,7 @@ import { getProjectJobs } from "@pages/api/projectJobsView";
 import { getAllProjects } from "@pages/api/projects";
 // import { getJobNames } from "@pages/api/jobNames";
 import { PostJobEntry } from "@pages/api/jobs";
+import { getJobName } from "@src/pages/api/jobNames";
 
 interface AddJobProps {
 	onAddJob: () => void;
@@ -123,11 +124,15 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 		}
 		getJobs();
 	}, [selectedProject]);
-
+	let jobName: string;
 	async function saveJobEntry() {
+		const getTheJobName = await getJobName(Number(selectedJob));
+		if (getTheJobName) {
+			jobName = getTheJobName[0].job_name_name || "";
+		}
 		const dataToPost = {
 			jobNameId: Number(selectedJob),
-			jobName: selectedProject,
+			jobName: jobName,
 			clientId: Number(selectedClient),
 			projectId: Number(selectedProject),
 			jobId: Number(selectedJob),
@@ -228,7 +233,11 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 								>
 									{jobs.map((job) => (
-										<MenuItem key={job.value} value={job.value}>
+										<MenuItem
+											key={job.value}
+											value={job.value}
+											title={job.value.toString()}
+										>
 											{job.label}
 										</MenuItem>
 									))}

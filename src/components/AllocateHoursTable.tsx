@@ -162,11 +162,6 @@ function CollapsibleHoursGrid({
 		const currentDate = new Date();
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		if (edit) {
-			// const allocateHoursLogged = (await getJobAllocatedHoursPerMonthPerUser(
-			// 	Number(monthNumber),
-			// 	selectedUser,
-
-			// )) || [];
 			const dataToUpdateAHE = {
 				id: Number(selectedId),
 				userId: selectedUser,

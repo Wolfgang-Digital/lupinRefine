@@ -43,6 +43,7 @@ interface JobDetailProps {
 }
 
 const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
+	console.log({ job });
 	const [tabValue, setTabValue] = useState(0);
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
@@ -50,13 +51,17 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
 		[
-			{ label: "Job ID", field: "job_id" },
-			{ label: "Jobs ID", field: "id" },
+			// { label: "Job ID", field: "job_id" },
+			// { label: "Jobs ID", field: "id" },
 			{ label: "Client Name", field: "client_name" },
-			{ label: "Project Name", field: "project_name" },
-			{ label: "Project ID", field: "job_name_id" },
-			{ label: "Job Type", field: "job_type_name" },
+			{ label: "Department", field: "department_name" },
+			{ label: "Start Date", field: "job_start_date" },
+			{ label: "Project", field: "project_name" },
+			// { label: "Project ID", field: "job_name_id" },
+			// { label: "Job", field: "job_type_name" },
+			{ label: "Job", field: "job_name_name" },
 			{ label: "Tier", field: "tier_name" },
+			{ label: "Notes", field: "job_notes" },
 		];
 
 	return (
@@ -82,7 +87,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 							{`${job?.client_name}: ${job?.job_name_name}`}
 						</Typography>
 						<Button autoFocus color="inherit" onClick={onClose}>
-							Save
+							Close
 						</Button>
 					</Toolbar>
 				</AppBar>
