@@ -24,17 +24,6 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsViewV5 } from "types";
-import { getAllUsers, getUserName } from "@src/pages/api/users";
-import { format } from "date-fns";
-import { PostAllocateHoursEntry } from "@src/pages/api/allocateHours";
-import { PostTimeEntry } from "@src/pages/api/timesheet";
-import { getAllProjectJobTasks } from "@src/pages/api/projectJobTasksView";
-import {
-	getJobAllocatedHoursPerMonthPerJob,
-	getJobAllocatedHoursPerMonthPerUser,
-} from "@src/pages/api/allocateHoursView";
-// import { gridColumnGroupsLookupSelector } from "@mui/x-data-grid";
-// import { getTaskName } from "@src/pages/api/tasks";
 import { changeAllocation } from "@pages/api/allocateHours";
 
 import Modal from "@mui/material/Modal";
@@ -198,16 +187,6 @@ type UserEntry = {
 	user_id: string;
 	hours: number;
 };
-
-type TaskOption = {
-	label: string;
-	value: string;
-};
-
-type UserOption = {
-	label: string;
-	value: string;
-};
 type User = Record<string, UserEntry | string>;
 type TaskEntry = Record<string, User | Total | string>;
 type Task = Record<string, TaskEntry | Total | string>;
@@ -263,7 +242,6 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					actualValue: (current.time || 0) * (current.rate || 0) || 0,
 				} as unknown as Total,
 				task_name: current.task_name || "",
-				task_id: current.task_id?.toString() || "",
 			};
 			// If task exists, add the time and rate to the total
 		} else {
@@ -275,7 +253,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			total.effective_rate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
-				(total.actualValue || 0) + ((current.time || 0) * (current.rate || 0) || 0);
+				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
 			(((accumulator[jobKey] as Task)[taskKey] as User).total as Total) = total;
 		}
 
@@ -309,6 +287,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			(userEntry as UserEntry).time += current?.time || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
+
 		return accumulator;
 	}, {} as Accumulator);
 
@@ -365,11 +344,9 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 function JobsFinancialTable({
 	projectId,
 	clientId,
-	jobNameId,
 }: {
 	projectId: number;
 	clientId: number;
-	jobNameId: number;
 }) {
 	const [value, setValue] = React.useState(dayjs("2023-10-31") as Dayjs | null);
 
@@ -833,17 +810,6 @@ function JobsFinancialTable({
 																title="Add new Task to Job"
 																color="secondary"
 																style={{ padding: "0px" }}
-																onClick={() => {
-																	setSelectedTask("");
-																	setSelectedUser("");
-																	setAllocatedHours("");
-																	setRate("");
-																	setShowAddUserToTaskForm(false);
-																	setJobId((job as Job)?.job_id as string);
-																	setJobsId((job as Job)?.jobs_id as string);
-																	setPostData(false);
-																	setIsModalOpen(true);
-																}}
 															>
 																<PostAdd style={{ fontSize: "22px" }} />
 															</IconButton>
@@ -858,9 +824,6 @@ function JobsFinancialTable({
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{((job as Job)?.total as Total).time || 0}
 														</TaskEntryCell>
-														<TaskEntryCell
-															style={{ border: "0.8px solid black" }}
-														></TaskEntryCell>
 														{CreateEmptyCells(1)}
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{/*{((job as Job)?.total as Total).time || 0}*/}
@@ -911,19 +874,16 @@ function JobsFinancialTable({
 																			<PersonAddAlt1 style={{ fontSize: "22px" }} />
 																		</IconButton>
 																	</ShortTableCell>
-																	<TaskEntryCell
-																		style={{ border: "0.8px solid black" }}
-																	></TaskEntryCell>
-																	<TaskEntryCell
-																		style={{ border: "0.8px solid black" }}
-																	></TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{/* {((task as TaskEntry)?.total as Total).hours || 0} */}
+																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
-																	<TaskEntryCell
-																		style={{ border: "0.8px solid black" }}
-																	></TaskEntryCell>
-																	<TaskEntryCell
-																		style={{ border: "0.8px solid black" }}
-																	></TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{/* {((task as TaskEntry)?.total as Total).allocatedValue || 0} */}
+																	</TaskEntryCell>
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{/* {((task as TaskEntry)?.total as Total).time || 0} */}
+																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
@@ -954,7 +914,6 @@ function JobsFinancialTable({
 																							marginLeft: "10px",
 																							borderBottom: "0.8px solid black",
 																						}}
-																						key={(task as TaskEntry)?.task_id as string}
 																					>
 																						{CreateEmptyCells(2)}
 																						<ShortTaskEntryCell></ShortTaskEntryCell>
@@ -987,6 +946,7 @@ function JobsFinancialTable({
 																											</IconButton>
 																										)}
 																									</TaskEntryCell>
+
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
@@ -1037,6 +997,7 @@ function JobsFinancialTable({
 																									>
 																										{allocated_rate}
 																									</TaskEntryCell>
+
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
@@ -1282,6 +1243,7 @@ function JobsFinancialTable({
 												color="secondary"
 												style={{ padding: "0px" }}
 												title="Add new Job"
+												// onClick={() => handleEditRow(params.row.id)}
 											>
 												<AddCircle style={{ fontSize: "22px" }} />
 											</IconButton>

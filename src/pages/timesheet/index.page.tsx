@@ -222,6 +222,7 @@ const Timesheet = () => {
 			const month = selectedWeekStart.getMonth() + 1;
 			const year = selectedWeekStart.getFullYear();
 			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
+			console.log({ monthlyTimesheetsResponse });
 			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse =
 				monthlyTimesheetsResponse;
 
@@ -377,15 +378,15 @@ const Timesheet = () => {
 	// Function to post Data to SupaBase when ADD TIME form is submitted
 	async function saveTimeEntry() {
 		const splitDate = selectedDate.split("-");
-		const month = Number(splitDate[1]);
-		const year = Number(splitDate[0]);
+		const monthTest = Number(splitDate[1]);
+		const yearTest = Number(splitDate[0]);
 		const userId = localStorage.getItem("user_id") || "";
 		const jobsId = Number(selectedJob);
 		const taskId = Number(selectedTask);
 		const allocatedHoursLogged =
 			(await getJobAllocatedHoursPerMonthPerUser(
-				year,
-				month,
+				yearTest,
+				monthTest,
 				userId,
 				jobsId,
 				taskId
@@ -534,6 +535,7 @@ const Timesheet = () => {
 							completed: false,
 						}))
 					);
+					console.log({ tasks });
 				}
 			}
 		}
