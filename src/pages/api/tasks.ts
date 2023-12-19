@@ -1,5 +1,6 @@
-import supabase from "@config/supaBaseClient";
-// import { JobTask } from "types";
+import supabase, { PostgrestError } from "@config/supaBaseClient";
+import { Tasks } from "types";
+export type TaskData = Tasks;
 
 export const getAllTasks = async () => {
 	try {

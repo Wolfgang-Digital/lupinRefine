@@ -5,6 +5,7 @@ export type AllocateHours = Tables["allocate_hours"]["Row"];
 export type Client = Tables["client"]["Row"];
 export type Currency = Tables["currency"]["Row"];
 export type Users = Tables["users"]["Row"];
+export type Tasks = Tables["tasks"]["Row"];
 export type Tier = Tables["tier"]["Row"];
 export type Job = Tables["jobs"]["Row"];
 export type Country = Tables["countries"]["Row"];
