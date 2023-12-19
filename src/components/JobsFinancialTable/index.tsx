@@ -13,13 +13,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
-	Button,
+	// Button,
 	Dialog,
 	DialogContent,
 	IconButton,
 	MenuItem,
 	Table,
-	TextField,
+	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
@@ -72,7 +72,6 @@ const columns = [
 		},
 	},
 	{
-
 		text: " Allocated Rate",
 		style: {
 			backgroundColor: "#BEB3D4",
@@ -351,7 +350,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			const taskEntry = (result[jobKey] as Task)[taskKey] as TaskEntry;
 			const total = taskEntry.total as Total;
 			if (total && total.count !== 0) {
-				total.baseRate /= total.count;
+				total.allocated_rate /= total.count;
 			}
 		}
 	}
@@ -377,67 +376,51 @@ function JobsFinancialTable({
 		new Date().getMonth()
 	);
 	const [postData, setPostData] = useState(false);
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				const getUsers = await getAllUsers();
-				if (getUsers) {
-					getUsers.forEach((user) => {
-						userOptions.push({
-							label: user.user_name || "",
-							value: user.user_id?.toString() || "0",
-						});
+	// useEffect(() => {
+	async function fetchData() {
+		try {
+			const getUsers = await getAllUsers();
+			if (getUsers) {
+				getUsers.forEach((user) => {
+					userOptions.push({
+						label: user.user_name || "",
+						value: user.user_id?.toString() || "0",
 					});
-				}
-				setUsers(userOptions);
-				const getProjectJobTasks = await getAllProjectJobTasks(
-					projectId || 0,
-					jobNameId || 0
-				);
-				if (getProjectJobTasks) {
-					getProjectJobTasks.forEach((task) => {
-						taskOptions.push({
-							label: task.task_name || "",
-							value: task.task_id?.toString() || "0",
-						});
+				});
+			}
+			setUsers(userOptions);
+			const getProjectJobTasks = await getAllProjectJobTasks(
+				projectId || 0,
+				jobNameId || 0
+			);
+			if (getProjectJobTasks) {
+				getProjectJobTasks.forEach((task) => {
+					taskOptions.push({
+						label: task.task_name || "",
+						value: task.task_id?.toString() || "0",
 					});
-				}
-				setTasks(taskOptions);
-				// do something for 12 times
-				const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-					2023,
-					10
-				)) as unknown as AllTimesheetRowsViewV5[];
-				const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-					2023,
-					11
-				)) as unknown as AllTimesheetRowsViewV5[];
-				const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-					2023,
-					12
-				)) as unknown as AllTimesheetRowsViewV5[];
-				const unfilteredResponse = october.concat(november, december);
-				let filteredResponse: AllTimesheetRowsViewV5[] = [];
-				if (unfilteredResponse) {
-					filteredResponse = unfilteredResponse.filter(
-						({ client_id, project_id }) => {
-							return client_id === clientId && project_id === projectId;
-						}
-					);
-				}
-
-				// create empty array with 12 elements, each element is an empty array
-				const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
-					() => []
-				);
-				// loop through each timesheet row
-				filteredResponse?.forEach((row) => {
-					// get the month of the timesheet row
-					if (row.year === new Date().getFullYear()) {
-						ungroupedMonthData[(row.month || 0) - 1] = [
-							...ungroupedMonthData[(row.month || 0) - 1],
-							row,
-						];
+				});
+			}
+			setTasks(taskOptions);
+			// do something for 12 times
+			const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				10
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				11
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
+				2023,
+				12
+			)) as unknown as AllTimesheetRowsViewV5[];
+			const unfilteredResponse = october.concat(november, december);
+			let filteredResponse: AllTimesheetRowsViewV5[] = [];
+			if (unfilteredResponse) {
+				filteredResponse = unfilteredResponse.filter(
+					({ client_id, project_id }) => {
+						return client_id === clientId && project_id === projectId;
 					}
 				);
 			}
@@ -446,6 +429,17 @@ function JobsFinancialTable({
 			const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
 				() => []
 			);
+			// loop through each timesheet row
+			filteredResponse?.forEach((row) => {
+				// get the month of the timesheet row
+				if (row.year === new Date().getFullYear()) {
+					ungroupedMonthData[(row.month || 0) - 1] = [
+						...ungroupedMonthData[(row.month || 0) - 1],
+						row,
+					];
+				}
+			});
+			// }
 			// loop through each timesheet row
 			filteredResponse?.forEach((row) => {
 				// get the month of the timesheet row
@@ -501,7 +495,7 @@ function JobsFinancialTable({
 		const month = Number(selectedMonthIndex + 1);
 		const year = Number(currentDate.getFullYear());
 		const userNameArr = await getUserName(selectedUser);
-    
+
 		if (userNameArr) {
 			userName = userNameArr[0]?.user_name || "";
 		}
@@ -1249,7 +1243,6 @@ function JobsFinancialTable({
 																							)}
 																						</DialogContent>
 																					</Dialog>
-
 																				</>
 																			)
 																		);

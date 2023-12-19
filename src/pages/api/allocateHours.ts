@@ -181,7 +181,8 @@ export const updateAllocatedHoursAndRate = async (
 		return data;
 	} catch (error) {
 		console.error("Error updating allocated hours and rate: ", error);
-
+	}
+};
 export const changeAllocation = async ({
 	updatedData,
 	job_id,
