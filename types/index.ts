@@ -7,7 +7,6 @@ export type Currency = Tables["currency"]["Row"];
 export type Users = Tables["users"]["Row"];
 export type Tier = Tables["tier"]["Row"];
 export type Job = Tables["jobs"]["Row"];
-export type Tasks = Tables["tasks"]["Row"];
 export type Country = Tables["countries"]["Row"];
 export type ClientOverview = Views["client_overview"]["Row"];
 // export type JobsOverview = Views["jobs_overview"]["Row"];
