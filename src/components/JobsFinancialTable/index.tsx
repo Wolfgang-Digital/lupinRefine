@@ -24,14 +24,25 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
 import { AllTimesheetRowsViewV5 } from "types";
-import { changeAllocation } from "@pages/api/allocateHours";
+import {
+	PostAllocateHoursEntry,
+	changeAllocation,
+} from "@pages/api/allocateHours";
 
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import { getTaskName } from "@src/pages/api/tasks";
-import { getAllUsers } from "@src/pages/api/users";
+import { getAllUsers, getUserName } from "@src/pages/api/users";
+import { getAllProjectJobTasks } from "@src/pages/api/projectJobTasksView";
+import { format } from "date-fns";
+import {
+	getJobAllocatedHoursPerMonthPerUser,
+	getJobAllocatedHoursPerMonthPerJob,
+} from "@src/pages/api/allocateHoursView";
+import { PostTimeEntry } from "@src/pages/api/timesheet";
+// import { TaskOption } from "@src/pages/timesheet/index.page";
 
 const columns = [
 	"Month",
@@ -188,6 +199,14 @@ type UserEntry = {
 	user_id: string;
 	hours: number;
 };
+type TaskOption = {
+	label: string;
+	value: string;
+};
+type UserOption = {
+	label: string;
+	value: string;
+};
 type User = Record<string, UserEntry | string>;
 type TaskEntry = Record<string, User | Total | string>;
 type Task = Record<string, TaskEntry | Total | string>;
@@ -243,6 +262,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					actualValue: (current.time || 0) * (current.rate || 0) || 0,
 				} as unknown as Total,
 				task_name: current.task_name || "",
+				task_id: current.task_id?.toString() || "",
 			};
 			// If task exists, add the time and rate to the total
 		} else {
@@ -345,9 +365,11 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 function JobsFinancialTable({
 	projectId,
 	clientId,
+	jobNameId,
 }: {
 	projectId: number;
 	clientId: number;
+	jobNameId: number;
 }) {
 	const [value, setValue] = React.useState(dayjs("2023-10-31") as Dayjs | null);
 
@@ -369,11 +391,13 @@ function JobsFinancialTable({
 				});
 			}
 			setUsers(userOptions);
+
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
+				// console.log({ jobNameId });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -382,6 +406,7 @@ function JobsFinancialTable({
 				});
 			}
 			setTasks(taskOptions);
+
 			// do something for 12 times
 			const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
 				2023,
@@ -470,6 +495,7 @@ function JobsFinancialTable({
 	};
 
 	async function saveAllocateHoursEntry() {
+		console.log({ taskId });
 		const currentDate = new Date();
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		const month = Number(selectedMonthIndex + 1);
@@ -481,7 +507,7 @@ function JobsFinancialTable({
 			setTaskName(taskNameArr[0]?.task_name || "");
 		}
 
-		const checkJobsId = Number(jobId);
+		const checkJobsId = Number(jobsId);
 		const checkTaskId = Number(taskId);
 
 		if (showAddUserToTaskForm) {
@@ -526,8 +552,8 @@ function JobsFinancialTable({
 				const response2 = await PostTimeEntry(dataToPostTSE);
 				console.log(`PostAllocateHoursEntry ${response}`);
 				console.log(`PostTimeEntry ${response2}`);
-				console.log({ dataToPostTSE });
-				console.log({ dataToPostAHE });
+				// console.log({ dataToPostTSE });
+				// console.log({ dataToPostAHE });
 			}
 		} else {
 			const checkTaskId = Number(selectedTask);
@@ -811,6 +837,17 @@ function JobsFinancialTable({
 																title="Add new Task to Job"
 																color="secondary"
 																style={{ padding: "0px" }}
+																onClick={() => {
+																	setSelectedTask("");
+																	setSelectedUser("");
+																	setAllocatedHours("");
+																	setRate("");
+																	setShowAddUserToTaskForm(false);
+																	setJobId((job as Job)?.job_id as string);
+																	setJobsId((job as Job)?.jobs_id as string);
+																	setPostData(false);
+																	setIsModalOpen(true);
+																}}
 															>
 																<PostAdd style={{ fontSize: "22px" }} />
 															</IconButton>

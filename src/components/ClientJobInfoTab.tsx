@@ -247,6 +247,7 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 							<JobsFinancialTable
 								projectId={selectedProject.project_id || 0}
 								clientId={clientId || 0}
+								jobNameId={selectedProject.job_name_id || 0}
 							/>
 						</DialogContent>
 						<DialogActions></DialogActions>
