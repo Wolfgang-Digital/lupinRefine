@@ -495,7 +495,6 @@ function JobsFinancialTable({
 	};
 
 	async function saveAllocateHoursEntry() {
-		console.log({ taskId });
 		const currentDate = new Date();
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		const month = Number(selectedMonthIndex + 1);
@@ -507,7 +506,7 @@ function JobsFinancialTable({
 			setTaskName(taskNameArr[0]?.task_name || "");
 		}
 
-		const checkJobsId = Number(jobsId);
+		const checkJobsId = Number(jobId);
 		const checkTaskId = Number(taskId);
 
 		if (showAddUserToTaskForm) {
@@ -552,8 +551,8 @@ function JobsFinancialTable({
 				const response2 = await PostTimeEntry(dataToPostTSE);
 				console.log(`PostAllocateHoursEntry ${response}`);
 				console.log(`PostTimeEntry ${response2}`);
-				// console.log({ dataToPostTSE });
-				// console.log({ dataToPostAHE });
+				console.log({ dataToPostTSE });
+				console.log({ dataToPostAHE });
 			}
 		} else {
 			const checkTaskId = Number(selectedTask);
