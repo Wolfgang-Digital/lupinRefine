@@ -181,5 +181,42 @@ export const updateAllocatedHoursAndRate = async (
 		return data;
 	} catch (error) {
 		console.error("Error updating allocated hours and rate: ", error);
+
+export const changeAllocation = async ({
+	updatedData,
+	job_id,
+	task_id,
+	user_id,
+}: {
+	updatedData: {
+		allocated_rate?: number;
+		hours?: number;
+		effective_rate?: number; // Add this line
+	};
+	job_id: number;
+	task_id: number;
+	user_id: string;
+}) => {
+	try {
+		const { data, error } = await supabase
+			.from("allocate_hours")
+			.update({
+				...updatedData,
+			})
+			.match({
+				job_id,
+				task_id,
+				user_id,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+			});
+		if (error) {
+			console.error("Error changing allocation: ", error);
+			return;
+		}
+		console.log(job_id, task_id, user_id);
+		return data;
+	} catch (error) {
+		console.error("Error changing allocation: ", error);
 	}
 };
