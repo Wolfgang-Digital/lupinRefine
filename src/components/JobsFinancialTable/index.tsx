@@ -41,6 +41,7 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
+import { getTaskName } from "@src/pages/api/tasks";
 
 const columns = [
 	"Month",
@@ -226,6 +227,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
 				job_id: current?.jobs_id?.toString() || "",
+				jobs_id: current?.job_id?.toString() || "",
 				total: {
 					time: 0,
 					rate: 0,
@@ -495,13 +497,15 @@ function JobsFinancialTable({
 		const month = Number(selectedMonthIndex + 1);
 		const year = Number(currentDate.getFullYear());
 		const userNameArr = await getUserName(selectedUser);
-
-		if (userNameArr) {
+		const taskNameArr = await getTaskName(Number(selectedTask));
+		if (userNameArr && taskNameArr) {
 			userName = userNameArr[0]?.user_name || "";
+			setTaskName(taskNameArr[0]?.task_name || "");
 		}
 
-		const checkJobsId = Number(jobsId);
+		const checkJobsId = Number(jobId);
 		const checkTaskId = Number(taskId);
+
 		if (showAddUserToTaskForm) {
 			const allocatedHoursLogged =
 				(await getJobAllocatedHoursPerMonthPerUser(
@@ -521,7 +525,7 @@ function JobsFinancialTable({
 					month: Number(selectedMonthIndex + 1),
 					year: Number(currentDate.getFullYear()),
 					userId: selectedUser,
-					jobId: Number(jobsId),
+					jobId: Number(jobId),
 					taskId: Number(taskId),
 					hours: Number(allocatedHours),
 					allocatedRate: Number(rate),
@@ -532,8 +536,8 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobId: Number(jobId),
-					jobsId: Number(jobsId),
+					jobId: Number(jobsId),
+					jobsId: Number(jobId),
 					taskId: Number(taskId),
 					selectedDate: formattedDate,
 					rate: Number(rate),
@@ -544,6 +548,8 @@ function JobsFinancialTable({
 				const response2 = await PostTimeEntry(dataToPostTSE);
 				console.log(`PostAllocateHoursEntry ${response}`);
 				console.log(`PostTimeEntry ${response2}`);
+				console.log({ dataToPostTSE });
+				console.log({ dataToPostAHE });
 			}
 		} else {
 			const checkTaskId = Number(selectedTask);
@@ -555,14 +561,14 @@ function JobsFinancialTable({
 					checkTaskId
 				)) || [];
 			if (allocatedHoursLogged.length > 0) {
-				window.alert(`${taskName} task has already been allocated to this job`);
+				window.alert(`The ${taskName} task has already been allocated to this job`);
 			} else {
 				const dataToPostAHE = {
 					jobTaskId: 10,
 					month: Number(selectedMonthIndex + 1),
 					year: Number(currentDate.getFullYear()),
 					userId: selectedUser,
-					jobId: Number(jobsId),
+					jobId: Number(jobId),
 					taskId: Number(selectedTask),
 					hours: Number(allocatedHours),
 					allocatedRate: Number(rate),
@@ -573,8 +579,8 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobId: Number(jobId),
-					jobsId: Number(jobsId),
+					jobId: Number(jobsId),
+					jobsId: Number(jobId),
 					taskId: Number(selectedTask),
 					selectedDate: formattedDate,
 					rate: Number(rate),
@@ -895,6 +901,7 @@ function JobsFinancialTable({
 																				setTaskName((task as TaskEntry)?.task_name as string);
 																				setTaskId((task as Task)?.task_id as string);
 																				setJobId((job as Job)?.job_id as string);
+																				// setJobsId((job as Job)?.jobs_id as string);
 																				setJobsId((job as Job)?.jobs_id as string);
 																				setPostData(false);
 																				setIsModalOpen(true);
