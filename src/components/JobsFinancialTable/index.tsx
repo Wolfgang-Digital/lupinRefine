@@ -77,6 +77,7 @@ const columns = [
 	"Invoice Adj",
 	"Fee c/f",
 	"Bal",
+	"",
 ];
 
 const monthNames = [
@@ -566,6 +567,7 @@ function JobsFinancialTable({
 								style={{
 									backgroundColor: "white",
 									paddingLeft: 0,
+									paddingRight: 0,
 									borderBottom: "none",
 								}}
 								colSpan={8}
@@ -596,7 +598,7 @@ function JobsFinancialTable({
 							if (monthIndex !== selectedMonthIndex)
 								return (
 									<TableRow onClick={() => setSelectedMonthIndex(monthIndex)}>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 19)}
 									</TableRow>
 								);
 							if (Object.keys(jobs).length === 0) return <>Empty</>;
@@ -606,7 +608,7 @@ function JobsFinancialTable({
 										style={{ background: "#1E7F74", color: "white" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 18)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 19)}
 									</TableRow>
 									{monthIndex === selectedMonthIndex &&
 										jobs.map((job) => (
@@ -647,10 +649,9 @@ function JobsFinancialTable({
 															{/*{((job as Job)?.total as Total).time || 0}*/}
 														</TaskEntryCell>
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
-															<a href="#" title="Edit Actuals Value">
-																{((job as Job)?.total as Total).actualValue || 0}
-															</a>
+															{((job as Job)?.total as Total).actualValue || 0}
 														</TaskEntryCell>
+
 														<TaskEntryCell></TaskEntryCell>
 														<TaskEntryCell></TaskEntryCell>
 														<TaskEntryCell></TaskEntryCell>
@@ -690,6 +691,9 @@ function JobsFinancialTable({
 																		{/* {((task as TaskEntry)?.total as Total).time || 0} */}
 																	</TaskEntryCell>
 																	{CreateEmptyCells(1)}
+																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
+																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
+																	</TaskEntryCell>
 																	<TaskEntryCell style={{ border: "0.8px solid black" }}>
 																		{/* {((task as TaskEntry)?.total as Total).actualValue || 0} */}
 																	</TaskEntryCell>
@@ -742,9 +746,9 @@ function JobsFinancialTable({
 																														"hours"
 																													)
 																												}
-																												style={{ padding: 0, marginLeft: "10px" }}
+																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
-																												<EditIcon style={{ fontSize: "16px" }} />
+																												<EditIcon style={{ fontSize: "14px" }} />
 																											</IconButton>
 																										)}
 																									</TaskEntryCell>
@@ -768,9 +772,9 @@ function JobsFinancialTable({
 																														"allocated_rate"
 																													)
 																												}
-																												style={{ padding: 0, marginLeft: "10px" }}
+																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
-																												<EditIcon style={{ fontSize: "16px" }} />
+																												<EditIcon style={{ fontSize: "14px" }} />
 																											</IconButton>
 																										)}
 																									</TaskEntryCell>
@@ -819,9 +823,9 @@ function JobsFinancialTable({
 																														"effective_rate"
 																													)
 																												}
-																												style={{ padding: 0, marginLeft: "10px" }}
+																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
-																												<EditIcon style={{ fontSize: "16px" }} />
+																												<EditIcon style={{ fontSize: "14px" }} />
 																											</IconButton>
 																										)}
 																									</TaskEntryCell>
@@ -829,12 +833,10 @@ function JobsFinancialTable({
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
-																											backgroundColor: "#BEB3D4",
+																											fontWeight: "bold",
 																										}}
 																									>
-																										<a href="#" title="Edit Value">
-																											{time * effective_rate}
-																										</a>
+																										{hours * effective_rate}
 																									</TaskEntryCell>
 																								</>
 																							)}
@@ -856,7 +858,7 @@ function JobsFinancialTable({
 											backgroundColor: "#E5E5E8",
 										}}
 									>
-										{CreateEmptyCells(17)}
+										{CreateEmptyCells(19)}
 									</TableRow>
 									<TableRow
 										style={{
