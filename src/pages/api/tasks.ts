@@ -62,6 +62,7 @@ export const getTaskName = async (
 			console.error("Error fetching task name: ", error);
 			return;
 		}
+		// console.log(data);
 		return data;
 	} catch (error) {
 		console.error("Error fetching task name: ", error);
