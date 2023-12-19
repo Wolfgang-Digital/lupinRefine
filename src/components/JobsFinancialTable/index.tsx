@@ -53,7 +53,13 @@ const columns = [
 		},
 	},
 	{
-		text: "Rate",
+		text: " Allocated Rate",
+		style: {
+			backgroundColor: "#BEB3D4",
+		},
+	},
+	{
+		text: " Effective Rate",
 		style: {
 			backgroundColor: "#BEB3D4",
 		},
@@ -194,6 +200,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					time: 0,
 					rate: 0,
 					allocated_rate: 0,
+					effective_rate: 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
@@ -206,6 +213,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			total.time += 0;
 			total.rate += current.rate || 0;
 			total.allocated_rate = current.rate || 0;
+			total.effective_rate = current.rate || 0;
 			total.count += 1;
 		}
 
@@ -216,6 +224,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 					time: current.time || 0,
 					rate: current.rate || 0,
 					allocated_rate: current.rate || 0,
+					effective_rate: current.rate || 0,
 					hours: 0,
 					count: 1,
 					allocatedValue: 0,
@@ -230,6 +239,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			total.time += current.time || 0;
 			total.rate += current.rate || 0;
 			total.allocated_rate = current.rate || 0;
+			total.effective_rate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
 				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
@@ -248,6 +258,7 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 				time: current.time || 0,
 				rate: current.rate || 0,
 				allocated_rate: current.allocated_rate || 0,
+				effective_rate: current.effective_rate || 0,
 				count: 1,
 				user_id: current.user_id || "",
 				user_name: current.user_name || "",
@@ -393,7 +404,7 @@ function JobsFinancialTable({
 		user_id: string;
 		task_id: number;
 		job_id: number;
-		editType: "hours" | "allocated_rate";
+		editType: "hours" | "allocated_rate" | "effective_rate";
 	}
 
 	const [editState, setEditState] = useState<EditState>({
@@ -410,7 +421,7 @@ function JobsFinancialTable({
 		task_id: number,
 		job_id: number,
 		currentValue: string,
-		editType: "hours" | "allocated_rate"
+		editType: "hours" | "allocated_rate" | "effective_rate"
 	) => {
 		setEditState({
 			isModalOpen: true,
@@ -422,6 +433,31 @@ function JobsFinancialTable({
 		});
 	};
 
+	//const handleSave = async () => {
+	//	const { editingValue, user_id, task_id, job_id, editType } = editState;
+	//	const numericValue = parseFloat(editingValue);
+
+	//	if (isNaN(numericValue)) {
+	//		console.error("Invalid input: editingValue is not a number.");
+	//		return;
+	//	}
+
+	//	const updatedData =
+	//		editType === "hours"
+	//			? { hours: numericValue }
+	//			: { allocated_rate: numericValue }; // Ensure this line is correct
+
+	//	await changeAllocation({
+	//		updatedData,
+	//		user_id,
+	//		task_id,
+	//		job_id,
+	//	});
+
+	//	await fetchData(); // Ensure fetchData correctly re-fetches and updates state
+	//	setEditState({ ...editState, isModalOpen: false });
+	//};
+
 	const handleSave = async () => {
 		const { editingValue, user_id, task_id, job_id, editType } = editState;
 		const numericValue = parseFloat(editingValue);
@@ -431,10 +467,22 @@ function JobsFinancialTable({
 			return;
 		}
 
-		const updatedData =
-			editType === "hours"
-				? { hours: numericValue }
-				: { allocated_rate: numericValue }; // Ensure this line is correct
+		let updatedData = {};
+
+		switch (editType) {
+			case "hours":
+				updatedData = { hours: numericValue };
+				break;
+			case "allocated_rate":
+				updatedData = { allocated_rate: numericValue };
+				break;
+			case "effective_rate":
+				updatedData = { effective_rate: numericValue };
+				break;
+			default:
+				console.error("Invalid edit type.");
+				return;
+		}
 
 		await changeAllocation({
 			updatedData,
@@ -504,7 +552,7 @@ function JobsFinancialTable({
 								Allocated
 							</NoPadding>
 							<NoPadding
-								colSpan={3}
+								colSpan={4}
 								style={{
 									backgroundColor: "#BEB3D4",
 									paddingLeft: 0,
@@ -558,7 +606,7 @@ function JobsFinancialTable({
 										style={{ background: "#1E7F74", color: "white" }}
 										onClick={() => setSelectedMonthIndex(monthIndex)}
 									>
-										{CreateRowOfTableCells(monthNames[monthIndex], 0, 17)}
+										{CreateRowOfTableCells(monthNames[monthIndex], 0, 18)}
 									</TableRow>
 									{monthIndex === selectedMonthIndex &&
 										jobs.map((job) => (
@@ -596,10 +644,21 @@ function JobsFinancialTable({
 														</TaskEntryCell>
 														{CreateEmptyCells(1)}
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+															{/*{((job as Job)?.total as Total).time || 0}*/}
+														</TaskEntryCell>
+														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															<a href="#" title="Edit Actuals Value">
 																{((job as Job)?.total as Total).actualValue || 0}
 															</a>
 														</TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
+														<TaskEntryCell></TaskEntryCell>
 													</TableRow>
 												</>
 												{Object.entries(job).map(([key, task]) => {
@@ -735,12 +794,36 @@ function JobsFinancialTable({
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
-																											backgroundColor: "#BEB3D4",
+																											fontWeight: "bold",
 																										}}
 																									>
-																										<a href="#" title="Edit Rate">
-																											{allocated_rate}
-																										</a>
+																										{allocated_rate}
+																									</TaskEntryCell>
+
+																									<TaskEntryCell
+																										style={{
+																											border: "0.8px solid black",
+																											backgroundColor: "#BEB3D4",
+																											paddingLeft: "10px",
+																										}}
+																									>
+																										{effective_rate}
+																										{selectedMonthIndex === getCurrentMonth() && (
+																											<IconButton
+																												onClick={() =>
+																													openEditModal(
+																														user_id,
+																														Number(key),
+																														Number(job.job_id),
+																														effective_rate.toString(),
+																														"effective_rate"
+																													)
+																												}
+																												style={{ padding: 0, marginLeft: "10px" }}
+																											>
+																												<EditIcon style={{ fontSize: "16px" }} />
+																											</IconButton>
+																										)}
 																									</TaskEntryCell>
 
 																									<TaskEntryCell
