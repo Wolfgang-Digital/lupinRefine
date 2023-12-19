@@ -440,6 +440,7 @@ function JobsFinancialTable({
 	const [showAddUserToTaskForm, setShowAddUserToTaskForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
 	const [tasks, setTasks] = useState<TaskOption[]>([]);
+
 	const taskOptions: TaskOption[] = [];
 	const [taskName, setTaskName] = useState("");
 	// const [userName, setUserName] = useState("");
