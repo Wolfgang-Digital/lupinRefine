@@ -140,13 +140,11 @@ const JobList: React.FC = () => {
 						project_id: job.project_id,
 						job_name_name: job.job_name_name,
 						job_name_id: job.job_name_id,
-						job_notes: job.job_notes,
-						job_start_date: job.job_start_date,
 						job_type_name: job.job_type_name,
 						tier_name: job.tier_name,
 						currency_symbol: job.currency_symbol,
 						status: job.status_code_name,
-						department_name: job.department_name,
+						department: job.department_name,
 					}))}
 					columns={columns}
 					slots={{ toolbar: GridToolbar }}
