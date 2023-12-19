@@ -896,17 +896,17 @@ function JobsFinancialTable({
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "flex-start", // Align to the left
-					marginLeft: "10%", // Adjust this value as needed
+					marginLeft: "2%", // Adjust this value as needed
 				}}
 			>
 				<div
 					style={{
 						backgroundColor: "white",
 						padding: "20px",
-						borderRadius: "4px",
+						borderRadius: "10px",
 						boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.2)",
 						outline: "none",
-						minWidth: "300px",
+						minWidth: "200px",
 					}}
 				>
 					<h2>Edit Value</h2>
