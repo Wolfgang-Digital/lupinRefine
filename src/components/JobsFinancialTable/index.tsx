@@ -1067,7 +1067,7 @@ function JobsFinancialTable({
 																											fontWeight: "bold",
 																										}}
 																									>
-																										{hours * effective_rate}
+																										{time * effective_rate}
 																									</TaskEntryCell>
 																								</>
 																							)}
