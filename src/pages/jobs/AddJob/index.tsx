@@ -21,6 +21,7 @@ import { getProjectJobs } from "@pages/api/projectJobsView";
 import { getAllProjects } from "@pages/api/projects";
 // import { getJobNames } from "@pages/api/jobNames";
 import { PostJobEntry } from "@pages/api/jobs";
+import { getJobName } from "@src/pages/api/jobNames";
 
 interface AddJobProps {
 	onAddJob: () => void;
@@ -123,11 +124,18 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 		}
 		getJobs();
 	}, [selectedProject]);
-
+	let jobName: string;
 	async function saveJobEntry() {
+		event?.preventDefault();
+
+		const jobNameArr = await getJobName(Number(selectedJob));
+		if (jobNameArr) {
+			jobName = jobNameArr[0].job_name_name || "";
+		}
+
 		const dataToPost = {
 			jobNameId: Number(selectedJob),
-			jobName: selectedProject,
+			jobName: jobName,
 			clientId: Number(selectedClient),
 			projectId: Number(selectedProject),
 			jobId: Number(selectedJob),
