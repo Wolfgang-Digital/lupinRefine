@@ -33,8 +33,7 @@ type RowData = TimesheetRowsView & {
 };
 
 const columns = [
-	{ field: "project_id", headerName: "Project ID", width: 100 },
-	{ field: "project_name", headerName: "Project", width: 100 },
+	{ field: "project_name", headerName: "Project", width: 300 },
 	{ field: "allocated", headerName: "Allocated: ", width: 100 },
 	{ field: "hours", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
@@ -96,8 +95,11 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
 		TimesheetRowsView[]
 	>([]);
-
-	const [selectedMonth, setSelectedMonth] = useState(10);
+	const getCurrentMonth = () => {
+		return new Date().getMonth();
+	};
+	console.log(getCurrentMonth());
+	const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
