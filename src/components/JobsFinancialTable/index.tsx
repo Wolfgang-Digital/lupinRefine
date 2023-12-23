@@ -274,7 +274,8 @@ function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
 			total.effective_rate = current.rate || 0;
 			total.count += 1;
 			total.actualValue =
-				(total.actualValue || 0) + (current.time || 0) * (current.rate || 0) || 0;
+				(total.actualValue || 0) +
+					(current.time || 0) * (current.effective_rate || 0) || 0;
 			(((accumulator[jobKey] as Task)[taskKey] as User).total as Total) = total;
 		}
 
@@ -630,31 +631,6 @@ function JobsFinancialTable({
 		});
 	};
 
-	//const handleSave = async () => {
-	//	const { editingValue, user_id, task_id, job_id, editType } = editState;
-	//	const numericValue = parseFloat(editingValue);
-
-	//	if (isNaN(numericValue)) {
-	//		console.error("Invalid input: editingValue is not a number.");
-	//		return;
-	//	}
-
-	//	const updatedData =
-	//		editType === "hours"
-	//			? { hours: numericValue }
-	//			: { allocated_rate: numericValue }; // Ensure this line is correct
-
-	//	await changeAllocation({
-	//		updatedData,
-	//		user_id,
-	//		task_id,
-	//		job_id,
-	//	});
-
-	//	await fetchData(); // Ensure fetchData correctly re-fetches and updates state
-	//	setEditState({ ...editState, isModalOpen: false });
-	//};
-
 	const handleSave = async () => {
 		const { editingValue, user_id, task_id, job_id, editType } = editState;
 		const numericValue = parseFloat(editingValue);
@@ -692,9 +668,11 @@ function JobsFinancialTable({
 		setEditState({ ...editState, isModalOpen: false });
 	};
 
-	const getCurrentMonth = () => {
-		return new Date().getMonth();
-	};
+	function isEditableMonth(monthIndex: number) {
+		const currentMonth = new Date().getMonth();
+		const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+		return monthIndex === currentMonth || monthIndex === previousMonth;
+	}
 
 	return (
 		<div>
@@ -855,8 +833,29 @@ function JobsFinancialTable({
 														<TaskEntryCell style={{ border: "0.8px solid black" }}>
 															{/*{((job as Job)?.total as Total).time || 0}*/}
 														</TaskEntryCell>
-														<TaskEntryCell style={{ border: "0.8px solid black" }}>
+														<TaskEntryCell
+															style={{
+																border: "0.8px solid black",
+																backgroundColor: "#BEB3D4",
+																paddingLeft: "10px",
+															}}
+														>
 															{((job as Job)?.total as Total).actualValue || 0}
+															{isEditableMonth(selectedMonthIndex) && (
+																<IconButton
+																	//onClick={() =>
+																	//	openEditModal(
+																	//		Number(key),
+																	//		Number(job.job_id),
+																	//		effective_rate.toString(),
+																	//		"actualValue"
+																	//	)
+																	//}
+																	style={{ padding: 0, marginLeft: "5px" }}
+																>
+																	<EditIcon style={{ fontSize: "14px" }} />
+																</IconButton>
+															)}
 														</TaskEntryCell>
 
 														<TaskEntryCell></TaskEntryCell>
@@ -956,7 +955,7 @@ function JobsFinancialTable({
 																										}}
 																									>
 																										{hours}
-																										{selectedMonthIndex === getCurrentMonth() && (
+																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
 																													openEditModal(
@@ -982,7 +981,7 @@ function JobsFinancialTable({
 																										}}
 																									>
 																										{allocated_rate}
-																										{selectedMonthIndex === getCurrentMonth() && (
+																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
 																													openEditModal(
@@ -1033,7 +1032,7 @@ function JobsFinancialTable({
 																										}}
 																									>
 																										{effective_rate}
-																										{selectedMonthIndex === getCurrentMonth() && (
+																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
 																													openEditModal(
@@ -1054,190 +1053,32 @@ function JobsFinancialTable({
 																									<TaskEntryCell
 																										style={{
 																											border: "0.8px solid black",
-																											fontWeight: "bold",
+																											backgroundColor: "#BEB3D4",
+																											paddingLeft: "10px",
 																										}}
 																									>
 																										{time * effective_rate}
+																										{isEditableMonth(selectedMonthIndex) && (
+																											<IconButton
+																												onClick={() =>
+																													openEditModal(
+																														user_id,
+																														Number(key),
+																														Number(job.job_id),
+																														effective_rate.toString(),
+																														"effective_rate"
+																													)
+																												}
+																												style={{ padding: 0, marginLeft: "5px" }}
+																											>
+																												<EditIcon style={{ fontSize: "14px" }} />
+																											</IconButton>
+																										)}
 																									</TaskEntryCell>
 																								</>
 																							)}
 																						</>
 																					</TableRow>
-																					<Dialog
-																						maxWidth="xs"
-																						open={isModalOpen}
-																						onClose={closeModal}
-																					>
-																						<DialogContent>
-																							{showAddUserToTaskForm ? (
-																								<>
-																									<h2>ADD USER TO TASK</h2>
-																									<form onSubmit={handleFormSubmit}>
-																										<TextField
-																											label="Selected Task"
-																											value={taskName}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										></TextField>
-																										<TextField
-																											select
-																											value={selectedUser}
-																											label="Select User"
-																											onChange={(event) =>
-																												setSelectedUser(event.target.value)
-																											}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										>
-																											{users.map((user) => (
-																												<MenuItem key={user.value} value={user.value}>
-																													{user.label}
-																												</MenuItem>
-																											))}
-																										</TextField>
-																										<TextField
-																											type="number"
-																											label="Select Hours"
-																											value={allocatedHours}
-																											onChange={(event) => {
-																												if (Number(event.target.value) >= 0) {
-																													setAllocatedHours(event.target.value);
-																												}
-																											}}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										></TextField>
-																										<TextField
-																											type="text"
-																											label="Select Rate"
-																											value={rate}
-																											onChange={(event) => setRate(event.target.value)}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										></TextField>
-																										<Button
-																											variant="contained"
-																											/* color="secondary" */
-																											type="submit"
-																											style={{ padding: "10px", marginRight: "25px" }}
-																											/* onClick={} */
-																										>
-																											Cancel
-																										</Button>
-																										<Button
-																											variant="contained"
-																											color="secondary"
-																											type="submit"
-																											style={{ padding: "10px", marginLeft: "25px" }}
-																											onClick={saveAllocateHoursEntry}
-																										>
-																											Save Allocation
-																										</Button>
-																									</form>
-																								</>
-																							) : (
-																								<>
-																									<h2>ADD TASK TO JOB</h2>
-																									<form onSubmit={handleFormSubmit}>
-																										<TextField
-																											select
-																											label="Select Task"
-																											value={selectedTask}
-																											onChange={(event) =>
-																												setSelectedTask(event.target.value)
-																											}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										>
-																											{tasks.map((task) => (
-																												<MenuItem key={task.value} value={task.value}>
-																													{task.label}
-																												</MenuItem>
-																											))}
-																										</TextField>
-																										<TextField
-																											select
-																											value={selectedUser}
-																											label="Select User"
-																											onChange={(event) =>
-																												setSelectedUser(event.target.value)
-																											}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										>
-																											{users.map((user) => (
-																												<MenuItem key={user.value} value={user.value}>
-																													{user.label}
-																												</MenuItem>
-																											))}
-																										</TextField>
-																										<TextField
-																											type="number"
-																											label="Select Hours"
-																											value={allocatedHours}
-																											onChange={(event) => {
-																												if (Number(event.target.value) >= 0) {
-																													setAllocatedHours(event.target.value);
-																												}
-																											}}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										></TextField>
-																										<TextField
-																											type="text"
-																											label="Select Rate"
-																											value={rate}
-																											onChange={(event) => setRate(event.target.value)}
-																											style={{
-																												width: "100%",
-																												marginBottom: "20px",
-																												textAlign: "left",
-																											}}
-																										></TextField>
-																										<Button
-																											variant="contained"
-																											/* color="secondary" */
-																											type="submit"
-																											style={{ padding: "10px", marginRight: "25px" }}
-																											/* onClick={} */
-																										>
-																											Cancel
-																										</Button>
-																										<Button
-																											variant="contained"
-																											color="primary"
-																											type="submit"
-																											style={{ padding: "10px" }}
-																											onClick={saveAllocateHoursEntry}
-																										>
-																											Save Allocation
-																										</Button>
-																									</form>
-																								</>
-																							)}
-																						</DialogContent>
-																					</Dialog>
 																				</>
 																			)
 																		);
@@ -1335,6 +1176,181 @@ function JobsFinancialTable({
 					</div>
 				</div>
 			</Modal>
+
+			<Dialog maxWidth="xs" open={isModalOpen} onClose={closeModal}>
+				<DialogContent
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						padding: "20px",
+						background: "#fff", // Set your background color
+						borderRadius: "10px",
+					}}
+				>
+					{showAddUserToTaskForm ? (
+						<>
+							<h2>ADD USER TO TASK</h2>
+							<form onSubmit={handleFormSubmit}>
+								<TextField
+									label="Selected Task"
+									value={taskName}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								></TextField>
+								<TextField
+									select
+									value={selectedUser}
+									label="Select User"
+									onChange={(event) => setSelectedUser(event.target.value)}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								>
+									{users.map((user) => (
+										<MenuItem key={user.value} value={user.value}>
+											{user.label}
+										</MenuItem>
+									))}
+								</TextField>
+								<TextField
+									type="number"
+									label="Select Hours"
+									value={allocatedHours}
+									onChange={(event) => {
+										if (Number(event.target.value) >= 0) {
+											setAllocatedHours(event.target.value);
+										}
+									}}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								></TextField>
+								<TextField
+									type="text"
+									label="Select Rate"
+									value={rate}
+									onChange={(event) => setRate(event.target.value)}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								></TextField>
+								<Button
+									variant="contained"
+									/* color="secondary" */
+									type="submit"
+									style={{ padding: "10px", marginRight: "25px" }}
+									/* onClick={} */
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									color="secondary"
+									type="submit"
+									style={{ padding: "10px", marginLeft: "25px" }}
+									onClick={saveAllocateHoursEntry}
+								>
+									Save Allocation
+								</Button>
+							</form>
+						</>
+					) : (
+						<>
+							<h2>ADD TASK TO JOB</h2>
+							<form onSubmit={handleFormSubmit}>
+								<TextField
+									select
+									label="Select Task"
+									value={selectedTask}
+									onChange={(event) => setSelectedTask(event.target.value)}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								>
+									{tasks.map((task) => (
+										<MenuItem key={task.value} value={task.value}>
+											{task.label}
+										</MenuItem>
+									))}
+								</TextField>
+								<TextField
+									select
+									value={selectedUser}
+									label="Select User"
+									onChange={(event) => setSelectedUser(event.target.value)}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								>
+									{users.map((user) => (
+										<MenuItem key={user.value} value={user.value}>
+											{user.label}
+										</MenuItem>
+									))}
+								</TextField>
+								<TextField
+									type="number"
+									label="Select Hours"
+									value={allocatedHours}
+									onChange={(event) => {
+										if (Number(event.target.value) >= 0) {
+											setAllocatedHours(event.target.value);
+										}
+									}}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								></TextField>
+								<TextField
+									type="text"
+									label="Select Rate"
+									value={rate}
+									onChange={(event) => setRate(event.target.value)}
+									style={{
+										width: "100%",
+										marginBottom: "20px",
+										textAlign: "left",
+									}}
+								></TextField>
+								<Button
+									variant="contained"
+									/* color="secondary" */
+									type="submit"
+									style={{ padding: "10px", marginRight: "25px" }}
+									/* onClick={} */
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									color="primary"
+									type="submit"
+									style={{ padding: "10px" }}
+									onClick={saveAllocateHoursEntry}
+								>
+									Save Allocation
+								</Button>
+							</form>
+						</>
+					)}
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
