@@ -5,7 +5,7 @@ export const getAllTimesheetRows = async (): // userID: number
 Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("all_timesheet_rows_view")
+			.from("timesheet_rows_view_v6")
 			.select("*")
 			.order("name", { ascending: true })
 			.order("job_id", { ascending: true })) as unknown as {
@@ -56,7 +56,7 @@ export const getAllTimesheetRowsV3 = async (
 ): Promise<TimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view_v5")
+			.from("timesheet_rows_view_v6")
 			.select("*")
 			.eq("allocate_hours_month", month)
 			.eq("month", month)

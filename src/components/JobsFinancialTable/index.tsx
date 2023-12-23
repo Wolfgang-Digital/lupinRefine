@@ -22,7 +22,10 @@ import {
 	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
+import {
+	getAllTimesheetRows,
+	getAllTimesheetRowsV3,
+} from "@pages/api/timesheetRows";
 import { AllTimesheetRowsViewV5 } from "types";
 import {
 	PostAllocateHoursEntry,
@@ -397,7 +400,6 @@ function JobsFinancialTable({
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
-				// console.log({ jobNameId });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -420,7 +422,11 @@ function JobsFinancialTable({
 				2023,
 				12
 			)) as unknown as AllTimesheetRowsViewV5[];
+			const allMonths: AllTimesheetRowsViewV5[] =
+				(await getAllTimesheetRows()) as unknown as AllTimesheetRowsViewV5[];
+
 			const unfilteredResponse = october.concat(november, december);
+			console.log({ allMonths });
 			let filteredResponse: AllTimesheetRowsViewV5[] = [];
 			if (unfilteredResponse) {
 				filteredResponse = unfilteredResponse.filter(
@@ -445,16 +451,7 @@ function JobsFinancialTable({
 				}
 			});
 			// }
-			// loop through each timesheet row
-			filteredResponse?.forEach((row) => {
-				// get the month of the timesheet row
-				if (row.year === new Date().getFullYear()) {
-					ungroupedMonthData[(row.month || 0) - 1] = [
-						...ungroupedMonthData[(row.month || 0) - 1],
-						row,
-					];
-				}
-			});
+
 			const groupedData: Accumulator[] = [];
 			ungroupedMonthData.forEach((month, index) => {
 				groupedData[index] = groupData(month);
@@ -489,9 +486,8 @@ function JobsFinancialTable({
 	const closeModal = () => {
 		setIsModalOpen(false);
 	};
-	const handleFormSubmit = (event: React.FormEvent) => {
+	const handleFormSubmit = () => {
 		setIsModalOpen(false);
-		event.preventDefault();
 	};
 
 	async function saveAllocateHoursEntry() {
@@ -551,8 +547,6 @@ function JobsFinancialTable({
 				const response2 = await PostTimeEntry(dataToPostTSE);
 				console.log(`PostAllocateHoursEntry ${response}`);
 				console.log(`PostTimeEntry ${response2}`);
-				console.log({ dataToPostTSE });
-				console.log({ dataToPostAHE });
 			}
 		} else {
 			const checkTaskId = Number(selectedTask);
