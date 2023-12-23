@@ -445,16 +445,6 @@ function JobsFinancialTable({
 				}
 			});
 			// }
-			// loop through each timesheet row
-			filteredResponse?.forEach((row) => {
-				// get the month of the timesheet row
-				if (row.year === new Date().getFullYear()) {
-					ungroupedMonthData[(row.month || 0) - 1] = [
-						...ungroupedMonthData[(row.month || 0) - 1],
-						row,
-					];
-				}
-			});
 			const groupedData: Accumulator[] = [];
 			ungroupedMonthData.forEach((month, index) => {
 				groupedData[index] = groupData(month);
