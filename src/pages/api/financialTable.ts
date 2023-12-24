@@ -36,7 +36,7 @@ export const groupFinancialTableData = (
 export const getFinancialTable = async (clientId: number) => {
 	try {
 		const { data, error } = await supabase
-			.from("all_timesheet_rows_view")
+			.from("timesheet_rows_view")
 			.select("*")
 			.order("id", { ascending: true })
 			.eq("client_id", clientId);
