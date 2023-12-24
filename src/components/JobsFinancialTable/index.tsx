@@ -219,7 +219,7 @@ type Accumulator = Record<string, Job>;
 function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
-			(current.job_id?.toString() as unknown as string) || "0";
+			(current.jobs_id?.toString() as unknown as string) || "0";
 		const taskKey: string =
 			(current.task_id?.toString() as unknown as string) || "0";
 		const userKey: string =
@@ -229,7 +229,7 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
 				job_id: current?.jobs_id?.toString() || "",
-				jobs_id: current?.job_id?.toString() || "",
+				// jobs_id: current?.job_id?.toString() || "",
 				total: {
 					time: 0,
 					rate: 0,
@@ -312,7 +312,6 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 			(userEntry as UserEntry).time += current?.time || 0;
 			(userEntry as unknown as UserEntry).count += 1;
 		}
-
 		return accumulator;
 	}, {} as Accumulator);
 
