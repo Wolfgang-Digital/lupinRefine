@@ -50,11 +50,9 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 	const jobInfoFields: { label: string; field: keyof GetAllJobsWithProjects }[] =
 		[
-			{ label: "Job ID", field: "job_id" },
-			{ label: "Jobs ID", field: "id" },
 			{ label: "Client Name", field: "client_name" },
 			{ label: "Project Name", field: "project_name" },
-			{ label: "Project ID", field: "job_name_id" },
+			{ label: "Job Name", field: "job_name_name" },
 			{ label: "Job Type", field: "job_type_name" },
 			{ label: "Tier", field: "tier_name" },
 		];

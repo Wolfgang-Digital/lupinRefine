@@ -33,8 +33,7 @@ type RowData = TimesheetRowsView & {
 };
 
 const columns = [
-	{ field: "project_id", headerName: "Project ID", width: 100 },
-	{ field: "project_name", headerName: "Project", width: 100 },
+	{ field: "project_name", headerName: "Project", width: 300 },
 	{ field: "allocated", headerName: "Allocated: ", width: 100 },
 	{ field: "hours", headerName: "Hours", width: 75 },
 	{ field: "rate", headerName: "Rate", width: 75 },
