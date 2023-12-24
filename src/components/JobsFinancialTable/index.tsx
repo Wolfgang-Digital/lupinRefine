@@ -22,8 +22,11 @@ import {
 	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRowsV3 } from "@pages/api/timesheetRows";
-import { AllTimesheetRowsViewV5 } from "types";
+import {
+	getAllTimesheetRows,
+	getAllTimesheetRowsV3,
+} from "@pages/api/timesheetRows";
+import { AllTimesheetRowsViewV5, TimesheetRowsView } from "types";
 import {
 	PostAllocateHoursEntry,
 	changeAllocation,
@@ -408,19 +411,8 @@ function JobsFinancialTable({
 			setTasks(taskOptions);
 
 			// do something for 12 times
-			const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				10
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				11
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				12
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const unfilteredResponse = october.concat(november, december);
+			const unfilteredResponse: TimesheetRowsView[] =
+				(await getAllTimesheetRows()) as unknown as TimesheetRowsView[];
 			let filteredResponse: AllTimesheetRowsViewV5[] = [];
 			if (unfilteredResponse) {
 				filteredResponse = unfilteredResponse.filter(
