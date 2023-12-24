@@ -398,7 +398,6 @@ function JobsFinancialTable({
 				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
-				// console.log({ jobNameId });
 				getProjectJobTasks.forEach((task) => {
 					taskOptions.push({
 						label: task.task_name || "",
@@ -542,8 +541,6 @@ function JobsFinancialTable({
 				const response2 = await PostTimeEntry(dataToPostTSE);
 				console.log(`PostAllocateHoursEntry ${response}`);
 				console.log(`PostTimeEntry ${response2}`);
-				console.log({ dataToPostTSE });
-				console.log({ dataToPostAHE });
 			}
 		} else {
 			const checkTaskId = Number(selectedTask);

@@ -222,7 +222,6 @@ const Timesheet = () => {
 			const month = selectedWeekStart.getMonth() + 1;
 			const year = selectedWeekStart.getFullYear();
 			const monthlyTimesheetsResponse = await getMonthlyTimesheetRows(year, month);
-			console.log({ monthlyTimesheetsResponse });
 			let monthlyFilteredResponse: typeof monthlyTimesheetsResponse =
 				monthlyTimesheetsResponse;
 
@@ -535,7 +534,6 @@ const Timesheet = () => {
 							completed: false,
 						}))
 					);
-					console.log({ tasks });
 				}
 			}
 		}
