@@ -22,11 +22,8 @@ import {
 	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import {
-	getAllTimesheetRows,
-	// getAllTimesheetRowsV3,
-} from "@pages/api/timesheetRows";
-import { AllTimesheetRowsViewV5, TimesheetRowsView } from "types";
+import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import { TimesheetRowsView } from "types";
 import {
 	PostAllocateHoursEntry,
 	changeAllocation,
@@ -216,7 +213,7 @@ type Task = Record<string, TaskEntry | Total | string>;
 type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
-function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
+function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -413,7 +410,7 @@ function JobsFinancialTable({
 			// do something for 12 times
 			const unfilteredResponse: TimesheetRowsView[] =
 				(await getAllTimesheetRows()) as unknown as TimesheetRowsView[];
-			let filteredResponse: AllTimesheetRowsViewV5[] = [];
+			let filteredResponse: TimesheetRowsView[] = [];
 			if (unfilteredResponse) {
 				filteredResponse = unfilteredResponse.filter(
 					({ client_id, project_id }) => {
@@ -423,7 +420,7 @@ function JobsFinancialTable({
 			}
 
 			// create empty array with 12 elements, each element is an empty array
-			const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
+			const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
 				() => []
 			);
 			// loop through each timesheet row
