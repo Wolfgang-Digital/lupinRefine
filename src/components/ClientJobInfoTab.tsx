@@ -98,7 +98,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const getCurrentMonth = () => {
 		return new Date().getMonth();
 	};
-	console.log(getCurrentMonth());
 	const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);

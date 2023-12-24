@@ -54,6 +54,7 @@ function CollapsibleTasksGrid({
 	projectId?: number;
 	jobId?: number;
 }) {
+	console.log({ jobId });
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
 	const [tasks, setTasks] = useState<TaskOption[]>([]);

@@ -18,7 +18,7 @@ type RowData = TimesheetRowsView & {
 };
 
 const columns = [
-	{ field: "job_id", headerName: "Job ID", width: 100 },
+	// { field: "job_id", headerName: "Job ID", width: 100 },
 	{ field: "job_name", headerName: "Job", width: 200 },
 	{ field: "task_name", headerName: "Task", width: 250 },
 	{ field: "user_name", headerName: "Staff", width: 150 },
@@ -80,7 +80,7 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 					(item: TimesheetRowsView) => ({
 						...item,
 						id: item.id,
-						job_id: item.job_id,
+						// job_id: item.job_id,
 						month: new Date(
 							item.date?.toString() || new Date().toString()
 						).getMonth(), // Format the month name

@@ -24,9 +24,9 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import {
 	getAllTimesheetRows,
-	getAllTimesheetRowsV3,
+	// getAllTimesheetRowsV3,
 } from "@pages/api/timesheetRows";
-import { AllTimesheetRowsViewV5 } from "types";
+import { TimesheetRowsView } from "types";
 import {
 	PostAllocateHoursEntry,
 	changeAllocation,
@@ -216,7 +216,7 @@ type Task = Record<string, TaskEntry | Total | string>;
 type Job = Record<string, Task | string | Total>;
 type Accumulator = Record<string, Job>;
 
-function groupData(dataArray: AllTimesheetRowsViewV5[]): Accumulator {
+function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -410,24 +410,9 @@ function JobsFinancialTable({
 			setTasks(taskOptions);
 
 			// do something for 12 times
-			const october: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				10
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const november: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				11
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const december: AllTimesheetRowsViewV5[] = (await getAllTimesheetRowsV3(
-				2023,
-				12
-			)) as unknown as AllTimesheetRowsViewV5[];
-			const allMonths: AllTimesheetRowsViewV5[] =
-				(await getAllTimesheetRows()) as unknown as AllTimesheetRowsViewV5[];
-
-			const unfilteredResponse = october.concat(november, december);
-			console.log({ allMonths });
-			let filteredResponse: AllTimesheetRowsViewV5[] = [];
+			const unfilteredResponse: TimesheetRowsView[] =
+				(await getAllTimesheetRows()) as unknown as TimesheetRowsView[];
+			let filteredResponse: TimesheetRowsView[] = [];
 			if (unfilteredResponse) {
 				filteredResponse = unfilteredResponse.filter(
 					({ client_id, project_id }) => {
@@ -437,7 +422,7 @@ function JobsFinancialTable({
 			}
 
 			// create empty array with 12 elements, each element is an empty array
-			const ungroupedMonthData: AllTimesheetRowsViewV5[][] = [...Array(12)].map(
+			const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
 				() => []
 			);
 			// loop through each timesheet row

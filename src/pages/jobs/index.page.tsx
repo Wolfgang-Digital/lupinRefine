@@ -74,37 +74,17 @@ const JobList: React.FC = () => {
 		{
 			field: "client_name",
 			headerName: "Client Name",
-			width: 200,
+			width: 300,
 			renderCell: (params: GridRenderCellParams) => (
 				<HoverableCell onClick={() => handleJobClick(params)}>
 					{params.value || ""}
 				</HoverableCell>
 			),
 		},
-		{ field: "project_name", headerName: "Project Name", width: 200 },
-		{ field: "job_name_name", headerName: "Job Name", width: 200 },
-		// { field: "job_type_name", headerName: "Job Type", width: 200 },
+		{ field: "project_name", headerName: "Project Name", width: 300 },
+		{ field: "job_name_name", headerName: "Job Name", width: 300 },
 		{ field: "tier_name", headerName: "Client Tier", width: 200 },
-		{ field: "job_id", headerName: "Job ID", width: 200 },
-		// { field: "job_id", headerName: "Job ID", width: 200 },
-		// { field: "currency_symbol", headerName: "Currency", width: 200 },
 	];
-
-	//const rows = displayedJobs.map((job) => ({
-	//	id: job.id,
-	//	job_id: job.job_id,
-	//	client_name: job.client_name,
-	//	project_name: job.project_name,
-	//	project_id: job.project_id,
-	//	job_name_name: job.job_name_name,
-	//	job_name_id: job.job_name_id,
-	//	// job_name: job.job_name,
-	//	job_type_name: job.job_type_name,
-	//	tier_name: job.tier_name,
-	//	currency_symbol: job.currency_symbol,
-	//	status: job.status_code_name,
-	//	department: job.department_name,
-	//}));
 
 	return (
 		<>
