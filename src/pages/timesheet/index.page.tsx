@@ -520,8 +520,6 @@ const Timesheet = () => {
 
 	useEffect(() => {
 		async function fetchTasks() {
-			console.log({ selectedJobName });
-			console.log({ selectedProject });
 			if (selectedJob) {
 				const response = await getProjectJobTaskForDayDialog(
 					Number(selectedProject) || 0,
