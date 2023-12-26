@@ -304,7 +304,6 @@ const Timesheet = () => {
 				project_id: number | null;
 				project_name: string;
 				jobs: {
-					// job_id: number;
 					jobs_id: number;
 					job_name: string;
 					job_name_id: number;
@@ -321,7 +320,6 @@ const Timesheet = () => {
 			project_id: number | null;
 			project_name: string;
 			jobs: {
-				// job_id: number;
 				jobs_id: number;
 				job_name: string;
 				job_name_id: number;
@@ -334,7 +332,6 @@ const Timesheet = () => {
 			}[];
 		},
 		job: {
-			// job_id: number;
 			jobs_id: number;
 			job_name: string;
 			job_name_id: number;
@@ -362,7 +359,7 @@ const Timesheet = () => {
 			selectedProjectId = project?.project_id.toString();
 		}
 		const selectedJobId = job.jobs_id.toString();
-		const selectedJobsId = job.jobs_id.toString();
+		// const selectedJobsId = job.jobs_id.toString();
 		const selectedJobNameId = job.job_name_id.toString();
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
@@ -370,7 +367,7 @@ const Timesheet = () => {
 		setSelectedProject(selectedProjectId);
 		setSelectedJob(selectedJobId);
 		setSelectedTask(selectedTaskId);
-		setSelectedJobs(selectedJobsId);
+		setSelectedJobs(selectedJobNameId);
 		setSelectedJobName(selectedJobNameId);
 	};
 
@@ -474,10 +471,12 @@ const Timesheet = () => {
 	const handleJobSelect = (
 		event: React.ChangeEvent<{ value: unknown; name: unknown }>
 	) => {
-		const selectedJobId = event.target.value as string;
-		const selectedJobsId = event.target.name as string;
-		setSelectedJob(selectedJobId);
+		// const selectedJobId = event.target.value as string;
+		const selectedJobsId = event.target.value as string;
+		const selectedJobNameId = event.target.value as string;
+		setSelectedJob(selectedJobNameId);
 		setSelectedJobs(selectedJobsId);
+		setSelectedJobName(selectedJobNameId);
 
 		// Filter tasks based on the selected job
 		setSelectedTask(""); // Reset the selected task
@@ -508,9 +507,9 @@ const Timesheet = () => {
 				if (response) {
 					setJobs(
 						response?.map((job) => ({
-							value: job.id?.toString() || "",
+							value: job.job_name_id?.toString() || "",
 							label: job.job_name || "",
-							taskLabel: job.id.toString(),
+							taskLabel: job.job_name_id?.toString() || "",
 						}))
 					);
 				}
@@ -521,6 +520,8 @@ const Timesheet = () => {
 
 	useEffect(() => {
 		async function fetchTasks() {
+			console.log({ selectedJobName });
+			console.log({ selectedProject });
 			if (selectedJob) {
 				const response = await getProjectJobTaskForDayDialog(
 					Number(selectedProject) || 0,
