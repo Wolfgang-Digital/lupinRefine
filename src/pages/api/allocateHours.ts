@@ -215,7 +215,6 @@ export const changeAllocation = async ({
 			console.error("Error changing allocation: ", error);
 			return;
 		}
-		console.log(job_id, task_id, user_id);
 		return data;
 	} catch (error) {
 		console.error("Error changing allocation: ", error);

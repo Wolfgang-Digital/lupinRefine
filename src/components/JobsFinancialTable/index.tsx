@@ -22,10 +22,7 @@ import {
 	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import {
-	getAllTimesheetRows,
-	// getAllTimesheetRowsV3,
-} from "@pages/api/timesheetRows";
+import { getAllTimesheetRows } from "@pages/api/timesheetRows";
 import { TimesheetRowsView } from "types";
 import {
 	PostAllocateHoursEntry,

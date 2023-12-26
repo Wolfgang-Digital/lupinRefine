@@ -95,10 +95,8 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 	const [filteredFinancialData, setFilteredFinancialData] = useState<
 		TimesheetRowsView[]
 	>([]);
-	const getCurrentMonth = () => {
-		return new Date().getMonth();
-	};
-	const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
+	const currentMonth = new Date().getMonth();
+	const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 	const [selectedProject, setSelectedProject] = useState<RowData | null>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 

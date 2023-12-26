@@ -23,59 +23,7 @@ Promise<TimesheetRowsView[] | undefined> => {
 		console.error("Error fetching timesheet rows: ", error);
 	}
 };
-// export const getAllTimesheetRowsV2 = async (
-// 	year: number,
-// 	month: number
-// ): Promise<TimesheetRowsView[] | undefined> => {
-// 	try {
-// 		const { data, error } = (await supabase
-// 			.from("timesheet_rows_view_v4")
-// 			.select("*")
-// 			.eq("allocate_hours_month", month)
-// 			.eq("month", month)
-// 			.eq("allocate_hours_year", year)
-// 			.eq("year", year)
-// 			.order("name", { ascending: true })
-// 			.order("jobs_id", { ascending: true })) as unknown as {
-// 			data: TimesheetRowsView[];
-// 			error: PostgrestError;
-// 		};
-// 		if (error) {
-// 			console.error("Error fetching timesheet rows: ", error);
-// 			return;
-// 		}
-// 		return data;
-// 	} catch (error) {
-// 		console.error("Error fetching timesheet rows: ", error);
-// 	}
-// };
 
-// export const getAllTimesheetRowsV3 = async (
-// 	year: number,
-// 	month: number
-// ): Promise<TimesheetRowsView[] | undefined> => {
-// 	try {
-// 		const { data, error } = (await supabase
-// 			.from("timesheet_rows_view_v6")
-// 			.select("*")
-// 			.eq("allocate_hours_month", month)
-// 			.eq("month", month)
-// 			.eq("allocate_hours_year", year)
-// 			.eq("year", year)
-// 			.order("name", { ascending: true })
-// 			.order("jobs_id", { ascending: true })) as unknown as {
-// 			data: TimesheetRowsView[];
-// 			error: PostgrestError;
-// 		};
-// 		if (error) {
-// 			console.error("Error fetching timesheet rows V4: ", error);
-// 			return;
-// 		}
-// 		return data;
-// 	} catch (error) {
-// 		console.error("Error fetching timesheet rows V4: ", error);
-// 	}
-// };
 
 export const getMonthlyTimesheetRows = async (
 	year: number,
