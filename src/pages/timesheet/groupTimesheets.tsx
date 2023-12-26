@@ -8,7 +8,7 @@ type Task = {
 };
 
 type Job = {
-	job_id: number;
+	// job_id: number;
 	jobs_id: number;
 	job_name: string;
 	job_name_id: number;
@@ -59,7 +59,7 @@ export const groupMonthlyTimesheets = (
 					}
 				} else {
 					existingProjectEntry.jobs.push({
-						job_id: curr?.job_id || 0,
+						// job_id: curr?.job_id || 0,
 						jobs_id: curr?.jobs_id || 0,
 						job_name: curr?.job_name || "",
 						job_name_id: curr?.job_name_id || 0,
@@ -79,7 +79,7 @@ export const groupMonthlyTimesheets = (
 					project_name: curr?.project_name || "",
 					jobs: [
 						{
-							job_id: curr?.job_id || 0,
+							// job_id: curr?.job_id || 0,
 							jobs_id: curr?.jobs_id || 0,
 							job_name: curr?.job_name || "",
 							job_name_id: curr?.job_name_id || 0,
@@ -105,7 +105,7 @@ export const groupMonthlyTimesheets = (
 						project_name: curr?.project_name || "",
 						jobs: [
 							{
-								job_id: curr?.job_id || 0,
+								// job_id: curr?.job_id || 0,
 								jobs_id: curr?.jobs_id || 0,
 								job_name: curr?.job_name || "",
 								job_name_id: curr?.job_name_id || 0,
@@ -157,7 +157,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					}
 				} else {
 					existingProjectEntry.jobs.push({
-						job_id: curr?.job_id || 0,
+						// job_id: curr?.job_id || 0,
 						jobs_id: curr?.jobs_id || 0,
 						job_name: curr?.job_name || "",
 						job_name_id: curr?.job_name_id || 0,
@@ -177,7 +177,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					project_name: curr?.project_name || "",
 					jobs: [
 						{
-							job_id: curr?.job_id || 0,
+							// job_id: curr?.job_id || 0,
 							jobs_id: curr?.jobs_id || 0,
 							job_name: curr?.job_name || "",
 							job_name_id: curr?.job_name_id || 0,
@@ -203,7 +203,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 						project_name: curr?.project_name || "",
 						jobs: [
 							{
-								job_id: curr?.job_id || 0,
+								// job_id: curr?.job_id || 0,
 								jobs_id: curr?.jobs_id || 0,
 								job_name: curr?.job_name || "",
 								job_name_id: curr?.job_name_id || 0,

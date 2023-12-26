@@ -226,7 +226,6 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
 				job_id: current?.jobs_id?.toString() || "",
-				// jobs_id: current?.job_id?.toString() || "",
 				total: {
 					time: 0,
 					rate: 0,
@@ -462,13 +461,13 @@ function JobsFinancialTable({
 	const [rate, setRate] = useState("");
 	const [taskId, setTaskId] = useState("");
 	const [jobId, setJobId] = useState("");
-	const [jobsId, setJobsId] = useState("");
 	let userName: string;
 
 	const closeModal = () => {
 		setIsModalOpen(false);
 	};
-	const handleFormSubmit = () => {
+	const handleFormSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
 		setIsModalOpen(false);
 	};
 
@@ -517,7 +516,6 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobId: Number(jobsId),
 					jobsId: Number(jobId),
 					taskId: Number(taskId),
 					selectedDate: formattedDate,
@@ -558,7 +556,6 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobId: Number(jobsId),
 					jobsId: Number(jobId),
 					taskId: Number(selectedTask),
 					selectedDate: formattedDate,
@@ -796,7 +793,6 @@ function JobsFinancialTable({
 																	setRate("");
 																	setShowAddUserToTaskForm(false);
 																	setJobId((job as Job)?.job_id as string);
-																	setJobsId((job as Job)?.jobs_id as string);
 																	setPostData(false);
 																	setIsModalOpen(true);
 																}}
@@ -875,8 +871,6 @@ function JobsFinancialTable({
 																				setTaskName((task as TaskEntry)?.task_name as string);
 																				setTaskId((task as Task)?.task_id as string);
 																				setJobId((job as Job)?.job_id as string);
-																				// setJobsId((job as Job)?.jobs_id as string);
-																				setJobsId((job as Job)?.jobs_id as string);
 																				setPostData(false);
 																				setIsModalOpen(true);
 																			}}
