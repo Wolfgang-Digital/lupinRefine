@@ -92,7 +92,6 @@ function CollapsibleTasksGrid({
 					})
 				);
 				setFetchedRows(mappedData);
-				console.log({ mappedData });
 			}
 		}
 		fetchData();

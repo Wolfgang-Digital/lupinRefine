@@ -193,7 +193,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 									projectId={job?.project_id || 0}
 									jobId={job?.id || 0}
 									jobNameId={job?.job_name_id || 0}
-									jobsId={job?.job_id || 0}
+									// jobsId={job?.job_id || 0}
 								/>
 							</Paper>
 						</Container>

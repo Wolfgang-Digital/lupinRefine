@@ -59,8 +59,8 @@ function CollapsibleHoursGrid({
 	projectId,
 	jobId,
 	jobNameId,
-	jobsId,
-}: {
+}: // jobsId,
+{
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
@@ -121,7 +121,6 @@ function CollapsibleHoursGrid({
 				(item: AllocateHoursView) => ({
 					...item,
 					id: item.id,
-					jobs_id: item.jobs_id,
 					job_name: item.job_name,
 					task_name: item.task_name,
 					user_name: item.user_name,
@@ -167,7 +166,7 @@ function CollapsibleHoursGrid({
 			console.log(`Update allocate hours row ${response}`);
 		} else {
 			const dataToPostAHE = {
-				jobTaskId: 10,
+				// jobTaskId: 0,
 				month: Number(monthNumber),
 				year: Number(currentDate.getFullYear()),
 				userId: selectedUser,
@@ -182,7 +181,7 @@ function CollapsibleHoursGrid({
 				notes: "Zero hours for allocate hours",
 				timeSpent: 0,
 				projectId: Number(projectId),
-				jobId: Number(jobsId),
+				// jobId: Number(jobsId),
 				jobsId: Number(jobId),
 				taskId: Number(selectedTask),
 				selectedDate: formattedDate,

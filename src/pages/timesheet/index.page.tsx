@@ -304,7 +304,7 @@ const Timesheet = () => {
 				project_id: number | null;
 				project_name: string;
 				jobs: {
-					job_id: number;
+					// job_id: number;
 					jobs_id: number;
 					job_name: string;
 					job_name_id: number;
@@ -321,7 +321,7 @@ const Timesheet = () => {
 			project_id: number | null;
 			project_name: string;
 			jobs: {
-				job_id: number;
+				// job_id: number;
 				jobs_id: number;
 				job_name: string;
 				job_name_id: number;
@@ -334,7 +334,7 @@ const Timesheet = () => {
 			}[];
 		},
 		job: {
-			job_id: number;
+			// job_id: number;
 			jobs_id: number;
 			job_name: string;
 			job_name_id: number;
@@ -874,7 +874,7 @@ const Timesheet = () => {
 																				</TableCell>
 																				<TableCell className={classes.tableRowCell}>
 																					<TableRow key={`${index - 3}`}>
-																						<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
+																						<div style={{ whiteSpace: "nowrap" }} key={job.jobs_id}>
 																							{job.job_name}
 																						</div>
 																					</TableRow>
