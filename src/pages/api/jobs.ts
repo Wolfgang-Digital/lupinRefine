@@ -5,17 +5,19 @@ export type JobsDataWithProjects = GetAllJobsWithProjects;
 export type JobsDataWithProjects2 = GetAllJobsWithProjects2;
 
 export const getJob = async ({ id }: { id: string }) => {
+	console.log({ id });
 	try {
 		const { data, error } = await supabase
 			.from("jobs")
 			.select("*")
-			.eq("job_id", id)
+			.eq("id", Number(id))
 			.single();
 
 		if (error) {
 			console.error("Error fetching clients:", error);
 			return;
 		}
+
 		return data;
 	} catch (error) {
 		console.error("Error fetching clients:", error);
@@ -103,7 +105,6 @@ export const PostJobEntry = async ({
 	jobName: job_name,
 	clientId: job_client_id,
 	projectId: project_id,
-	// jobId: job_id,
 	jobCurrencyId: job_currency_id,
 	jobType: job_type,
 	jobStatus: job_current_status,
@@ -126,7 +127,6 @@ export const PostJobEntry = async ({
 				job_name,
 				job_client_id,
 				project_id,
-				// job_id,
 				job_currency_id,
 				job_type,
 				job_current_status,

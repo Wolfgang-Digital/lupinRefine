@@ -348,7 +348,7 @@ export const DayDialog = ({
 								<TextField
 									select
 									label="Select Job"
-									value={selectedJob}
+									value={selectedJobs}
 									name={selectedJobs}
 									onChange={handleJobSelect}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
