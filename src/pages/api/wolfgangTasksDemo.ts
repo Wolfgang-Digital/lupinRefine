@@ -7,8 +7,7 @@ export const getAllWolfgangTasksDemo = async (): Promise<
 	try {
 		const { data, error } = (await supabase
 			.from("wolfgang_jobs_demo")
-			.select("*")
-			.order("job_id", { ascending: true })) as unknown as {
+			.select("*")) as unknown as {
 			data: WolfgangTasksDemo[];
 			error: PostgrestError;
 		};

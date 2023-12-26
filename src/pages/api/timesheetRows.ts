@@ -7,9 +7,7 @@ Promise<TimesheetRowsView[] | undefined> => {
 		const { data, error } = (await supabase
 			.from("timesheet_rows_view")
 			.select("*")
-			.order("name", { ascending: true })
-			.order("job_id", { ascending: true })) as unknown as {
-			// .eq("user_id", userID))
+			.order("name", { ascending: true })) as unknown as {
 			data: TimesheetRowsView[];
 			error: PostgrestError;
 		};
@@ -23,7 +21,6 @@ Promise<TimesheetRowsView[] | undefined> => {
 		console.error("Error fetching timesheet rows: ", error);
 	}
 };
-
 
 export const getMonthlyTimesheetRows = async (
 	year: number,
