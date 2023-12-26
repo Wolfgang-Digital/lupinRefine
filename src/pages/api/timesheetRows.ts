@@ -1,5 +1,5 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { TimesheetRowsView, MonthlyTimesheetRowsView } from "types";
+import { MonthlyTimesheetRowsView, TimesheetRowsView } from "types";
 
 export const getAllTimesheetRows = async (): // userID: number
 Promise<TimesheetRowsView[] | undefined> => {
@@ -23,6 +23,7 @@ Promise<TimesheetRowsView[] | undefined> => {
 		console.error("Error fetching timesheet rows: ", error);
 	}
 };
+
 
 export const getMonthlyTimesheetRows = async (
 	year: number,

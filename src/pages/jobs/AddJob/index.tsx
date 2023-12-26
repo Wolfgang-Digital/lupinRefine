@@ -21,6 +21,7 @@ import { getProjectJobs } from "@pages/api/projectJobsView";
 import { getAllProjects } from "@pages/api/projects";
 // import { getJobNames } from "@pages/api/jobNames";
 import { PostJobEntry } from "@pages/api/jobs";
+import { getJobName } from "@src/pages/api/jobNames";
 
 interface AddJobProps {
 	onAddJob: () => void;
@@ -63,14 +64,6 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 
 	const buttonSize =
 		size === "small" ? "small" : size === "medium" ? "medium" : "large";
-
-	// const jobInfoFields = [
-	// 	{ label: "Job Name", field: "jobName" },
-	// 	{ label: "Client Name", field: "clientName" },
-	// 	{ label: "Job Type", field: "jobType" },
-	// 	{ label: "Client Tier", field: "clientTier" },
-	// 	// Add more fields as needed
-	// ];
 
 	const [clients, setClients] = useState<ClientOptions[]>([]);
 	const clientOptions: ClientOptions[] = [];
@@ -123,14 +116,18 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 		}
 		getJobs();
 	}, [selectedProject]);
-
+	let jobName: string;
 	async function saveJobEntry() {
+		const jobNameArr = await getJobName(Number(selectedJob));
+		if (jobNameArr) {
+			jobName = jobNameArr[0].job_name_name || "";
+		}
+
 		const dataToPost = {
 			jobNameId: Number(selectedJob),
-			jobName: selectedProject,
+			jobName: jobName,
 			clientId: Number(selectedClient),
 			projectId: Number(selectedProject),
-			jobId: Number(selectedJob),
 			jobCurrencyId: 1,
 			jobType: 1,
 			jobStatus: 1,
@@ -182,15 +179,6 @@ const AddJob: React.FC<AddJobProps> = ({ size = "small" }) => {
 							Job Information
 						</Typography>
 						<form>
-							{/* {jobInfoFields.map((field) => (
-								<TextField
-									key={field.field}
-									margin="normal"
-									fullWidth
-									label={field.label}
-									// Add your field value and onChange handling here
-								/>
-							))} */}
 							<TextField
 								select
 								value={selectedClient}

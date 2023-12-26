@@ -103,7 +103,7 @@ export const PostJobEntry = async ({
 	jobName: job_name,
 	clientId: job_client_id,
 	projectId: project_id,
-	jobId: job_id,
+	// jobId: job_id,
 	jobCurrencyId: job_currency_id,
 	jobType: job_type,
 	jobStatus: job_current_status,
@@ -113,7 +113,7 @@ export const PostJobEntry = async ({
 	jobName: string;
 	clientId: number;
 	projectId: number;
-	jobId: number;
+	// jobId: number;
 	jobCurrencyId: number;
 	jobType: number;
 	jobStatus: number;
@@ -126,7 +126,7 @@ export const PostJobEntry = async ({
 				job_name,
 				job_client_id,
 				project_id,
-				job_id,
+				// job_id,
 				job_currency_id,
 				job_type,
 				job_current_status,

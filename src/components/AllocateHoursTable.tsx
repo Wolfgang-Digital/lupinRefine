@@ -121,7 +121,6 @@ function CollapsibleHoursGrid({
 				(item: AllocateHoursView) => ({
 					...item,
 					id: item.id,
-					job_id: item.job_id,
 					jobs_id: item.jobs_id,
 					job_name: item.job_name,
 					task_name: item.task_name,
@@ -139,18 +138,6 @@ function CollapsibleHoursGrid({
 				rate: allocation.rate,
 				task_id: allocation.task_id,
 				user_id: allocation.user_id,
-				// client_id: allocation.client_id,
-				// job_id: allocation.job_id,
-				// job_name: allocation.job_name,
-				// job_name_id: allocation.job_name_id,
-				// job_name_name: allocation.job_name_name,
-				// jobs_id: allocation.jobs_id,
-				// name: allocation.name,
-				// project_id: allocation.project_id,
-				// project_name: allocation.project_name,
-				// task_name: allocation.task_name,
-				// user_name: allocation.user_name,
-				// year: allocation.year,
 			}));
 			setRows(newRows);
 		}

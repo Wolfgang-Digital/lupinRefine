@@ -47,12 +47,13 @@ function CustomToolbar() {
 		</GridToolbarContainer>
 	);
 }
+
 function CollapsibleTasksGrid({
 	projectId,
-	jobId,
+	jobNameId,
 }: {
 	projectId?: number;
-	jobId?: number;
+	jobNameId?: number;
 }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
@@ -67,7 +68,7 @@ function CollapsibleTasksGrid({
 
 			const getProjectJobTasks = await getAllProjectJobTasks(
 				projectId || 0,
-				jobId || 0
+				jobNameId || 0
 			);
 			if (getProjectJobTasks) {
 				if (getTasks) {
@@ -91,6 +92,7 @@ function CollapsibleTasksGrid({
 					})
 				);
 				setFetchedRows(mappedData);
+				console.log({ mappedData });
 			}
 		}
 		fetchData();

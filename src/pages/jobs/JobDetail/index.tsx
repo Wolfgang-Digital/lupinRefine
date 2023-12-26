@@ -170,7 +170,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								</Typography>
 								<CollapsibleTasksGrid
 									projectId={job?.project_id || 0}
-									jobId={job?.job_name_id || 0}
+									jobNameId={job?.job_name_id || 0}
 								/>
 							</Paper>
 						</Container>
