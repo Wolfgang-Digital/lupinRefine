@@ -17,10 +17,7 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import {
-	getJobAllocatedHoursPerMonth,
-	// getJobAllocatedHoursPerMonthPerUser,
-} from "@pages/api/allocateHoursView";
+import { getJobAllocatedHoursPerMonth } from "@pages/api/allocateHoursView";
 import { getAllUsers } from "@pages/api/users";
 import { AllocateHoursView } from "types";
 import {
@@ -64,7 +61,7 @@ function CollapsibleHoursGrid({
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
-	jobsId?: number;
+	// jobsId?: number;
 }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
@@ -148,11 +145,6 @@ function CollapsibleHoursGrid({
 		const currentDate = new Date();
 		const formattedDate = format(currentDate, "yyyy-MM-dd");
 		if (edit) {
-			// const allocateHoursLogged = (await getJobAllocatedHoursPerMonthPerUser(
-			// 	Number(monthNumber),
-			// 	selectedUser,
-
-			// )) || [];
 			const dataToUpdateAHE = {
 				id: Number(selectedId),
 				userId: selectedUser,

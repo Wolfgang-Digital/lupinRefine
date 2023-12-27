@@ -141,7 +141,7 @@ const Timesheet = () => {
 	const [selectedProject, setSelectedProject] = useState("");
 	const [selectedJob, setSelectedJob] = useState("");
 	const [selectedJobs, setSelectedJobs] = useState("");
-	const [selectedJobName, setSelectedJobName] = useState("");
+	// const [selectedJobName, setSelectedJobName] = useState("");
 	const [selectedTask, setSelectedTask] = useState("");
 
 	const [filteredTimesheets, setFilteredTimesheets] =
@@ -365,10 +365,10 @@ const Timesheet = () => {
 		setSelectedDate(selectedDate);
 		setSelectedClient(selectedClientId);
 		setSelectedProject(selectedProjectId);
-		setSelectedJob(selectedJobId);
+		setSelectedJob(selectedJobNameId);
 		setSelectedTask(selectedTaskId);
-		setSelectedJobs(selectedJobNameId);
-		setSelectedJobName(selectedJobNameId);
+		setSelectedJobs(selectedJobId);
+		// setSelectedJobName(selectedJobNameId);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
@@ -377,14 +377,21 @@ const Timesheet = () => {
 		const monthTest = Number(splitDate[1]);
 		const yearTest = Number(splitDate[0]);
 		const userId = localStorage.getItem("user_id") || "";
-		const jobsId = Number(selectedJob);
+		const projectId = selectedProject;
+		// const jobsId = Number(selectedJobName);
 		const taskId = Number(selectedTask);
+		const clientId = selectedClient;
+		const clientJob = (await getJobByProjectId(clientId, projectId)) || [];
+		let AHJobId: number = 0;
+		if (clientJob) {
+			AHJobId = clientJob[0].id;
+		}
 		const allocatedHoursLogged =
 			(await getJobAllocatedHoursPerMonthPerUser(
 				yearTest,
 				monthTest,
 				userId,
-				jobsId,
+				AHJobId,
 				taskId
 			)) || [];
 		if (allocatedHoursLogged.length == 0) {
@@ -393,7 +400,7 @@ const Timesheet = () => {
 				month: Number(splitDate[1]),
 				year: Number(splitDate[0]),
 				userId: localStorage.getItem("user_id") || "",
-				jobId: Number(selectedJob),
+				jobId: Number(AHJobId),
 				taskId: Number(selectedTask),
 				hours: 0,
 				allocatedRate: 150,
@@ -407,8 +414,7 @@ const Timesheet = () => {
 			notes,
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),
-			jobId: 3565,
-			jobsId: Number(selectedJob),
+			jobsId: Number(AHJobId),
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 0,
@@ -471,12 +477,10 @@ const Timesheet = () => {
 	const handleJobSelect = (
 		event: React.ChangeEvent<{ value: unknown; name: unknown }>
 	) => {
-		// const selectedJobId = event.target.value as string;
-		const selectedJobsId = event.target.value as string;
-		const selectedJobNameId = event.target.value as string;
-		setSelectedJob(selectedJobNameId);
+		const selectedJobId = event.target.value as string;
+		const selectedJobsId = event.target.name as string;
+		setSelectedJob(selectedJobId);
 		setSelectedJobs(selectedJobsId);
-		setSelectedJobName(selectedJobNameId);
 
 		// Filter tasks based on the selected job
 		setSelectedTask(""); // Reset the selected task
@@ -503,13 +507,12 @@ const Timesheet = () => {
 		async function fetchJobs() {
 			if (selectedProject) {
 				const response = await getJobByProjectId(selectedClient, selectedProject);
-
 				if (response) {
 					setJobs(
 						response?.map((job) => ({
 							value: job.job_name_id?.toString() || "",
 							label: job.job_name || "",
-							taskLabel: job.job_name_id?.toString() || "",
+							taskLabel: job.job_id?.toString() || "",
 						}))
 					);
 				}
@@ -523,7 +526,7 @@ const Timesheet = () => {
 			if (selectedJob) {
 				const response = await getProjectJobTaskForDayDialog(
 					Number(selectedProject) || 0,
-					Number(selectedJobName) || 0
+					Number(selectedJob) || 0
 				);
 				if (response) {
 					setTasks(

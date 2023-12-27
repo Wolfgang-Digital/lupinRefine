@@ -17,35 +17,6 @@ export const getAllTasks = async () => {
 	}
 };
 
-export const getTaskByJobId = async (jobId: string) => {
-	try {
-		const { data, error } = await supabase
-			.from("job_tasks")
-			.select("task_id")
-			.eq("jobs_id", jobId);
-		let taskIds: number[] = [];
-		if (error) {
-			console.error("Error fetching job tasks:", error);
-			return;
-		}
-		if (data) {
-			taskIds = data?.map((jobTask) => jobTask.task_id || 0);
-		}
-		const { data: taskData, error: taskError } = await supabase
-			.from("tasks")
-			.select("task_id, task_name")
-			.in("task_id", taskIds);
-
-		if (taskError) {
-			console.error("Error fetching tasks:", error);
-			return;
-		}
-		return taskData;
-	} catch (error) {
-		console.error("Error fetching tasks:", error);
-	}
-};
-
 export const getTaskName = async (
 	taskId: number
 ): Promise<TaskData[] | undefined> => {
