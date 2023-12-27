@@ -216,7 +216,7 @@ type Accumulator = Record<string, Job>;
 function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
-			(current.jobs_id?.toString() as unknown as string) || "0";
+			(current.job_id?.toString() as unknown as string) || "0";
 		const taskKey: string =
 			(current.task_id?.toString() as unknown as string) || "0";
 		const userKey: string =
@@ -225,7 +225,7 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 		if (!accumulator[jobKey]) {
 			accumulator[jobKey] = {
 				job_name: current.job_name || "",
-				job_id: current?.jobs_id?.toString() || "",
+				job_id: current?.job_id?.toString() || "",
 				total: {
 					time: 0,
 					rate: 0,
@@ -483,7 +483,7 @@ function JobsFinancialTable({
 			setTaskName(taskNameArr[0]?.task_name || "");
 		}
 
-		const checkJobsId = Number(jobId);
+		const checkJobId = Number(jobId);
 		const checkTaskId = Number(taskId);
 
 		if (showAddUserToTaskForm) {
@@ -492,7 +492,7 @@ function JobsFinancialTable({
 					year,
 					month,
 					selectedUser,
-					checkJobsId,
+					checkJobId,
 					checkTaskId
 				)) || [];
 			if (allocatedHoursLogged.length > 0) {
@@ -516,7 +516,7 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobsId: Number(jobId),
+					jobId: Number(jobId),
 					taskId: Number(taskId),
 					selectedDate: formattedDate,
 					rate: Number(rate),
@@ -534,7 +534,7 @@ function JobsFinancialTable({
 				(await getJobAllocatedHoursPerMonthPerJob(
 					year,
 					month,
-					checkJobsId,
+					checkJobId,
 					checkTaskId
 				)) || [];
 			if (allocatedHoursLogged.length > 0) {
@@ -556,7 +556,7 @@ function JobsFinancialTable({
 					notes: "Zero hours for allocate hours",
 					timeSpent: 0,
 					projectId: Number(projectId),
-					jobsId: Number(jobId),
+					jobId: Number(jobId),
 					taskId: Number(selectedTask),
 					selectedDate: formattedDate,
 					rate: Number(rate),

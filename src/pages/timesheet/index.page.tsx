@@ -304,7 +304,7 @@ const Timesheet = () => {
 				project_id: number | null;
 				project_name: string;
 				jobs: {
-					jobs_id: number;
+					job_id: number;
 					job_name: string;
 					job_name_id: number;
 					tasks: {
@@ -320,7 +320,7 @@ const Timesheet = () => {
 			project_id: number | null;
 			project_name: string;
 			jobs: {
-				jobs_id: number;
+				job_id: number;
 				job_name: string;
 				job_name_id: number;
 				tasks: {
@@ -332,7 +332,7 @@ const Timesheet = () => {
 			}[];
 		},
 		job: {
-			jobs_id: number;
+			job_id: number;
 			job_name: string;
 			job_name_id: number;
 			tasks: {
@@ -358,8 +358,7 @@ const Timesheet = () => {
 		if (project.project_id) {
 			selectedProjectId = project?.project_id.toString();
 		}
-		const selectedJobId = job.jobs_id.toString();
-		// const selectedJobsId = job.jobs_id.toString();
+		const selectedJobId = job.job_id.toString();
 		const selectedJobNameId = job.job_name_id.toString();
 		const selectedTaskId = task.task_id.toString();
 		setSelectedDate(selectedDate);
@@ -368,7 +367,6 @@ const Timesheet = () => {
 		setSelectedJob(selectedJobNameId);
 		setSelectedTask(selectedTaskId);
 		setSelectedJobs(selectedJobId);
-		// setSelectedJobName(selectedJobNameId);
 	};
 
 	// Function to post Data to SupaBase when ADD TIME form is submitted
@@ -378,7 +376,6 @@ const Timesheet = () => {
 		const yearTest = Number(splitDate[0]);
 		const userId = localStorage.getItem("user_id") || "";
 		const projectId = selectedProject;
-		// const jobsId = Number(selectedJobName);
 		const taskId = Number(selectedTask);
 		const clientId = selectedClient;
 		const clientJob = (await getJobByProjectId(clientId, projectId)) || [];
@@ -414,7 +411,7 @@ const Timesheet = () => {
 			notes,
 			timeSpent: Number(timeSpent),
 			projectId: Number(selectedProject),
-			jobsId: Number(AHJobId),
+			jobId: Number(AHJobId),
 			taskId: Number(selectedTask),
 			selectedDate: selectedDate,
 			rate: 0,
@@ -478,9 +475,9 @@ const Timesheet = () => {
 		event: React.ChangeEvent<{ value: unknown; name: unknown }>
 	) => {
 		const selectedJobId = event.target.value as string;
-		const selectedJobsId = event.target.name as string;
+		// const selectedJobsId = event.target.name as string;
 		setSelectedJob(selectedJobId);
-		setSelectedJobs(selectedJobsId);
+		// setSelectedJobs(selectedJobsId);
 
 		// Filter tasks based on the selected job
 		setSelectedTask(""); // Reset the selected task
@@ -876,7 +873,7 @@ const Timesheet = () => {
 																				</TableCell>
 																				<TableCell className={classes.tableRowCell}>
 																					<TableRow key={`${index - 3}`}>
-																						<div style={{ whiteSpace: "nowrap" }} key={job.jobs_id}>
+																						<div style={{ whiteSpace: "nowrap" }} key={job.job_id}>
 																							{job.job_name}
 																						</div>
 																					</TableRow>
@@ -926,13 +923,13 @@ const Timesheet = () => {
 																										setCompleteDialog({
 																											open: true,
 																											taskId: task.task_id,
-																											jobId: job.jobs_id,
+																											jobId: job.job_id,
 																										});
 																									} else {
 																										setCompleteDialog({
 																											open: true,
 																											taskId: task.task_id,
-																											jobId: job.jobs_id,
+																											jobId: job.job_id,
 																										});
 																									}
 																								}}

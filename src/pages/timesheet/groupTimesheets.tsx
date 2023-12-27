@@ -8,7 +8,7 @@ type Task = {
 };
 
 type Job = {
-	jobs_id: number;
+	job_id: number;
 	job_name: string;
 	job_name_id: number;
 	tasks: Task[];
@@ -40,7 +40,7 @@ export const groupMonthlyTimesheets = (
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
-					(job: Job) => job.jobs_id === curr.jobs_id
+					(job: Job) => job.job_id === curr.job_id
 				);
 				if (existingJobEntry) {
 					const existingTaskEntry = existingJobEntry.tasks.find(
@@ -58,7 +58,7 @@ export const groupMonthlyTimesheets = (
 					}
 				} else {
 					existingProjectEntry.jobs.push({
-						jobs_id: curr?.jobs_id || 0,
+						job_id: curr?.job_id || 0,
 						job_name: curr?.job_name || "",
 						job_name_id: curr?.job_name_id || 0,
 						tasks: [
@@ -77,7 +77,7 @@ export const groupMonthlyTimesheets = (
 					project_name: curr?.project_name || "",
 					jobs: [
 						{
-							jobs_id: curr?.jobs_id || 0,
+							job_id: curr?.job_id || 0,
 							job_name: curr?.job_name || "",
 							job_name_id: curr?.job_name_id || 0,
 							tasks: [
@@ -102,7 +102,7 @@ export const groupMonthlyTimesheets = (
 						project_name: curr?.project_name || "",
 						jobs: [
 							{
-								jobs_id: curr?.jobs_id || 0,
+								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
 								job_name_id: curr?.job_name_id || 0,
 								tasks: [
@@ -135,7 +135,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 			);
 			if (existingProjectEntry) {
 				const existingJobEntry = existingProjectEntry.jobs.find(
-					(job: Job) => job.jobs_id === curr.jobs_id
+					(job: Job) => job.job_id === curr.job_id
 				);
 				if (existingJobEntry) {
 					const existingTaskEntry = existingJobEntry.tasks.find(
@@ -153,7 +153,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					}
 				} else {
 					existingProjectEntry.jobs.push({
-						jobs_id: curr?.jobs_id || 0,
+						job_id: curr?.job_id || 0,
 						job_name: curr?.job_name || "",
 						job_name_id: curr?.job_name_id || 0,
 						tasks: [
@@ -172,7 +172,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 					project_name: curr?.project_name || "",
 					jobs: [
 						{
-							jobs_id: curr?.jobs_id || 0,
+							job_id: curr?.job_id || 0,
 							job_name: curr?.job_name || "",
 							job_name_id: curr?.job_name_id || 0,
 							tasks: [
@@ -197,7 +197,7 @@ export const groupTimesheets = (timesheets: TimesheetRowsView[]) => {
 						project_name: curr?.project_name || "",
 						jobs: [
 							{
-								jobs_id: curr?.jobs_id || 0,
+								job_id: curr?.job_id || 0,
 								job_name: curr?.job_name || "",
 								job_name_id: curr?.job_name_id || 0,
 								tasks: [
