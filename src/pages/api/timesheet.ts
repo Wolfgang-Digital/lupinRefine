@@ -20,7 +20,7 @@ export const PostTimeEntry = async ({
 	timeSpent,
 	notes,
 	projectId: project_id,
-	jobsId: jobs_id,
+	jobId: job_id,
 	taskId: task_id,
 	selectedDate: selectedDate,
 	rate,
@@ -31,7 +31,7 @@ export const PostTimeEntry = async ({
 	timeSpent: number;
 	notes: string;
 	projectId: number;
-	jobsId: number;
+	jobId: number;
 	taskId: number;
 	selectedDate: string;
 	rate: number;
@@ -44,7 +44,7 @@ export const PostTimeEntry = async ({
 				staff_id,
 				time: timeSpent,
 				notes,
-				jobs_id,
+				job_id,
 				task_id,
 				date: selectedDate,
 				rate,

@@ -56,12 +56,10 @@ function CollapsibleHoursGrid({
 	projectId,
 	jobId,
 	jobNameId,
-}: // jobsId,
-{
+}: {
 	projectId?: number;
 	jobId?: number;
 	jobNameId?: number;
-	// jobsId?: number;
 }) {
 	const [fetchedRows, setFetchedRows] = useState<RowData[]>([]);
 	const [showForm, setShowForm] = useState(false);
@@ -173,8 +171,7 @@ function CollapsibleHoursGrid({
 				notes: "Zero hours for allocate hours",
 				timeSpent: 0,
 				projectId: Number(projectId),
-				// jobId: Number(jobsId),
-				jobsId: Number(jobId),
+				jobId: Number(jobId),
 				taskId: Number(selectedTask),
 				selectedDate: formattedDate,
 				rate: Number(rate),
