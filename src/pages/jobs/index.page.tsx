@@ -114,7 +114,6 @@ const JobList: React.FC = () => {
 					style={{ height: "100%" }}
 					rows={displayedJobs.map((job) => ({
 						id: job.id,
-						job_id: job.job_id,
 						client_name: job.client_name,
 						project_name: job.project_name,
 						project_id: job.project_id,
