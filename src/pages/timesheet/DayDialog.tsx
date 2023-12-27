@@ -48,7 +48,7 @@ export const DayDialog = ({
 	handleProjectSelect,
 	projects,
 	selectedJob,
-	selectedJobs,
+	// selectedJobs,
 	handleJobSelect,
 	jobs,
 	selectedTask,
@@ -348,9 +348,11 @@ export const DayDialog = ({
 								<TextField
 									select
 									label="Select Job"
-									value={selectedJobs}
-									name={selectedJobs}
-									onChange={handleJobSelect}
+									value={selectedJob}
+									name={selectedJob}
+									onChange={() => {
+										handleJobSelect;
+									}}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 									required
 								>
