@@ -512,7 +512,7 @@ const Timesheet = () => {
 						response?.map((job) => ({
 							value: job.job_name_id?.toString() || "",
 							label: job.job_name || "",
-							taskLabel: job.job_id?.toString() || "",
+							taskLabel: job.job_name_id?.toString() || "",
 						}))
 					);
 				}
