@@ -350,9 +350,7 @@ export const DayDialog = ({
 									label="Select Job"
 									value={selectedJob}
 									name={selectedJob}
-									onChange={() => {
-										handleJobSelect;
-									}}
+									onChange={handleJobSelect}
 									style={{ width: "100%", marginBottom: "20px", textAlign: "left" }}
 									required
 								>
