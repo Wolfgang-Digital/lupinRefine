@@ -83,7 +83,7 @@ export const getJobAllocatedHoursPerMonthPerUser = async (
 			.eq("year", year)
 			.eq("month", month)
 			.eq("user_id", userId)
-			.eq("jobs_id", jobId)
+			.eq("job_id", jobId)
 			.eq("task_id", taskId);
 		if (error) {
 			console.error("Error fetching job allocated hours per user: ", error);
