@@ -3,28 +3,18 @@ import {
 	Button,
 	Grid,
 	MenuItem,
-	// Accordion,
-	// AccordionDetails,
-	// AccordionSummary,
 	Paper,
 	TextField,
 	Typography,
-	// Toolbar,
-	// Typography,
 } from "@mui/material";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
 	DataGrid,
 	GridToolbarContainer,
 	GridToolbarExport,
 } from "@mui/x-data-grid";
-import { getAllTasks, PostJobTaskEntry } from "@pages/api/jobTasksView";
+import { getAllTasks } from "@pages/api/jobTasksView";
 import { getAllProjectJobTasks } from "@pages/api/projectJobTasksView";
-import {
-	// JobTasksView,
-	// GetAllJobsWithProjects,
-	ProjectJobTasksView,
-} from "types";
+import { ProjectJobTasksView } from "types";
 
 type RowData = ProjectJobTasksView;
 
@@ -97,14 +87,6 @@ function CollapsibleTasksGrid({
 		fetchData();
 	}, []);
 
-	function saveTaskEntry() {
-		const dataToPost = {
-			jobId: 3551,
-			taskId: 2,
-		};
-		const response = PostJobTaskEntry(dataToPost);
-		console.log({ response });
-	}
 	// Function to handle "Add Task" button click
 	const handleAddTaskClick = () => {
 		setShowForm(true);
@@ -152,14 +134,7 @@ function CollapsibleTasksGrid({
 						>
 							{showForm ? (
 								<form onSubmit={handleFormSubmit}>
-									{/* <TextField
-										label="Date"
-										style={{
-											width: "100%",
-											marginBottom: "20px",
-											textAlign: "left",
-										}}
-									/> */}
+									{}
 									<TextField
 										select
 										value={""}
@@ -177,7 +152,6 @@ function CollapsibleTasksGrid({
 										color="primary"
 										type="submit"
 										style={{ padding: "10px" }}
-										onClick={saveTaskEntry}
 									>
 										Save Task Entry
 									</Button>

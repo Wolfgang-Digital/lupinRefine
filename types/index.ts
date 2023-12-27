@@ -15,9 +15,7 @@ export type TimesheetRowsView = Views["timesheet_rows_view"]["Row"];
 export type MonthlyTimesheetRowsView =
 	Views["monthly_timesheet_rows_view"]["Row"];
 export type JobTask = Tables["job_tasks"]["Row"];
-export type WolfgangTasksDemo = Views["wolfgang_jobs_demo"]["Row"];
 export type AllocateHoursView = Views["allocate_hours_view"]["Row"];
-export type JobTasksView = Views["job_tasks_view"]["Row"];
 export type GetAllJobsWithProjects =
 	Views["jobs_overview_with_projects"]["Row"];
 export type ProjectJobTasksView = Views["project_job_task_view"]["Row"];
