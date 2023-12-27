@@ -44,7 +44,7 @@ export const getJobByProjectId = async (
 		}
 		const { data: jobData, error: jobError } = await supabase
 			.from("jobs")
-			.select("job_id, job_name, id, job_name_id")
+			.select("job_name, id, job_name_id")
 			.in("id", jobIds);
 
 		if (jobError) {
