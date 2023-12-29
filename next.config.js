@@ -8,13 +8,7 @@ module.exports = {
 		NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
 	},
 	async redirects() {
-		return [
-			{
-				source: "/",
-				destination: "/dashboard",
-				permanent: true,
-			},
-		];
+		return [];
 	},
 	pageExtensions: ["page.tsx", "page.ts", "page.jsx", "page.js"],
 };

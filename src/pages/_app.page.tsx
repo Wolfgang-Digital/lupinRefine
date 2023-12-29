@@ -70,6 +70,9 @@ const App = (props: React.PropsWithChildren) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const router = useRouter();
 	useEffect(() => {
+		if (router.asPath === "/") {
+			router.push("/dashboard");
+		}
 		if (router.asPath === "/login") {
 			setIsLoading(false);
 			return;
@@ -121,10 +124,10 @@ const App = (props: React.PropsWithChildren) => {
 		},
 		check: async () => {
 			if (status === "unauthenticated") {
-				return {
+				/* return {
 					authenticated: false,
 					redirectTo: "/login",
-				};
+				}; */
 			}
 
 			return {
