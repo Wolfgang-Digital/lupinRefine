@@ -22,7 +22,9 @@ import {
 	// TextField,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { getAllTimesheetRows } from "@pages/api/timesheetRows";
+import { getAllMonthlyTimesheetRows } from "@pages/api/timesheetRows";
+import { MonthlyTimesheetRowsView } from "types";
+
 import { TimesheetRowsView } from "types";
 import {
 	PostAllocateHoursEntry,
@@ -189,6 +191,13 @@ type Total = {
 	actualValue?: number;
 };
 
+type JobTotal = {
+	time: number;
+	hours: number;
+	allocatedValue: number;
+	actualValue: number;
+};
+
 type UserEntry = {
 	time: number;
 	rate: number;
@@ -210,10 +219,16 @@ type UserOption = {
 type User = Record<string, UserEntry | string>;
 type TaskEntry = Record<string, User | Total | string>;
 type Task = Record<string, TaskEntry | Total | string>;
-type Job = Record<string, Task | string | Total>;
+type Job = Record<string, Task | string | JobTotal>;
 type Accumulator = Record<string, Job>;
 
 function groupData(dataArray: TimesheetRowsView[]): Accumulator {
+	const addedAllocations: {
+		jobKey: string;
+		taskKey: string;
+		userKey: string;
+	}[] = [];
+
 	const result = dataArray.reduce((accumulator, current) => {
 		const jobKey: string =
 			(current.job_id?.toString() as unknown as string) || "0";
@@ -227,25 +242,31 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 				job_name: current.job_name || "",
 				job_id: current?.job_id?.toString() || "",
 				total: {
-					time: 0,
+					time: current.time,
+					hours: current.hours,
 					rate: 0,
-					allocated_rate: 0,
-					effective_rate: 0,
-					hours: 0,
-					count: 1,
-					allocatedValue: 0,
-					actualValue: 0,
-				} as Total,
+					actualValue: (current.time || 0) * (current.effective_rate || 0),
+					allocatedValue: (current.hours || 0) * (current.allocated_rate || 0),
+				} as unknown as JobTotal,
 			};
 		} else {
 			const job = accumulator[jobKey];
-			const total = job.total as Total;
-			total.time += 0;
-			total.rate += current.rate || 0;
-			total.allocated_rate = current.rate || 0;
-			total.effective_rate = current.rate || 0;
-			total.count += 1;
+			const total = job.total as JobTotal;
+			total.time += current.time || 0;
+			total.actualValue += (current.time || 0) * (current.effective_rate || 0);
+			if (
+				!addedAllocations.find(
+					(a) =>
+						a.jobKey === jobKey && a.taskKey === taskKey && a.userKey === userKey
+				)
+			) {
+				total.hours += current.hours || 0;
+
+				total.allocatedValue +=
+					(current.hours || 0) * (current.allocated_rate || 0);
+			}
 		}
+		addedAllocations.push({ jobKey, taskKey, userKey });
 
 		// If task is not existing, create a new task
 		if (!accumulator[jobKey][taskKey]) {
@@ -311,53 +332,6 @@ function groupData(dataArray: TimesheetRowsView[]): Accumulator {
 		return accumulator;
 	}, {} as Accumulator);
 
-	// Calculate the average rate for each user under each job
-	for (const jobKey in result) {
-		if (
-			typeof result[jobKey] !== "object" ||
-			["job_name", "total"].includes(jobKey)
-		)
-			continue;
-		for (const taskKey in result[jobKey] as Task) {
-			if (["job_name", "total"].includes(taskKey)) continue;
-			const jobTotal = result[jobKey].total as Total;
-			const taskTotal = ((result[jobKey] as Task)[taskKey] as User).total as Total;
-			jobTotal.actualValue =
-				(jobTotal.actualValue || 0) + (taskTotal?.actualValue || 0);
-			jobTotal.hours += taskTotal?.hours || 0;
-			jobTotal.time += taskTotal?.time || 0;
-			jobTotal.allocatedValue =
-				(jobTotal.allocatedValue || 0) + (taskTotal?.allocatedValue || 0);
-			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;
-
-			for (const userKey in (result[jobKey] as Task)[taskKey] as User) {
-				if (
-					typeof ((result[jobKey] as Task)[taskKey] as User)[userKey] !== "object" ||
-					userKey === "total"
-				)
-					continue;
-				// const userEntry = ((result[jobKey] as Task)[taskKey] as User)[
-				// 	userKey
-				// ] as UserEntry;
-			}
-		}
-	}
-
-	// Calculate the average rate for each task under each job
-	for (const jobKey in result) {
-		if (typeof result[jobKey] !== "object") continue;
-		for (const taskKey in result[jobKey] as Task) {
-			if (typeof (result[jobKey] as Task)[taskKey] !== "object") continue;
-			const taskEntry = (result[jobKey] as Task)[taskKey] as TaskEntry;
-			const total = taskEntry.total as Total;
-			if (total && total.count !== 0) {
-				total.allocated_rate /= total.count;
-			}
-		}
-	}
-
-	if (Object.keys(result).length !== 0) console.log({ result });
-
 	return result;
 }
 
@@ -405,39 +379,28 @@ function JobsFinancialTable({
 			}
 			setTasks(taskOptions);
 
-			// do something for 12 times
-			const unfilteredResponse: TimesheetRowsView[] =
-				(await getAllTimesheetRows()) as unknown as TimesheetRowsView[];
-			let filteredResponse: TimesheetRowsView[] = [];
-			if (unfilteredResponse) {
-				filteredResponse = unfilteredResponse.filter(
+			const allMonthsData: MonthlyTimesheetRowsView[][] = [];
+			for (let i = 0; i < 12; i++) {
+				const monthData = (await getAllMonthlyTimesheetRows(
+					2023,
+					i + 1
+				)) as unknown as MonthlyTimesheetRowsView[];
+				const filteredMonthData: MonthlyTimesheetRowsView[] = monthData.filter(
 					({ client_id, project_id }) => {
 						return client_id === clientId && project_id === projectId;
 					}
 				);
+				allMonthsData.push(filteredMonthData);
 			}
+			const groupedMonthData = [];
 
-			// create empty array with 12 elements, each element is an empty array
-			const ungroupedMonthData: TimesheetRowsView[][] = [...Array(12)].map(
-				() => []
-			);
-			// loop through each timesheet row
-			filteredResponse?.forEach((row) => {
-				// get the month of the timesheet row
-				if (row.year === new Date().getFullYear()) {
-					ungroupedMonthData[(row.month || 0) - 1] = [
-						...ungroupedMonthData[(row.month || 0) - 1],
-						row,
-					];
-				}
-			});
-			// }
-
-			const groupedData: Accumulator[] = [];
-			ungroupedMonthData.forEach((month, index) => {
-				groupedData[index] = groupData(month);
-			});
-			setMonthData(groupedData);
+			for (const monthData of allMonthsData) {
+				const groupedCurrentData = groupData(
+					monthData as unknown as MonthlyTimesheetRowsView[]
+				);
+				groupedMonthData.push(groupedCurrentData);
+			}
+			setMonthData(groupedMonthData);
 		} catch (error) {
 			console.error(error);
 		}
@@ -446,6 +409,7 @@ function JobsFinancialTable({
 	useEffect(() => {
 		fetchData();
 	}, [postData]);
+
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [showAddUserToTaskForm, setShowAddUserToTaskForm] = useState(false);
 	const [selectedTask, setSelectedTask] = useState("");
@@ -578,76 +542,124 @@ function JobsFinancialTable({
 	}
 	// edit functionality for rows
 
+	type editType =
+		| "hours"
+		| "allocated_rate"
+		| "effective_rate"
+		| "actual_value"
+		| "overall_actual_value";
+
 	interface EditState {
-		isModalOpen: boolean;
-		editingValue: string;
+		is_modal_open: boolean;
+		editing_value: string;
 		user_id: string;
 		task_id: number;
 		job_id: number;
-		editType: "hours" | "allocated_rate" | "effective_rate";
+		time?: number;
+		edit_type: editType;
+		actual_value?: string;
+		effective_rate?: string;
+		overall_actual_value?: string;
 	}
 
 	const [editState, setEditState] = useState<EditState>({
-		isModalOpen: false,
-		editingValue: "",
+		is_modal_open: false,
+		editing_value: "",
 		user_id: "",
 		task_id: 0,
 		job_id: 0,
-		editType: "hours", // Default value
+		time: 0,
+		edit_type: "hours", // Default value
 	});
 
-	const openEditModal = (
-		user_id: string,
-		task_id: number,
-		job_id: number,
-		currentValue: string,
-		editType: "hours" | "allocated_rate" | "effective_rate"
-	) => {
-		setEditState({
-			isModalOpen: true,
-			editingValue: currentValue,
+	const handleSave = async () => {
+		const {
+			editing_value,
 			user_id,
 			task_id,
 			job_id,
-			editType,
-		});
-	};
+			edit_type,
+			effective_rate,
+			time,
+		} = editState;
+		const numeric_value = parseFloat(editing_value);
 
-	const handleSave = async () => {
-		const { editingValue, user_id, task_id, job_id, editType } = editState;
-		const numericValue = parseFloat(editingValue);
-
-		if (isNaN(numericValue)) {
+		if (isNaN(numeric_value)) {
 			console.error("Invalid input: editingValue is not a number.");
 			return;
 		}
+		const jobData = monthData[selectedMonthIndex][job_id || ""];
+		const totalJobValue = (jobData?.total as Total)?.actualValue || 0;
+		const newTotalRate = Number(editing_value) / totalJobValue;
+
+		const overallUpdateArray = [];
 
 		let updatedData = {};
-
-		switch (editType) {
+		let newEffectiveRate = 0;
+		switch (edit_type) {
 			case "hours":
-				updatedData = { hours: numericValue };
+				updatedData = { hours: numeric_value };
 				break;
 			case "allocated_rate":
-				updatedData = { allocated_rate: numericValue };
+				updatedData = { allocated_rate: numeric_value };
 				break;
 			case "effective_rate":
-				updatedData = { effective_rate: numericValue };
+				updatedData = { effective_rate: numeric_value };
+				break;
+			case "actual_value":
+				newEffectiveRate = numeric_value / (time || 0);
+				updatedData = { effective_rate: newEffectiveRate };
+				break;
+			case "overall_actual_value":
+				for (const taskKey in jobData) {
+					console.log({ jobData });
+					const task = jobData[taskKey];
+					for (const userKey in task as Task) {
+						const obj = (task as Task)[userKey] as UserEntry;
+						const isUser = !!obj.user_id;
+						const totalValue = obj.effective_rate * (obj.time || 0);
+						const newTotalValue = newTotalRate * totalValue;
+						const newEffectiveRate = newTotalValue / (obj.time || 0);
+						if (isUser && totalValue !== 0)
+							overallUpdateArray.push({
+								user_id: userKey || "",
+								job_id: jobData.job_id || "",
+								task_id: taskKey || "",
+								effective_rate: newEffectiveRate,
+							});
+					}
+				}
+				console.log({
+					monthData: monthData[selectedMonthIndex][job_id || ""],
+					overallUpdateArray,
+				});
 				break;
 			default:
 				console.error("Invalid edit type.");
 				return;
 		}
 
-		await changeAllocation({
-			updatedData,
-			user_id,
-			task_id,
-			job_id,
-		});
+		console.log({ updatedData, numeric_value, effective_rate, time, job_id });
+		if (edit_type === "overall_actual_value") {
+			for (const updatedData of overallUpdateArray) {
+				await changeAllocation({
+					updatedData: { effective_rate: updatedData.effective_rate },
+					user_id: updatedData.user_id,
+					task_id: Number(updatedData.task_id),
+					job_id: Number(updatedData.job_id),
+				});
+			}
+		} else {
+			await changeAllocation({
+				updatedData,
+				user_id,
+				task_id,
+				job_id,
+			});
+		}
 
 		await fetchData(); // Ensure fetchData correctly re-fetches and updates state
-		setEditState({ ...editState, isModalOpen: false });
+		setEditState({ ...editState, is_modal_open: false });
 	};
 
 	function isEditableMonth(monthIndex: number) {
@@ -681,10 +693,7 @@ function JobsFinancialTable({
 				<h3 style={{ paddingLeft: "5%" }}>+ 5% YoY | + 0% MoM</h3>
 			</div>
 
-			<TableContainer
-				style={{ maxHeight: "550px", overflowY: "scroll" }}
-				component={Paper}
-			>
+			<TableContainer style={{ maxHeight: "max-content" }} component={Paper}>
 				<Table style={{ minWidth: "100%" }} aria-label="custom table">
 					<TableHead
 						style={{
@@ -762,7 +771,7 @@ function JobsFinancialTable({
 								<>
 									<TableRow
 										style={{ background: "#1E7F74", color: "white" }}
-										onClick={() => setSelectedMonthIndex(monthIndex)}
+										onClick={() => setSelectedMonthIndex(-1)}
 									>
 										{CreateRowOfTableCells(monthNames[monthIndex], 0, 19)}
 									</TableRow>
@@ -821,17 +830,24 @@ function JobsFinancialTable({
 																paddingLeft: "10px",
 															}}
 														>
-															{((job as Job)?.total as Total).actualValue || 0}
+															{}
+															{Math.round(
+																((job as Job)?.total as Total).actualValue || 0
+															).toFixed(0)}
 															{isEditableMonth(selectedMonthIndex) && (
 																<IconButton
-																	//onClick={() =>
-																	//	openEditModal(
-																	//		Number(key),
-																	//		Number(job.job_id),
-																	//		effective_rate.toString(),
-																	//		"actualValue"
-																	//	)
-																	//}
+																	onClick={() =>
+																		setEditState({
+																			is_modal_open: true,
+																			user_id: "",
+																			task_id: 0,
+																			job_id: Number(job.job_id),
+																			editing_value:
+																				((job as Job)?.total as Total).actualValue?.toString() ||
+																				"0",
+																			edit_type: "overall_actual_value",
+																		})
+																	}
 																	style={{ padding: 0, marginLeft: "5px" }}
 																>
 																	<EditIcon style={{ fontSize: "14px" }} />
@@ -937,13 +953,14 @@ function JobsFinancialTable({
 																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
-																													openEditModal(
+																													setEditState({
+																														is_modal_open: true,
 																														user_id,
-																														Number(key),
-																														Number(job.job_id),
-																														hours.toString(),
-																														"hours"
-																													)
+																														task_id: Number(key),
+																														job_id: Number(job.job_id),
+																														editing_value: hours.toString(),
+																														edit_type: "hours",
+																													})
 																												}
 																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
@@ -963,13 +980,14 @@ function JobsFinancialTable({
 																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
-																													openEditModal(
+																													setEditState({
+																														is_modal_open: true,
 																														user_id,
-																														Number(key),
-																														Number(job.job_id),
-																														allocated_rate.toString(),
-																														"allocated_rate"
-																													)
+																														task_id: Number(key),
+																														job_id: Number(job.job_id),
+																														editing_value: allocated_rate.toString(),
+																														edit_type: "allocated_rate",
+																													})
 																												}
 																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
@@ -1010,17 +1028,18 @@ function JobsFinancialTable({
 																											paddingLeft: "10px",
 																										}}
 																									>
-																										{effective_rate}
+																										{effective_rate.toFixed(0)}
 																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
-																													openEditModal(
+																													setEditState({
+																														is_modal_open: true,
 																														user_id,
-																														Number(key),
-																														Number(job.job_id),
-																														effective_rate.toString(),
-																														"effective_rate"
-																													)
+																														task_id: Number(key),
+																														job_id: Number(job.job_id),
+																														editing_value: effective_rate.toString(),
+																														edit_type: "effective_rate",
+																													})
 																												}
 																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
@@ -1036,17 +1055,21 @@ function JobsFinancialTable({
 																											paddingLeft: "10px",
 																										}}
 																									>
-																										{time * effective_rate}
+																										{Math.round(Number(time * effective_rate)).toFixed(0)}
 																										{isEditableMonth(selectedMonthIndex) && (
 																											<IconButton
 																												onClick={() =>
-																													openEditModal(
+																													setEditState({
+																														is_modal_open: true,
 																														user_id,
-																														Number(key),
-																														Number(job.job_id),
-																														effective_rate.toString(),
-																														"effective_rate"
-																													)
+																														task_id: Number(key),
+																														job_id: Number(job.job_id),
+																														editing_value: (effective_rate * time).toString(),
+																														edit_type: "actual_value",
+																														time,
+																														effective_rate: effective_rate.toString(),
+																														actual_value: (effective_rate * time).toString(),
+																													})
 																												}
 																												style={{ padding: 0, marginLeft: "5px" }}
 																											>
@@ -1104,8 +1127,8 @@ function JobsFinancialTable({
 			</TableContainer>
 
 			<Modal
-				open={editState.isModalOpen}
-				onClose={() => setEditState({ ...editState, isModalOpen: false })}
+				open={editState.is_modal_open}
+				onClose={() => setEditState({ ...editState, is_modal_open: false })}
 				aria-labelledby="modal-modal-title"
 				aria-describedby="modal-modal-description"
 				style={{
@@ -1130,9 +1153,9 @@ function JobsFinancialTable({
 						fullWidth
 						margin="normal"
 						label="New Value"
-						value={editState.editingValue}
+						value={editState.editing_value}
 						onChange={(e) =>
-							setEditState({ ...editState, editingValue: e.target.value })
+							setEditState({ ...editState, editing_value: e.target.value })
 						}
 					/>
 					<div
@@ -1145,7 +1168,7 @@ function JobsFinancialTable({
 						<Button
 							variant="outlined"
 							color="primary"
-							onClick={() => setEditState({ ...editState, isModalOpen: false })}
+							onClick={() => setEditState({ ...editState, is_modal_open: false })}
 						>
 							Cancel
 						</Button>

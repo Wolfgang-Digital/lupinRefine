@@ -254,6 +254,7 @@ const Timesheet = () => {
 				const monthlyGroupedTimesheets: MonthlyGroupedTimesheets =
 					groupMonthlyTimesheets(monthlyFilteredResponse);
 				setFilteredTimesheets(monthlyGroupedTimesheets);
+				console.log({ monthlyGroupedTimesheets });
 			}
 
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
@@ -378,10 +379,15 @@ const Timesheet = () => {
 		const projectId = selectedProject;
 		const taskId = Number(selectedTask);
 		const clientId = selectedClient;
-		const clientJob = (await getJobByProjectId(clientId, projectId)) || [];
+		const clientJobs = (await getJobByProjectId(clientId, projectId)) || [];
+
+		console.log({ clientJobs, selectedJob });
 		let AHJobId: number = 0;
-		if (clientJob) {
-			AHJobId = clientJob[0].id;
+		if (clientJobs) {
+			AHJobId =
+				clientJobs.find(
+					(clientJob) => clientJob.job_name_id === Number(selectedJob)
+				)?.id || 0;
 		}
 		const allocatedHoursLogged =
 			(await getJobAllocatedHoursPerMonthPerUser(

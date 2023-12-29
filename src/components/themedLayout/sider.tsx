@@ -16,7 +16,7 @@ import {
 	useWarnAboutChange,
 } from "@refinedev/core";
 import {
-	ThemedTitleV2 as DefaultTitle,
+	ThemedTitle as DefaultTitle,
 	useThemedLayoutContext,
 } from "@refinedev/mui";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";

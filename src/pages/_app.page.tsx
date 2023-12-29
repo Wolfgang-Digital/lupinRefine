@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import { ThemedLayoutV2 } from "src/components";
 import { ThemedHeaderV2 } from "src/components";
 import { ThemedSiderV2 } from "src/components";
-import { ThemedTitleV2 } from "src/components";
+import { ThemedTitle } from "src/components";
 
 //icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -121,10 +121,10 @@ const App = (props: React.PropsWithChildren) => {
 		},
 		check: async () => {
 			if (status === "unauthenticated") {
-				return {
+				/* 	return {
 					authenticated: false,
 					redirectTo: "/login",
-				};
+				}; */
 			}
 
 			return {
@@ -262,7 +262,7 @@ function MyApp({
 			<ThemedLayoutV2
 				Header={ThemedHeaderV2}
 				Sider={ThemedSiderV2}
-				Title={ThemedTitleV2}
+				Title={ThemedTitle}
 			>
 				<Component {...pageProps} />
 			</ThemedLayoutV2>

@@ -1,0 +1,5 @@
+[[redirects]]
+  # Redirect from / to /dashboard with a 301 (permanent) status code
+  from = "/"
+  to = "/dashboard"
+  status = 301

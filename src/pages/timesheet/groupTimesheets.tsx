@@ -30,6 +30,7 @@ export type MonthlyGroupedTimesheets = Client[];
 export const groupMonthlyTimesheets = (
 	timesheets: MonthlyTimesheetRowsView[]
 ) => {
+	console.log({ timesheets });
 	return timesheets.reduce((acc, curr) => {
 		const existingClientEntry = acc.find(
 			(entry: Client) => entry.client_id === curr.client_id

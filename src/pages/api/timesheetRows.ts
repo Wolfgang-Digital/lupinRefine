@@ -1,27 +1,34 @@
 import supabase, { PostgrestError } from "@config/supaBaseClient";
-import { MonthlyTimesheetRowsView, TimesheetRowsView } from "types";
+import { MonthlyTimesheetRowsView } from "types";
 
-export const getAllTimesheetRows = async (): // userID: number
-Promise<TimesheetRowsView[] | undefined> => {
+// gets all the rows regardless of the user
+export const getAllMonthlyTimesheetRows = async (
+	year: number,
+	month: number
+): Promise<MonthlyTimesheetRowsView[] | undefined> => {
 	try {
 		const { data, error } = (await supabase
-			.from("timesheet_rows_view")
+			.from("all_monthly_timesheet_rows_view")
 			.select("*")
+			.eq("year", year)
+			.eq("month", month)
+			.eq("allocate_hours_year", year)
+			.eq("allocate_hours_month", month)
 			.order("name", { ascending: true })) as unknown as {
-			data: TimesheetRowsView[];
+			data: MonthlyTimesheetRowsView[];
 			error: PostgrestError;
 		};
-
 		if (error) {
-			console.error("Error fetching timesheet rows: ", error);
+			console.error("Error fetching monthly timesheet rows: ", error);
 			return;
 		}
 		return data;
 	} catch (error) {
-		console.error("Error fetching timesheet rows: ", error);
+		console.error("Error fetching monthly timesheet rows: ", error);
 	}
 };
 
+// gets all the rows of the logged in user
 export const getMonthlyTimesheetRows = async (
 	year: number,
 	month: number

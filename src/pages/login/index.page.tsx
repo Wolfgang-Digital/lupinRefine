@@ -1,45 +1,68 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { useLogin } from "@refinedev/core";
-import { ThemedTitleV2 } from "src/components";
+import { ThemedTitle } from "src/components";
+import Link from "next/link";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+	container: {
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		height: "100vh",
+		gap: "64px",
+	},
+	box: {
+		minHeight: "250px",
+		minWidth: "250px",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+		border: "1px solid #ccc",
+		borderRadius: "4px",
+		padding: "24px",
+		gap: "24px",
+	},
+	link: {
+		textDecoration: "none",
+	},
+});
 
 export default function Login() {
+	const classes = useStyles();
 	const { mutate: login } = useLogin();
 
 	return (
-		<Container
-			style={{
-				height: "100vh",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-			}}
-		>
-			<Box
-				display="flex"
-				gap="36px"
-				justifyContent="center"
-				flexDirection="column"
-			>
-				<ThemedTitleV2
+		<Container className={classes.container}>
+			<Box className={classes.box} onClick={() => login({})}>
+				<ThemedTitle
 					collapsed={false}
 					wrapperStyles={{
 						fontSize: "22px",
 						justifyContent: "center",
 					}}
 				/>
-
-				<Button
-					style={{ width: "240px" }}
-					variant="contained"
-					size="large"
-					onClick={() => login({})}
-				>
-					Log in
-				</Button>
 			</Box>
+			<Link
+				className={classes.link}
+				// TODO: change link here
+				href="https://wolfgang-bi.wolfgangdigital.com/"
+			>
+				<Box className={classes.box}>
+					<ThemedTitle
+						collapsed={false}
+						wrapperStyles={{
+							fontSize: "22px",
+							justifyContent: "center",
+						}}
+						text="ANALYTICS"
+						disabled
+					/>
+				</Box>
+			</Link>
 		</Container>
 	);
 }

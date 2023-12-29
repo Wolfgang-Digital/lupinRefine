@@ -31,6 +31,7 @@ export const getProjectJobTaskForDayDialog = async (
 			.select("*")
 			.eq("project_id", projectId)
 			.eq("job_id", jobNameId);
+		console.log({ data });
 		if (error) {
 			console.error("Error fetching Project Job Task for Day Dialog: ", error);
 			return;
