@@ -254,7 +254,6 @@ const Timesheet = () => {
 				const monthlyGroupedTimesheets: MonthlyGroupedTimesheets =
 					groupMonthlyTimesheets(monthlyFilteredResponse);
 				setFilteredTimesheets(monthlyGroupedTimesheets);
-				console.log({ monthlyGroupedTimesheets });
 			}
 
 			// Create one option object e.g options = { client: [], project: [], job: [], task: []}
@@ -381,7 +380,6 @@ const Timesheet = () => {
 		const clientId = selectedClient;
 		const clientJobs = (await getJobByProjectId(clientId, projectId)) || [];
 
-		console.log({ clientJobs, selectedJob });
 		let AHJobId: number = 0;
 		if (clientJobs) {
 			AHJobId =

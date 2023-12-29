@@ -121,10 +121,10 @@ const App = (props: React.PropsWithChildren) => {
 		},
 		check: async () => {
 			if (status === "unauthenticated") {
-				/* 	return {
+				return {
 					authenticated: false,
 					redirectTo: "/login",
-				}; */
+				};
 			}
 
 			return {
