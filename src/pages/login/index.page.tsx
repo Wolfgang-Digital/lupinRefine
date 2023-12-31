@@ -46,11 +46,7 @@ export default function Login() {
 					}}
 				/>
 			</Box>
-			<Link
-				className={classes.link}
-				// TODO: change link here
-				href="https://wolfgang-bi.wolfgangdigital.com/"
-			>
+			<Link className={classes.link} href="https://analytics.wolfgangdigital.com/">
 				<Box className={classes.box}>
 					<ThemedTitle
 						collapsed={false}
