@@ -33,13 +33,20 @@ export const groupFinancialTableData = (
 	return groupedData;
 };
 
-export const getFinancialTable = async (clientId: number) => {
+export const getFinancialTable = async (
+	clientId: number,
+	month: number,
+	year: number
+) => {
 	try {
 		const { data, error } = await supabase
-			.from("timesheet_rows_view")
+			.from("all_monthly_timesheet_rows_view")
 			.select("*")
 			.order("id", { ascending: true })
-			.eq("client_id", clientId);
+			.eq("client_id", clientId)
+			.eq("month", month)
+			.eq("year", year);
+		console.log({ data, month: new Date().getMonth() + 1 });
 		if (error) {
 			console.error("Error fetching clients:", error);
 			return;
