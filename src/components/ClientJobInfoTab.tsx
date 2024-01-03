@@ -127,7 +127,6 @@ function JobsInfoGrid({ clientId }: { clientId?: number }) {
 		async function fetchData() {
 			const financialTable = await getFinancialTable(
 				clientId || 0,
-				selectedMonth + 1,
 				new Date().getFullYear()
 			);
 			if (financialTable) {
