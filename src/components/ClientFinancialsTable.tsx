@@ -68,7 +68,10 @@ function CollapsibleGrid({ clientId }: { clientId?: number }) {
 	useEffect(() => {
 		// Fetch data from Supabase and update the fetchedRows state
 		async function fetchData() {
-			const financialTable = await getFinancialTable(clientId || 0);
+			const financialTable = await getFinancialTable(
+				clientId || 0,
+				new Date().getFullYear()
+			);
 			if (financialTable) {
 				setFinancialData(financialTable);
 				fetchGroupedData(financialTable, selectedMonth);
