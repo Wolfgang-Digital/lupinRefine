@@ -382,7 +382,7 @@ function JobsFinancialTable({
 			const allMonthsData: MonthlyTimesheetRowsView[][] = [];
 			for (let i = 0; i < 12; i++) {
 				const monthData = (await getAllMonthlyTimesheetRows(
-					2023,
+					new Date().getFullYear(),
 					i + 1
 				)) as unknown as MonthlyTimesheetRowsView[];
 				const filteredMonthData: MonthlyTimesheetRowsView[] = monthData.filter(
