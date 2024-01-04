@@ -344,7 +344,7 @@ function JobsFinancialTable({
 	clientId: number;
 	jobNameId: number;
 }) {
-	const [value, setValue] = React.useState(dayjs("2023-10-31") as Dayjs | null);
+	const [value, setValue] = React.useState(dayjs("2024-01-01") as Dayjs | null);
 
 	const [monthData, setMonthData] = useState<Accumulator[]>([]);
 	const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
@@ -681,7 +681,7 @@ function JobsFinancialTable({
 				}}
 			>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
-					<DatePicker label="Start Date" defaultValue={dayjs("2023-10-05")} />
+					<DatePicker label="Start Date" defaultValue={dayjs("2024-01-01")} />
 					<DatePicker
 						label="End Date"
 						value={value}
