@@ -689,8 +689,8 @@ function JobsFinancialTable({
 					/>
 				</LocalizationProvider>
 				<h3 style={{ paddingLeft: "5%" }}>Total Revenue</h3>
-				<h3 style={{ paddingLeft: "15%" }}>3248</h3>
-				<h3 style={{ paddingLeft: "5%" }}>+ 5% YoY | + 0% MoM</h3>
+				<h3 style={{ paddingLeft: "15%" }}>0</h3>
+				<h3 style={{ paddingLeft: "5%" }}>+ 0% YoY | + 0% MoM</h3>
 			</div>
 
 			<TableContainer style={{ maxHeight: "max-content" }} component={Paper}>

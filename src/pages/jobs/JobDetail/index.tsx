@@ -24,7 +24,7 @@ import {
 	TabPanelContainer,
 } from "@styled-components/jobs";
 
-import CollapsibleGrid from "@components/ClientFinancialsTable";
+//import CollapsibleGrid from "@components/ClientFinancialsTable";
 import CollapsibleHoursGrid from "@components/AllocateHoursTable";
 import CollapsibleTasksGrid from "@components/JobTasksTable";
 
@@ -92,7 +92,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 						aria-label="Job Tabs"
 					>
 						<Tab label="Job Info" />
-						<Tab label="Financials" />
+						{/*<Tab label="Financials" />*/}
 						<Tab label="Tasks" />
 						<Tab label="Allocations" />
 					</Tabs>
@@ -138,7 +138,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 						</Container>
 					</TabPanelContainer>
 
-					<TabPanelContainer
+					{/*<TabPanelContainer
 						role="tabpanel"
 						hidden={tabValue !== 1}
 						id={`tabpanel-1`}
@@ -150,15 +150,15 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 								<Typography component="h1" variant="h5">
 									Financial Details
 								</Typography>
-								{/* <ClientFinancials clientId={client?.id || 0} /> */}
+								{<ClientFinancials clientId={client?.id || 0} />}
 								<CollapsibleGrid />
 							</Paper>
 						</Container>
-					</TabPanelContainer>
+					</TabPanelContainer>*/}
 
 					<TabPanelContainer
 						role="tabpanel"
-						hidden={tabValue !== 2}
+						hidden={tabValue !== 1}
 						id={`tabpanel-1`}
 						aria-labelledby={`tab-1`}
 					>
@@ -178,7 +178,7 @@ const JobDetail: React.FC<JobDetailProps> = ({ job, onClose }) => {
 
 					<TabPanelContainer
 						role="tabpanel"
-						hidden={tabValue !== 3}
+						hidden={tabValue !== 2}
 						id={`tabpanel-1`}
 						aria-labelledby={`tab-1`}
 					>

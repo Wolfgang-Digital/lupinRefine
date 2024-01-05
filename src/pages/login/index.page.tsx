@@ -7,24 +7,40 @@ import Link from "next/link";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
-	container: {
+	body: {
+		backgroundColor: "#02786D",
+		height: "100vh",
+		overflow: "hidden", // Prevent overscroll
+		display: "flex",
+		flexDirection: "column", // Center content vertically
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	logo: {
+		paddingBottom: "60px", // Adjusted padding
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		height: "100vh",
-		gap: "64px",
+	},
+	container: {
+		display: "flex",
+		flexDirection: "row", // Changed to column layout
+		justifyContent: "center",
+		alignItems: "center",
+		gap: "24px", // Adjusted gap between logo and boxes
 	},
 	box: {
-		minHeight: "250px",
+		minHeight: "100px",
 		minWidth: "250px",
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
 		border: "1px solid #ccc",
-		borderRadius: "4px",
+		borderRadius: "10px",
 		padding: "24px",
 		gap: "24px",
+		backgroundColor: "#fff",
 	},
 	link: {
 		textDecoration: "none",
@@ -36,30 +52,44 @@ export default function Login() {
 	const { mutate: login } = useLogin();
 
 	return (
-		<Container className={classes.container}>
-			<Box className={classes.box} onClick={() => login({})}>
-				<ThemedTitle
-					collapsed={false}
-					wrapperStyles={{
-						fontSize: "22px",
-						justifyContent: "center",
-					}}
+		<div className={classes.body}>
+			<Box className={classes.logo}>
+				<img
+					src="https://www.wolfgangdigital.com/img/logo.svg"
+					alt="Wolfgang Digital Logo"
+					style={{ width: "250px" }}
 				/>
 			</Box>
-			<Link className={classes.link} href="https://analytics.wolfgangdigital.com/">
-				<Box className={classes.box}>
+			<Container className={classes.container}>
+				{/* First Box */}
+				<Box className={classes.box} onClick={() => login({})}>
 					<ThemedTitle
 						collapsed={false}
 						wrapperStyles={{
 							fontSize: "22px",
 							justifyContent: "center",
 						}}
-						text="ANALYTICS"
-						disabled
 					/>
 				</Box>
-			</Link>
-		</Container>
+				{/* Second Box with Link */}
+				<Link
+					className={classes.link}
+					href="https://analytics.wolfgangdigital.com/"
+				>
+					<Box className={classes.box}>
+						<ThemedTitle
+							collapsed={false}
+							wrapperStyles={{
+								fontSize: "22px",
+								justifyContent: "center",
+							}}
+							text="ANALYTICS"
+							disabled
+						/>
+					</Box>
+				</Link>
+			</Container>
+		</div>
 	);
 }
 
