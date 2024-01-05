@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 		gap: "24px", // Adjusted gap between logo and boxes
 	},
 	box: {
-		minHeight: "100px",
+		minHeight: "80px",
 		minWidth: "250px",
 		display: "flex",
 		flexDirection: "column",
@@ -66,7 +66,7 @@ export default function Login() {
 					<ThemedTitle
 						collapsed={false}
 						wrapperStyles={{
-							fontSize: "22px",
+							fontSize: "18px",
 							justifyContent: "center",
 						}}
 					/>
@@ -80,7 +80,7 @@ export default function Login() {
 						<ThemedTitle
 							collapsed={false}
 							wrapperStyles={{
-								fontSize: "22px",
+								fontSize: "18px",
 								justifyContent: "center",
 							}}
 							text="ANALYTICS"
